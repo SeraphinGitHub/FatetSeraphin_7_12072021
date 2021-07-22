@@ -1,7 +1,7 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    const Publish = sequelize.define("User", {
+    const Publish = sequelize.define("Publish", {
 
         textContent: {
             type: DataTypes.STRING,

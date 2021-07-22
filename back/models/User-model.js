@@ -3,15 +3,40 @@ module.exports = (sequelize, DataTypes) => {
 
     const User = sequelize.define("User", {
 
-        firstName: {
+        email: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        userName: {
             type: DataTypes.STRING,
             allowNull: false,            
             validate: { notEmpty: true }
         },
 
-        email: {
+        password: {
             type: DataTypes.STRING,
-            unique: true,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        position: {
+            type: DataTypes.STRING,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        department: {
+            type: DataTypes.STRING,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0,
             allowNull: false,            
             validate: { notEmpty: true }
         },
