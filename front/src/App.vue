@@ -1,17 +1,22 @@
 <template>
-  <div class="flexCenter">
+  <section class="flexCenter">
+    
+    <figure class="logo">
+      <img alt="logo" src="./assets/grp-black.png">
+    </figure>
+    
+    <LogoutBtn/>
+    <PagesLog/>
+    <!-- <PagesSwap/> -->
 
-    <img class="logo" alt="logo" src="./assets/grp-black.png">
-    <Login/>
-    <PagesSwap/>
-
-  </div>
+  </section>
 </template>
 
 
 <script>
-  // import Login from "./components/Login"
-  import PagesSwap from './components/PagesSwap.vue'
+  import LogoutBtn from "./components/LogoutBtn.vue"
+  import PagesLog from './components/Login_Page/PagesLog.vue'
+  // import PagesSwap from './components/Pages_Swap/PagesSwap.vue'
  
   export default {
     created() {document.title = "Groupomania"},
@@ -19,14 +24,70 @@
     name: "App",
     
     components: {
-      // Login,
-      PagesSwap,
+      LogoutBtn,
+      PagesLog,
+      // PagesSwap,
     }
   }
 </script>
 
 
 <style>
+  .logo {
+    position: relative;
+    margin: 12px;
+    width: 100%;
+    height: 30px;
+  }
+
+  .logo img {
+    position: absolute;
+    left: 0;
+    object-fit: cover;
+    width: 180px;
+    height: 100%;
+  }
+
+
+  /* ======== Pages ======== */
+  .pages-container {
+    position: relative;
+    height: 500px;
+    margin: 5px;
+    margin-top: 0;
+  }
+
+  /* ======== Pages Log => Buttons ======== */
+  .login-btn,
+  .signin-btn,
+  .actu-btn,
+  .private-wall-btn,
+  .profile-btn {
+    position: absolute;
+    height: 40px;
+    top: -40px;
+    border-radius: 20px 20px 0 0;
+
+    font-family: "Roboto-Medium";
+    line-height: 100%;
+    font-weight: 400;
+    font-size: 120%;
+  }
+
+  /* ======== Pages Log => Pages ======== */
+  .login,
+  .signin,
+  .actu,
+  .private-wall,
+  .profile {
+    position: absolute;
+    height: 90%;
+    width: 96% !important;
+    top: 43px;
+    left: 0;
+  }
+
+
   #app {   
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -34,6 +95,25 @@
     text-align: center;
   }
 
+  body,
+  ul,
+  figure {
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    list-style: none;
+  }
+  
+  .flexCenter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
   /* Raleway Medium */
   @font-face {
     font-family: "Raleway-Medium";
@@ -62,28 +142,11 @@
     font-size: 110%;
   }
 
-  .flexCenter {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-  }
-  
-  li {
-    list-style: none;
-  }
-
   .btn {
     border: none;
     border-radius: 10px;
-    height: 50px;
-    width: 80%;
+    height: 40px;
+    width: 60%;
     background: linear-gradient(to top left, rgb(255, 94, 0), rgb(255, 217, 0));
     transition-duration: 0.5s;
     
@@ -101,11 +164,5 @@
     border-top: solid grey 5px;
     border-left: solid grey 5px;
     transition-duration: 0s;
-  }
-
-  .logo {
-    object-fit: cover;
-    width: 250px;
-    height: 50px;
   }
 </style>

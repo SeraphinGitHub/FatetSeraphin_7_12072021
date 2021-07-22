@@ -1,16 +1,13 @@
 <template>
-  <div class="vue">
+    <div class="vue">
 
-  </div>
+    </div>
 </template>
 
 
 <script>
     export default {
         name: 'Default',
-        props: {
-            msg: String
-        }
     }
 </script>
 

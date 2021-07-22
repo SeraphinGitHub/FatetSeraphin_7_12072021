@@ -7,9 +7,6 @@ const app = express();
 const publishRoutes = require("./routes/publish-routes.js");
 const userRoutes = require("./routes/user-routes.js");
 
-        
-
-
 
 // =================================================================================
 // Disable CORS errors

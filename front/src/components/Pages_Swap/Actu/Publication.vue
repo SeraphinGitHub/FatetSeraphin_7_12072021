@@ -3,7 +3,7 @@
 
         <div class="flexCenter caption">
             <figure class="flexCenter user-pict">
-                <img src="../../public/Onin_Pecker.jpg" alt="">
+                <img src="../../../../public/Onin_Pecker.jpg" alt="">
 
                 <figcaption class="flexCenter user-infos">
                     <h2>{{ userName }}</h2>
@@ -21,14 +21,14 @@
         </div>
 
         <figure class="file-pict">
-            <img src="../../public/stone_pit.jpg" alt="">
+            <img src="../../../../public/stone_pit.jpg" alt="">
         </figure>
 
         <p class="content">{{ textContent }}</p>
 
         <form class="flexCenter commentate">
             <figure class="flexCenter user-pict">
-                <img src="../../public/Onin_Pecker.jpg" alt="">
+                <img class="circle-user-img" src="../../../../public/Onin_Pecker.jpg" alt="">
 
                 <figcaption class="flexCenter user-infos">
                     <h2>{{ userName }}</h2>
@@ -63,12 +63,12 @@
                 // filePicture: null,
                 // textContent: null,
 
-                userPhoto: "../../public/Onin_Pecker.jpg",
+                userPhoto: "../../../../public/Onin_Pecker.jpg",
                 userName: "Fatet séraphin",
                 position: "Développeur web",
                 service: "Recherche et développement",
                 publishedTime: "19/05/2021 à 14:37",
-                filePicture: "../../public/stone_pit.jpg",
+                filePicture: "../../../../public/stone_pit.jpg",
                 textContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
             };
         },
@@ -100,7 +100,7 @@
     .post {
         overflow: hidden;
         height: auto;
-        width: 92%;
+        width: 96%;
         margin-bottom: 30px;
         border-radius: 15px;
         background-color: white;
@@ -122,12 +122,20 @@
         width: 100%;
     }
     
-    .user-pict img {
+    .user-pict img,
+    .circle-user-img {
         object-fit: cover;
         height: 100%;
-        width: 35%;
-        border-radius: 10px;
+        width: 80px;
         box-shadow: black 5px 5px 5px;
+    }
+
+    .user-pict img {
+        border-radius: 10px;
+    }
+
+    .circle-user-img {
+        border-radius: 50% !important;
     }
 
     .user-infos {
@@ -143,6 +151,7 @@
     .time-stamp {
         margin: 0;
         font-size: 95%;
+        width: 100%;
     }
 
     .post-btn {
