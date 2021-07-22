@@ -1,11 +1,14 @@
 
 module.exports = (sequelize, DataTypes) => {
-    
-    const Publish = sequelize.define("Publish", {
-        textContent: DataTypes.STRING,
-        picture: DataTypes.STRING,
-    }, {});
 
-    Publish.associate = (models) => models.Publish.belongsTo(models.User, {foreignKey: { allowNull: false }});
+    const Publish = sequelize.define("User", {
+
+        textContent: {
+            type: DataTypes.STRING,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+    });
+
     return Publish;
 };

@@ -68,9 +68,20 @@ exports.login = (req, res, next) => {
 
 
 // ==================================================================================
-// "GET" ==> User Page
+// "GET" ==> User Wall
 // ==================================================================================
-exports.userPage = (req, res, next) => {
+exports.userWall = (req, res, next) => {
+
+    User.findOne()
+    .then(() => res.status(200).json({ message: "" }))
+    .catch(error => res.status(500).json({ error }));
+};
+
+
+// ==================================================================================
+// "GET" ==> User Profile
+// ==================================================================================
+exports.userProfile = (req, res, next) => {
 
     User.findOne()
     .then(() => res.status(200).json({ message: "" }))

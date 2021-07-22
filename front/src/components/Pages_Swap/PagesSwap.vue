@@ -1,8 +1,8 @@
 <template>
     <section class="flexCenter pages-container">
                 
-        <Profile/>
-        <PrivateWall/>
+        <UserProfile/>
+        <UserWall/>
         <Actu/>
 
     </section>
@@ -11,8 +11,8 @@
 
 <script>
     import Actu from './Actu/Actu.vue'
-    import PrivateWall from './Wall/PrivateWall.vue'
-    import Profile from './Profile/Profile.vue'
+    import UserWall from './Wall/UserWall.vue'
+    import UserProfile from './Profile/UserProfile.vue'
     // import Publish from './Wall/Publish.vue'
 
     export default {
@@ -20,8 +20,8 @@
         
         components: {
             Actu,
-            PrivateWall,
-            Profile,
+            UserWall,
+            UserProfile,
             // Publish,
         },
     }

@@ -1,16 +1,21 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    const User = sequelize.define("User",
-    {
-        email: DataTypes.STRING,
-        password: DataTypes.STRING,
-        userName: DataTypes.STRING,
-        position: DataTypes.STRING,
-        department: DataTypes.STRING,
-        isAdmin: DataTypes.BOOLEAN,
-    }, {});
+    const User = sequelize.define("User", {
 
-    User.associate = (models) => models.User.hasMany(models.Publish);
+        firstName: {
+            type: DataTypes.STRING,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        email: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+    });
+
     return User;
 };

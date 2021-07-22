@@ -1,11 +1,18 @@
 
+// ========== API init ==========
 const express = require("express");
+const app = express();
+const initDB = require("./init_DB");
+
 const bodyParser = require("body-parser");
 const path = require("path");
-const app = express();
+const db = require("./models");
 
-const publishRoutes = require("./routes/publish-routes.js");
+
+// ========== Routes Files ==========
 const userRoutes = require("./routes/user-routes.js");
+const publishRoutes = require("./routes/publish-routes.js");
+// const commentRoutes = require("./routes/comment-routes.js");
 
 
 // =================================================================================
@@ -19,12 +26,16 @@ app.use((req, res, next) => {
 });
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-
-app.use("/pictures", express.static(path.join(__dirname, "pictures")));
-app.use("/api/auth", userRoutes);
-app.use("/api/publish", publishRoutes);
+db.sequelize.sync().then((req) => {
+    initDB;
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: false}));
+    
+    app.use("/pictures", express.static(path.join(__dirname, "pictures")));
+    app.use("/api/auth", userRoutes);
+    app.use("/api/publish", publishRoutes);
+    // app.use("/api/publish/:id/comment", commentRoutes);
+});
 
 
 module.exports = app;
