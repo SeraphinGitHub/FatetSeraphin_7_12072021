@@ -3,9 +3,27 @@ module.exports = (sequelize, DataTypes) => {
 
     const Publish = sequelize.define("Publish", {
 
-        textContent: {
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        title: {
             type: DataTypes.STRING,
             allowNull: false,            
+            validate: { notEmpty: true }
+        },
+
+        textContent: {
+            type: DataTypes.TEXT,
+            allowNull: true,            
+            validate: { notEmpty: true }
+        },
+
+        imageUrl: {
+            type: DataTypes.STRING,
+            allowNull: true,
             validate: { notEmpty: true }
         },
     });

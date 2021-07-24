@@ -33,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
             validate: { notEmpty: true }
         },
 
+        imageUrl: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: { notEmpty: true }
+        },
+
         isAdmin: {
             type: DataTypes.BOOLEAN,
             defaultValue: 0,

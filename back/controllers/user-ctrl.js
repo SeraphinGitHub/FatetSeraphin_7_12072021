@@ -1,38 +1,31 @@
 
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const db = require("../models");
 const User = db.User;
 
 
 // Find user by its hashed email
-const userBy_EmailHash = async (allUsers, reqBodyEmail) => {
-    
-    let userArray = [];
+const userBy_EmailHash = async (res, allUsers, reqBodyEmail) => {
+    let matchUserArray = [];
         
     for (i = 0; i < allUsers.length; i++) {
         let user = allUsers[i];
-
         await bcrypt.compare(reqBodyEmail, allUsers[i].email)
-        .then(emailValid => {
-            
-            if(emailValid) return userArray.push(user);
-            else return;
-            
-        }).catch(error => res.status(501).json({ error }));
+        .then(emailValid => { if(emailValid) return matchUserArray.push(user) })
+        .catch((error => res.status(501).json({ error })));
     }
-
-    return userArray;
+    return matchUserArray;
 }
 
 
-
-
-const aze = (res, reqBody, reqBodyEmail, reqBodyPsw) => {
+// Create user in DB with hashed email & password
+const createUser = (res, reqBody, reqBodyEmail, reqBodyPsw) => {
 
     bcrypt.hash(reqBodyEmail, 12)
     .then(emailHashed => {
-
         bcrypt.hash(reqBodyPsw, 12)
         .then(pswHashed => {
 
@@ -43,12 +36,11 @@ const aze = (res, reqBody, reqBodyEmail, reqBodyPsw) => {
             })
 
             user.save()
-            .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-            .catch(() => res.status(400).json({ message: "Utilisateur NON créé !" }));
+            .then(() => res.status(200).json({ message: "User created successfully !" }))
+            .catch(() => res.status(502).json({ message: "User NOT created !" }));
 
-        }).catch(() => res.status(501).json({ message: "Mot de passe NON validé !" }));
-
-    }).catch(() => res.status(500).json({ message: "E-mail NON validée !" }));
+        }).catch(() => res.status(501).json({ message: "Invalid password !" }));
+    }).catch(() => res.status(500).json({ message: "Invalid e-mail !" }));
 }
 
 
@@ -58,42 +50,18 @@ const aze = (res, reqBody, reqBodyEmail, reqBodyPsw) => {
 exports.signin = (req, res, next) => {
 
     User.findAll()
-    .then((users) => {
+    .then(async(users) => {
 
         // Search one user in DB with requested email
-        const userArray = userBy_EmailHash(users, req.body.email);
-        const userEmail_DB = userArray[0].email;
+        const matchUserArray = await userBy_EmailHash(res, users, req.body.email);
+
+        // If requested email exist inside DB
+        if(matchUserArray.length) return res.status(401).json({ message: "This e-mail already exists !" });
         
-        // Compare requested email
-        bcrypt.compare(req.body.email, userEmail_DB)
-        .then(emailValid => {
-            if(!emailValid) return res.status(401).json({ message: "Cette adresse e-mail existe déjà !" });
+        // If requested email doesn't exist inside DB
+        else createUser(res, req.body, req.body.email, req.body.password);
 
-            aze(res, req.body, req.body.email, req.body.password);
-
-            // bcrypt.hash(req.body.email, 12)
-            // .then(emailHashed => {
-
-            //     bcrypt.hash(req.body.password, 12)
-            //     .then(pswHashed => {
-
-            //         const user = new User({
-            //             ...req.body,
-            //             email: emailHashed,
-            //             password: pswHashed,
-            //         })
-
-            //         user.save()
-            //         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-            //         .catch(() => res.status(400).json({ message: "Utilisateur NON créé !" }));
-
-            //     }).catch(() => res.status(501).json({ message: "Mot de passe NON validé !" }));
-
-            // }).catch(() => res.status(500).json({ message: "E-mail NON validée !" }));
-
-        }).catch(() => res.status(502).json({ message: "azeazeaze !" }));
-    
-    }).catch(() => res.status(500).json({ message: "wxcwxcwxcwxc !" }));
+    }).catch(() => res.status(500).json({ message: "No user found !" }));
 };
 
 
@@ -102,27 +70,35 @@ exports.signin = (req, res, next) => {
 // ==================================================================================
 exports.login = (req, res, next) => {
 
-    User.findOne({ email: req.body.email })
-    .then((user) => {
-        if(!user) return res.status(401).json({ message: "Utilisateur non trouvé !" });
+    User.findAll()
+    .then(async(users) => {
 
-        bcrypt.compare(req.body.password, user.password)
-        
-        .then(valid => {
-            if(!valid) return res.status(401).json({ message: "Mot de passe incorrect !" });
+        // Search one user in DB with requested email
+        const matchUserArray = await userBy_EmailHash(res, users, req.body.email);
 
-            res.status(200).json({
-                userId: user._id,                
-                token: jwt.sign(
-                    { userId: user._id },
-                    "RANDOM_TOKEN_SECRET",
-                    { expiresIn: "48h" }
-                )
-            });
-        })
-        .catch(error => res.status(500).json({ error }));
-    })
-    .catch(error => res.status(500).json({ error }));
+        // If requested email exist inside DB
+        if(matchUserArray.length) {
+
+            const user = matchUserArray[0];
+            await bcrypt.compare(req.body.password, user.password)
+            .then(passwordValid => {
+                if(!passwordValid) return res.status(401).json({ message: "Invalid password !" });
+    
+                res.status(200).json({
+                    userId: user.id,                
+                    token: jwt.sign(
+                        { userId: user.id },
+                        proces.env.Token_Key,
+                        { expiresIn: "48h" }
+                    ),
+                    message: "User logged successfully !"
+                });
+            }).catch(() => res.status(502).json({ message: "Unexpected token !" }));
+        }
+
+        else return res.status(501).json({ message: "Invalid e-mail !" })
+
+    }).catch(() => res.status(500).json({ message: "No user found !" }));
 };
 
 
@@ -131,9 +107,9 @@ exports.login = (req, res, next) => {
 // ==================================================================================
 exports.userWall = (req, res, next) => {
 
-    User.findOne()
-    .then(() => res.status(200).json({ message: "" }))
-    .catch(error => res.status(500).json({ error }));
+    // User.findOne({ id: req.query.id })
+    // .then(wall => res.status(200).json(wall))
+    // .catch(error => res.status(404).json({ error }));
 };
 
 
@@ -142,18 +118,34 @@ exports.userWall = (req, res, next) => {
 // ==================================================================================
 exports.userProfile = (req, res, next) => {
 
-    User.findOne()
-    .then(() => res.status(200).json({ message: "" }))
-    .catch(error => res.status(500).json({ error }));
+    // User.findOne({ id: req.query.id })
+    // .then(profile => res.status(200).json(profile))
+    // .catch(error => res.status(404).json({ error }));
 };
 
 
 // ==================================================================================
 // "DELETE" ==> Delete User
 // ==================================================================================
+const deleteUser = (user, req, res) => {
+    
+    user.destroy({ where: { id: req.body.id } })
+    .then(() => res.status(200).json({ message: `${user.userName} deleted successfully !` }))
+    .catch(() => res.status(500).json({ message: "User NOT deleted !" }));
+}
+
 exports.deleteUser = (req, res, next) => {
 
-    User.findOne()
-    .then(() => res.status(200).json({ message: "" }))
-    .catch(error => res.status(500).json({ error }));
+    User.findOne({ where: { id: req.body.id } })
+    .then(user => {
+
+        if(user.isAdmin === false) {
+            const pictureName = user.imageUrl.split("/pictures/")[1];
+            if(pictureName) fs.unlink(`pictures/${pictureName}`, () => deleteUser(user, req, res));
+            else deleteUser(user, req, res);
+        }
+
+        else return res.status(500).json({ message: "Cannot delete -Admin- user !" })
+    })
+    .catch(() => res.status(404).json({ message: "User NOT found !" }));
 };
