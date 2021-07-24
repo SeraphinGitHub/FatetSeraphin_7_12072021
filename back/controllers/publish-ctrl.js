@@ -1,5 +1,6 @@
 
 const fs = require("fs");
+const generic = require("../generic-functions");
 const db = require("../models");
 const Publish = db.Publish;
 const User = db.User;
@@ -46,28 +47,24 @@ exports.modifyPublication = (req, res, next) => {
 // ==================================================================================
 // "DELETE" ==> Delete one publication by ID in DataBase
 // ==================================================================================
-exports.deletePublication = (req, res, next) => {
+exports.deletePublication = ( req, res, next) => {
     
-    User.getUserId(req.headers.authorization)
-    .then((aze) => {
-        console.log(aze);
-    })
-    .catch(() => res.status(500).json({ message: "Publication NOT deleted !" }));
+    const userIdTok = generic.getUserId(req, res, next, "token");
 
-    // Publish.destroy({ where: { id: req.body.id } })
-    // .then(() => res.status(200).json({ message: `${req.body.title} deleted successfully !` }))
-    // .catch(() => res.status(500).json({ message: "Publication NOT deleted !" }));
+    User.findOne({ where: { id: userIdTok } })
+    .then((user) => {      
+        Publish.findOne({ where: { id: req.body.id } })
+        .then(post => {
+            
+            if(user.isAdmin === true || post.userId === user.id) {
+                if(post.imageUrl) {
+                    
+                    const pictureName = post.imageUrl.split("/pictures/")[1];
+                    fs.unlink(`pictures/${pictureName}`, () => generic.deleteItem(post, post.title, res));
 
-    // Publish.findOne({ where: { id: req.body.id } })
-    // .then(publication => {
+                } else generic.deleteItem(post, post.title, res);
+            }
 
-    //     if(publication.isAdmin === false) {
-    //         const pictureName = publication.imageUrl.split("/pictures/")[1];
-    //         if(pictureName) fs.unlink(`pictures/${pictureName}`, () => deleteUser(user, req, res));
-    //         else deleteUser(user, req, res);
-    //     }
-
-    //     else return res.status(500).json({ message: "Cannot delete -Admin- user !" })
-    // })
-    // .catch(() => res.status(404).json({ message: "User NOT found !" }));
+        }).catch(() => res.status(404).json({ message: "Publication NOT found !" }));
+    }).catch(() => res.status(500).json({ message: "User NOT found !" }));
 }

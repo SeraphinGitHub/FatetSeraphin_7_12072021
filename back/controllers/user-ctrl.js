@@ -3,6 +3,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const generic = require("../generic-functions");
 const db = require("../models");
 const User = db.User;
 
@@ -88,7 +89,7 @@ exports.login = (req, res, next) => {
                     userId: user.id,                
                     token: jwt.sign(
                         { userId: user.id },
-                        proces.env.Token_Key,
+                        process.env.Token_Key,
                         { expiresIn: "48h" }
                     ),
                     message: "User logged successfully !"
@@ -127,25 +128,19 @@ exports.userProfile = (req, res, next) => {
 // ==================================================================================
 // "DELETE" ==> Delete User
 // ==================================================================================
-const deleteUser = (user, req, res) => {
-    
-    user.destroy({ where: { id: req.body.id } })
-    .then(() => res.status(200).json({ message: `${user.userName} deleted successfully !` }))
-    .catch(() => res.status(500).json({ message: "User NOT deleted !" }));
-}
-
 exports.deleteUser = (req, res, next) => {
 
     User.findOne({ where: { id: req.body.id } })
     .then(user => {
 
         if(user.isAdmin === false) {
-            const pictureName = user.imageUrl.split("/pictures/")[1];
-            if(pictureName) fs.unlink(`pictures/${pictureName}`, () => deleteUser(user, req, res));
-            else deleteUser(user, req, res);
-        }
+            if(user.imageUrl) {
 
-        else return res.status(500).json({ message: "Cannot delete -Admin- user !" })
+                const pictureName = user.imageUrl.split("/pictures/")[1];
+                fs.unlink(`pictures/${pictureName}`, () => generic.deleteItem(user, user.userName, res));
+
+            } else generic.deleteItem(user, user.userName, res);
+        } else return res.status(500).json({ message: "Cannot delete -Admin- user !" })
     })
     .catch(() => res.status(404).json({ message: "User NOT found !" }));
 };
