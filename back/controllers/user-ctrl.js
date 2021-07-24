@@ -1,7 +1,55 @@
 
 const bcrypt = require("bcrypt");
-const User = require("../models/User-model");
 const jwt = require("jsonwebtoken");
+const db = require("../models");
+const User = db.User;
+
+
+// Find user by its hashed email
+const userBy_EmailHash = async (allUsers, reqBodyEmail) => {
+    
+    let userArray = [];
+        
+    for (i = 0; i < allUsers.length; i++) {
+        let user = allUsers[i];
+
+        await bcrypt.compare(reqBodyEmail, allUsers[i].email)
+        .then(emailValid => {
+            
+            if(emailValid) return userArray.push(user);
+            else return;
+            
+        }).catch(error => res.status(501).json({ error }));
+    }
+
+    return userArray;
+}
+
+
+
+
+const aze = (res, reqBody, reqBodyEmail, reqBodyPsw) => {
+
+    bcrypt.hash(reqBodyEmail, 12)
+    .then(emailHashed => {
+
+        bcrypt.hash(reqBodyPsw, 12)
+        .then(pswHashed => {
+
+            const user = new User({
+                ...reqBody,
+                email: emailHashed,
+                password: pswHashed,
+            })
+
+            user.save()
+            .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+            .catch(() => res.status(400).json({ message: "Utilisateur NON créé !" }));
+
+        }).catch(() => res.status(501).json({ message: "Mot de passe NON validé !" }));
+
+    }).catch(() => res.status(500).json({ message: "E-mail NON validée !" }));
+}
 
 
 // ==================================================================================
@@ -9,32 +57,43 @@ const jwt = require("jsonwebtoken");
 // ==================================================================================
 exports.signin = (req, res, next) => {
 
-    bcrypt.hash(req.body.password, 10)
+    User.findAll()
+    .then((users) => {
 
-    .then(hash => {
+        // Search one user in DB with requested email
+        const userArray = userBy_EmailHash(users, req.body.email);
+        const userEmail_DB = userArray[0].email;
+        
+        // Compare requested email
+        bcrypt.compare(req.body.email, userEmail_DB)
+        .then(emailValid => {
+            if(!emailValid) return res.status(401).json({ message: "Cette adresse e-mail existe déjà !" });
 
-        const user = new User({
-            email: req.body.email,
-            password: hash,
-            userName: req.body.userName,
-            position: req.body.position,
-            department: req.body.department,
-            isAdmin: false
-        })
+            aze(res, req.body, req.body.email, req.body.password);
 
-        if (!req.body.email
-        || !req.body.password
-        || !req.body.userName
-        || !req.body.position
-        || !req.body.department) {
-            res.status(401).json({ error: "Veuillez remplir tout les champs !"})
-        }
+            // bcrypt.hash(req.body.email, 12)
+            // .then(emailHashed => {
 
-        else user.save()
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        .catch(error => res.status(400).json({ error }));
+            //     bcrypt.hash(req.body.password, 12)
+            //     .then(pswHashed => {
 
-    }).catch(error => res.status(500).json({ error }));
+            //         const user = new User({
+            //             ...req.body,
+            //             email: emailHashed,
+            //             password: pswHashed,
+            //         })
+
+            //         user.save()
+            //         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+            //         .catch(() => res.status(400).json({ message: "Utilisateur NON créé !" }));
+
+            //     }).catch(() => res.status(501).json({ message: "Mot de passe NON validé !" }));
+
+            // }).catch(() => res.status(500).json({ message: "E-mail NON validée !" }));
+
+        }).catch(() => res.status(502).json({ message: "azeazeaze !" }));
+    
+    }).catch(() => res.status(500).json({ message: "wxcwxcwxcwxc !" }));
 };
 
 

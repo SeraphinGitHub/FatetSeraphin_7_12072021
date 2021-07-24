@@ -121,6 +121,13 @@
     src: url("./fonts/Raleway-Medium.ttf");
   }
 
+  /* Roboto Light */
+  @font-face {
+    font-family: "Roboto-Light";
+    font-display: auto;
+    src: url("./fonts/Roboto-Light.ttf");
+  }
+
   /* Roboto Medium */
   @font-face {
     font-family: "Roboto-Medium";

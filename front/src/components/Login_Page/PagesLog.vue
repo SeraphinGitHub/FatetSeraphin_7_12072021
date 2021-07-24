@@ -39,7 +39,7 @@
     /* ========== Input Fields ========== */
     label,
     input {
-        width: 77%;
+        width: 100%;
     }
 
     label {
@@ -53,15 +53,15 @@
 
     input {
         text-align: left;
-        height: 22px;
-        margin-top: 5px;
+        height: 20px;
+        margin-top: 3px;
         padding-left: 15px;
         border-radius: 8px;
         border: solid black 1px;
 
-        font-family: "Raleway-Medium";
+        font-family: "Roboto-Light";
         line-height: 100%;
-        font-weight: 400;
+        font-weight: 600;
         font-size: 90%;
     }
 </style>
