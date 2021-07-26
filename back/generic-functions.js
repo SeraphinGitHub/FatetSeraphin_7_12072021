@@ -25,7 +25,6 @@ module.exports = {
     // Create One Item
     // ==================================================================================
     createOneItem: function(itemValue, req, res, next) {
-        let item;
         const userIdTok = this.verifyToken(req, res, next, "userId");
         
         if(itemValue === "publication") item = new Publish({
@@ -33,14 +32,11 @@ module.exports = {
             userId: userIdTok
         });
 
-        if(itemValue === "comment") {
-
-            item = new Comment({
-                ...req.body,
-                userId: userIdTok,
-                publishId: req.params.id,
-            });
-        }
+        if(itemValue === "comment") item = new Comment({
+            ...req.body,
+            userId: userIdTok,
+            publishId: req.params.id,
+        });
         
         item.save()
         .then(() => res.status(200).json({ message: "Publication created successfully !" }))
@@ -49,10 +45,30 @@ module.exports = {
 
 
     // ==================================================================================
+    // Check post User in order to Update/Delete (Base function)
+    // ==================================================================================
+    verifyPostOwner: function(itemModel, callback, req, res, next) {
+        const userIdTok = this.verifyToken(req, res, next, "userId");
+
+        User.findOne({ where: { id: userIdTok } })
+        .then(user => {
+
+            itemModel.findOne({ where: { id: req.params.id } })
+            .then(post => {
+                
+                if(user.isAdmin === true || post.userId === user.id) callback(itemModel, post, req, res, next);
+
+            }).catch(() => res.status(404).json({ message: "Publication NOT found !" }));
+        }).catch(() => res.status(500).json({ message: "Publication's user NOT found !" }));
+    },
+
+
+    // ==================================================================================
     // Modify One Item
     // ==================================================================================
-    modifyOneItem: function(itemModel, itemID, req, res) {
-        itemModel.update({ ...req.body }, { where: { id: itemID } })
+    modifyOneItem: function(itemModel, post, req, res, next) {
+        
+        itemModel.update({...req.body }, { where: { id: post.id } })
         .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
         .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
     },
@@ -61,32 +77,19 @@ module.exports = {
     // ==================================================================================
     // Delete One Item
     // ==================================================================================
-    deleteOneItem: function(itemModel, req, res, next) {
-        const userIdTok = this.verifyToken(req, res, next, "userId");
-
-        User.findOne({ where: { id: userIdTok } })
-        .then((user) => {      
-            itemModel.findOne({ where: { id: req.params.id } })
-            .then(post => {
-                
-                if(user.isAdmin === true || post.userId === user.id) {
-                    if(post.imageUrl) {
-                        
-                        const pictureName = post.imageUrl.split("/pictures/")[1];
-                        fs.unlink(`pictures/${pictureName}`, () => this.deleteItem(post, "Publication", res));
-
-                    } else this.deleteItem(post, "Publication", res);
-                }
-
-            }).catch(() => res.status(404).json({ message: "Publication NOT found !" }));
-        }).catch(() => res.status(500).json({ message: "User NOT found !" }));
+    deleteOneItem: function(itemModel, post, req, res, next) {
+        
+        if(post.imageUrl) {
+            const pictureName = post.imageUrl.split("/pictures/")[1];
+            fs.unlink(`pictures/${pictureName}`, () => this.destroyItem(post, "Publication", res));
+        } else this.destroyItem(post, "Publication", res);
     },
 
 
     // ==================================================================================
     // Delete Item (Base function)
     // ==================================================================================
-    deleteItem: function(item, itemName, res) {
+    destroyItem: function(item, itemName, res) {
         item.destroy({ where: { id: item.id } })
         .then(() => res.status(200).json({ message: `${itemName} deleted successfully !` }))
         .catch(() => res.status(500).json({ message: `${itemName} NOT deleted !` }));
@@ -98,17 +101,9 @@ module.exports = {
     // ==================================================================================
     verifyToken: function(req, res, next, elseValue) {
         try {
-            const token = req.headers.authorization.split(" ")[1];
-
-            // **************************************************
-            // const token = req.cookies.split(" ")[1];
-
-            const decodedToken = jwt.verify(token, process.env.Token_Key);
-            const tokenUserId = decodedToken.userId;
-        
-            if(req.body.userId && req.body.userId !== tokenUserId) throw "Session expired !";
-            else if(elseValue === "userId") return tokenUserId;
-            else if(elseValue === "token") return token;
+            const token = req.cookies.Session;
+            if(typeof token === "undefined") res.status(401).json({ message: "Session expired !" });
+            else if(elseValue === "userId") return jwt.verify(token, process.env.Token_Key).userId;
             else if(elseValue === "next") next();
         }
         catch (error) { res.status(403).json({ message: "None authentified request !" }) }

@@ -13,8 +13,10 @@ exports.createPublication = (req, res, next) => generic.createOneItem("publicati
 
 
 // "PUT" ==> Modify one publication by ID in DataBase
-exports.modifyPublication = (req, res, next) => generic.modifyOneItem(Publish, req.body.id, req, res);
+exports.modifyPublication = (req, res, next) => 
+generic.verifyPostOwner(Publish, generic.modifyOneItem, req, res, next);
 
 
 // "DELETE" ==> Delete one publication by ID in DataBase
-exports.deletePublication = (req, res, next) => generic.deleteOneItem(Publish, req, res, next);
+exports.deletePublication = (req, res, next) => 
+generic.verifyPostOwner(Publish, generic.deleteOneItem, req, res, next);

@@ -33,8 +33,8 @@ exports.signin = (req, res, next) => {
                 })
 
                 user.save()
-                .then(() => res.status(200).json({ message: "User created successfully !" }))
-                .catch(() => res.status(502).json({ message: "User NOT created !" }));
+                .then(() => res.status(200).json({ message: `${user.userName} created successfully !` }))
+                .catch(() => res.status(502).json({ message: `${user.userName} could NOT be created !` }));
 
             }).catch(() => res.status(401).json({ message: "Invalid password !" }));
         }).catch(() => res.status(400).json({ message: "Invalid E-mail !" }));
@@ -49,76 +49,51 @@ exports.login = (req, res, next) => {
 
     User.findAll()
     .then(async (users) => {
-
         const matchUserArray = await generic.userProbe(users, req.body.email, res);
-        if(!matchUserArray.length) return res.status(402).json({ message: "Invalid E-mail !" });
-            
-        else {
+
+        if(matchUserArray.length) {
             let user = matchUserArray[0];
 
             bcrypt.compare(req.body.password, user.password)
             .then(passwordValid => {
-                if(!passwordValid) return res.status(401).json({ message: "Invalid password !" });
 
-                else {
-                    // If first time logged
+                if(passwordValid) {
+                    const session = {
+                        userId: user.id,
+                        token: jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" })
+                    }
+                 
+                    const cookieOptions = {
+                        maxAge: 48*60*60*1000,  // 48h
+                        // maxAge: 30*1000, // 30 seconds
+                        httpOnly: true,
+                    }                         
 
+                    res.cookie("Session", session.token, cookieOptions);
+                    res.status(200).json({ session, message: `${user.userName} logged successfully !` });
 
+                } else return res.status(401).json({ message: "Invalid password !" });
+            }).catch(() => res.status(501).json({ message: `${user.userName} could NOT log !` }));
 
-
-
-                    // if(!user.token) {
-
-                        const session = {
-                            userId: user.id,
-                            token: jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" })
-                        }
-                        
-                        bcrypt.hash(session.token, 12)
-                        .then(tokenHashed => {
-
-                            const cookieOptions = {
-                                maxAge: 48*60*60*1000,
-                                httpOnly: true,
-                            }
-                            
-                            res.cookie(`Session: ${user.userName}`, session.token, cookieOptions);
-
-                            User.update({ token: tokenHashed }, { where: { id: user.id } })
-                            .then(() => res.status(200).json({ session, message: `${user.userName} logged successfully !` }))
-                            .catch(() => res.status(500).json({ message: `${user.userName} could NOT log !` }));
-                            
-                        }).catch(() => res.status(401).json({ message: "Session failled !" }));
-                    // }
-                    
-
-
-
-
-                    // If already had been logged
-                    // else {
-                    //     const headerToken = generic.verifyToken(req, res, next, "token");
-                    //     const session = { userId: user.id, token: headerToken }
-                        
-                    //     bcrypt.compare(headerToken, user.token)
-                    //     .then(tokenValid => {
-                    //         if(!tokenValid) return res.status(401).json({ message: "Session expired !" });
-                            
-                    //         else User.findOne({ where: { id: user.id } })
-                    //         .then(() => res.status(203).json({ session, message: `${user.userName} logged successfully !` }))
-                    //         .catch(() => res.status(503).json({ message: `${user.userName} could NOT log !` }));
-                            
-                    //     }).catch(() => res.status(502).json({ message: "Unexpected token ! -Session-" }));
-                    // }
-
-
-
-
-                    
-                }
-            }).catch(() => res.status(501).json({ message: "Unexpected token ! -Password-" }));
-        }
+        } else return res.status(400).json({ message: "Invalid E-mail !" });
     }).catch(() => res.status(500).json({ message: "No users found !" }));
+};
+
+
+// ==================================================================================
+// "POST" ==> User Logout
+// ==================================================================================
+exports.logout = (req, res, next) => {
+
+    const userIdTok = generic.verifyToken(req, res, next, "userId");
+
+    User.findOne({ where: { id: userIdTok } })
+    .then(user => {
+       
+        res.cookie("Session", {}, {maxAge: 0});
+        res.status(202).json({ message: `${user.userName} logged Out successfully !` });
+
+    }).catch(() => res.status(404).json({ message: "User NOT found !" }));
 };
 
 
@@ -138,10 +113,6 @@ exports.userWall = (req, res, next) => {
 // ==================================================================================
 exports.getUserProfile = (req, res, next) => {
     
-    // ********************************
-    console.log(req.cookies);
-
-
     const userIdTok = generic.verifyToken(req, res, next, "userId");
     User.findOne({ where: { id: userIdTok } })
     .then((user) => res.status(200).json(user))
@@ -154,8 +125,21 @@ exports.getUserProfile = (req, res, next) => {
 // ==================================================================================
 exports.modifyProfile = (req, res, next) => {
 
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
-    generic.modifyOneItem(User, userIdTok, req, res);
+    const userIdTok = this.verifyToken(req, res, next, "userId");
+
+    User.findOne({ where: { id: userIdTok } })
+    .then(user => {
+        
+        if(user.isAdmin === true || user.id) {
+
+            const item = {...req.body };
+            const {email, password, ...securedItem} = item;
+
+            User.update(securedItem, { where: { id: user.id } })
+            .then(() => res.status(200).json({ message: `${user.userName}'s profile update successfully !` }))
+            .catch(() => res.status(500).json({ message: `${user.userName}'s profile NOT updated !` }));
+        }        
+    }).catch(() => res.status(500).json({ message: "User NOT found !" }));
 };
 
 
@@ -180,9 +164,8 @@ exports.modifyEmail = (req, res, next) => {
     
     User.findAll()
     .then(async (users) => {
-
         const matchUserArray = await generic.userProbe(users, req.body.newEmail, res);
-        if(matchUserArray.length) return res.status(401).json({ message: "This e-mail already exists !" });
+        if(matchUserArray.length) return res.status(402).json({ message: "This e-mail already exists !" });
 
         else User.findOne({ where: { id: userIdTok } })
         .then(user => generic.updateEmailOrPsw(user, "E-mail", req, res, next))
@@ -203,13 +186,22 @@ exports.deleteUser = (req, res, next) => {
     .then(user => {
         if(user.isAdmin === false) {
 
-            if(user.imageUrl) {
+            bcrypt.compare(req.body.password, user.password)
+            .then(passwordValid => {
+                if(passwordValid) {
+                   
+                    res.cookie("Session", {}, {maxAge: 0});
 
-                const pictureName = user.imageUrl.split("/pictures/")[1];
-                fs.unlink(`pictures/${pictureName}`, () => generic.deleteItem(user, user.userName, res));
+                    if(user.imageUrl) {
 
-            } else generic.deleteItem(user, user.userName, res);
-            
+                        const pictureName = user.imageUrl.split("/pictures/")[1];
+                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, res));
+        
+                    } else generic.destroyItem(user, user.userName, res);
+
+                } else return res.status(401).json({ message: "Invalid password !" });
+            }).catch(() => res.status(501).json({ message: "Unexpected token ! -Delete User-" }));
+
         } else return res.status(500).json({ message: "Cannot delete -Admin- user !" });
     }).catch(() => res.status(404).json({ message: "User NOT found !" }));
 };

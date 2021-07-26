@@ -16,8 +16,10 @@ exports.createComment = (req, res, next) => generic.createOneItem("comment", req
 
 
 // "PUT" ==> Modify one comment by ID in DataBase
-exports.modifyComment = (req, res, next) => generic.modifyOneItem(Comment, req.body.id, req, res);
+exports.modifyComment = (req, res, next) => 
+generic.verifyPostOwner(Comment, generic.modifyOneItem, req, res, next);
 
 
 // "DELETE" ==> Delete one comment by ID in DataBase
-exports.deleteComment = (req, res, next) => generic.deleteOneItem(Comment, req, res, next);
+exports.deleteComment = (req, res, next) => 
+generic.verifyPostOwner(Comment, generic.deleteOneItem, req, res, next);
