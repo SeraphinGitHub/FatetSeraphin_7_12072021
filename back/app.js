@@ -5,6 +5,7 @@ const app = express();
 const initDB = require("./init_DB");
 
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 const db = require("./models");
 
@@ -12,7 +13,7 @@ const db = require("./models");
 // ========== Routes Files ==========
 const userRoutes = require("./routes/user-routes.js");
 const publishRoutes = require("./routes/publish-routes.js");
-// const commentRoutes = require("./routes/comment-routes.js");
+const commentRoutes = require("./routes/comment-routes.js");
 
 
 // =================================================================================
@@ -30,13 +31,13 @@ db.sequelize.sync().then((req) => {
     
     initDB;
     
+    app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
     
     app.use("/pictures", express.static(path.join(__dirname, "pictures")));
     app.use("/api/auth", userRoutes);
-    app.use("/api/publish", publishRoutes);
-    // app.use("/api/publish/:id/comment", commentRoutes);
+    app.use("/api/publish", publishRoutes, commentRoutes);
 });
 
 

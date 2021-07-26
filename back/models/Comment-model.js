@@ -1,32 +1,26 @@
 
 module.exports = (sequelize, DataTypes) => {
 
-    const Publish = sequelize.define("Publish", {
+    const Comment = sequelize.define("Comment", {
         
         userId: {
             type: DataTypes.INTEGER,
-            allowNull: false,            
+            allowNull: false,
             validate: { notEmpty: true }
         },
 
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false,            
+        publishId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
             validate: { notEmpty: true }
         },
 
         textContent: {
             type: DataTypes.TEXT,
-            allowNull: true,            
-            validate: { notEmpty: true }
-        },
-
-        imageUrl: {
-            type: DataTypes.STRING,
             allowNull: true,
             validate: { notEmpty: true }
         },
     });
 
-    return Publish;
+    return Comment;
 };
