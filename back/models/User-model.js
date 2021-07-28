@@ -35,7 +35,8 @@ module.exports = (sequelize, DataTypes) => {
 
         imageUrl: {
             type: DataTypes.STRING,
-            allowNull: true,
+            defaultValue: "../pictures/Default.jpg",
+            allowNull: false,
             validate: { notEmpty: true }
         },
 

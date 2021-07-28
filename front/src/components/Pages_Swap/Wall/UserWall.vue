@@ -34,7 +34,7 @@
 
 <style scoped lang="scss">
 
-    $pageColor: rgb(60, 63, 255);
+    $pageColor: rgb(255, 150, 0);
 
     .private-wall {
         z-index: 5;
@@ -50,5 +50,9 @@
     .private-wall-btn {
         left: center;
         background-color: $pageColor;
+    }
+
+    .flow {
+        height: 410px;
     }
 </style>

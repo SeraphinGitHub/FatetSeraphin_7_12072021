@@ -34,7 +34,7 @@
 
 <style scoped lang="scss">
 
-    $pageColor: rgb(135, 60, 255);
+    $pageColor: rgb(179, 0, 255);
 
     .profile {
         z-index: 1;

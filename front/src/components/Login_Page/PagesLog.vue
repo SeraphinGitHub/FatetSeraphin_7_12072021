@@ -1,5 +1,5 @@
 <template>
-    <section class="flexCenter pages-container" v-if="!isHidden">
+    <section class="flexCenter pages-container" v-if="isVisible">
                 
         <Login/>
         <Signin/>
@@ -8,28 +8,43 @@
 </template>
 
 
-<script>
-    import Login from './Login.vue'
-    import Signin from './Signin.vue'
+<script>    
+    import Login from "./Login.vue"
+    import Signin from "./Signin.vue"
 
     export default {
-        name: 'PagesLog',
-
-        data: function () {
-            return {
-                isHidden: false,
-            }
-        },
+        name: "PagesLog",
         
         components: {
             Login,
             Signin
         },
+
+        data() {
+            return {
+                // ***********************************
+
+                isVisible: false,
+                // isVisible: true,
+                
+                // ***********************************
+            }
+        },
+
+        methods: {
+
+            
+        },        
     }
 </script>
 
 
 <style>
+    .field-container {
+        position: relative;
+        width: 80% !important;
+    }
+
     /* ======== Pages Log => Buttons ======== */
     .login-btn,
     .signin-btn {

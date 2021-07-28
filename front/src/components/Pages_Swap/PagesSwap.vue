@@ -1,5 +1,5 @@
 <template>
-    <section class="flexCenter pages-container">
+    <section class="flexCenter pages-container" v-if="isVisible">
                 
         <UserProfile/>
         <UserWall/>
@@ -10,19 +10,28 @@
 
 
 <script>
-    import Actu from './Actu/Actu.vue'
-    import UserWall from './Wall/UserWall.vue'
-    import UserProfile from './Profile/UserProfile.vue'
-    // import Publish from './Wall/Publish.vue'
+    import Actu from "./Actu/Actu.vue"
+    import UserWall from "./Wall/UserWall.vue"
+    import UserProfile from "./Profile/UserProfile.vue"
 
     export default {
-        name: 'PagesSwap',
+        name: "PagesSwap",
         
         components: {
             Actu,
             UserWall,
             UserProfile,
-            // Publish,
+        },
+
+        data() {
+            return {
+                // ***********************************
+
+                isVisible: true,
+                // isVisible: false,
+                
+                // ***********************************
+            }
         },
     }
 </script>
@@ -32,7 +41,6 @@
     .flow {
         justify-content: flex-start !important;
         overflow: scroll;
-        height: 410px;
         width: 95% !important;
         margin-left: 25px;
     }
@@ -42,5 +50,22 @@
     .private-wall-btn,
     .profile-btn {
         width: 32%;
+    }
+
+    textarea {
+        text-align: left;
+        resize: none;
+        height: 80px;
+        width: 100%;
+        margin-top: 8px;
+        padding: 15px;
+        padding-top: 5px;
+        border-radius: 8px;
+        border: solid black 1px;
+
+        font-family: "Raleway-Medium";
+        line-height: 100%;
+        font-weight: 400;
+        font-size: 95%;
     }
 </style>

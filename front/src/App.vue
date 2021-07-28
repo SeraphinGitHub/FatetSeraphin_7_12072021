@@ -1,22 +1,24 @@
 <template>
-  <section class="flexCenter">
+  <section class="flexCenter main">
     
     <figure class="logo">
       <img alt="logo" src="./assets/grp-black.png">
     </figure>
     
+    <!-- <LoadingSpinner/> -->
     <LogoutBtn/>
     <PagesLog/>
-    <!-- <PagesSwap/> -->
+    <PagesSwap/>
 
   </section>
 </template>
 
 
 <script>
+  // import LoadingSpinner from "./components/LoadingSpinner.vue"
   import LogoutBtn from "./components/LogoutBtn.vue"
-  import PagesLog from './components/Login_Page/PagesLog.vue'
-  // import PagesSwap from './components/Pages_Swap/PagesSwap.vue'
+  import PagesLog from "./components/Login_Page/PagesLog.vue"
+  import PagesSwap from "./components/Pages_Swap/PagesSwap.vue"
  
   export default {
     created() {document.title = "Groupomania"},
@@ -24,9 +26,10 @@
     name: "App",
     
     components: {
+      // LoadingSpinner,
       LogoutBtn,
       PagesLog,
-      // PagesSwap,
+      PagesSwap,
     }
   }
 </script>
@@ -57,7 +60,7 @@
     margin-top: 0;
   }
 
-  /* ======== Pages Log => Buttons ======== */
+  /* ======== Pages Buttons ======== */
   .login-btn,
   .signin-btn,
   .actu-btn,
@@ -74,19 +77,22 @@
     font-size: 120%;
   }
 
-  /* ======== Pages Log => Pages ======== */
+  /* ======== Pages ======== */
   .login,
   .signin,
   .actu,
   .private-wall,
   .profile {
     position: absolute;
-    height: 90%;
+    height: 100%;
     width: 96% !important;
     top: 43px;
     left: 0;
   }
 
+  .main {
+    margin-bottom: 50px;
+  }
 
   #app {   
     font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -161,6 +167,14 @@
     line-height: 100%;
     font-weight: 400;
     font-size: 130%;
+  }
+
+  .red-btn {
+    background: linear-gradient(to bottom right, pink, red);
+  }
+
+  .green-btn {
+    background: linear-gradient(to bottom right, greenyellow, rgb(0, 170, 0));
   }
 
   .btn:hover {

@@ -6,7 +6,7 @@ const Comment = db.Comment;
 
 // "GET" ==> Get all comments by ID in DataBase
 exports.showAllComment = (req, res, next) =>  {
-    const whereObject = { where: { publishId: req.params.id } };
+    const whereObject = { where: { publishId: req.body.id } };
     generic.getAllItem(Comment, whereObject, res);
 }
 

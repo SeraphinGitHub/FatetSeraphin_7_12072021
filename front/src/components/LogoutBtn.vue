@@ -1,6 +1,6 @@
 <template>
 
-    <button class="flexCenter btn logout-btn" @click.prevent="logOut()" type="submit">
+    <button class="flexCenter btn red-btn logout-btn" @click.prevent="logOut()" type="submit">
         <figure class="flexCenter">
             <i class="fas fa-power-off"></i>
         </figure>
@@ -30,7 +30,6 @@
         height: 40px;
         width: 40px;
         border-radius: 50%;
-        background: linear-gradient(to bottom right, pink, red);
     }
 
     .svg-inline--fa {

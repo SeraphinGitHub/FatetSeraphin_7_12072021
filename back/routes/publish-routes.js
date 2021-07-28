@@ -7,7 +7,7 @@ const multer = require("../middleware/multer-config");
 
 router.get("/", auth, publishCtrl.showAllPublication);
 router.post("/create", auth, multer, publishCtrl.createPublication);
-router.put("/:id/modify", auth, multer, publishCtrl.modifyPublication)
-router.delete("/:id/delete", auth, publishCtrl.deletePublication)
+router.put("/modify", auth, multer, publishCtrl.modifyPublication)
+router.delete("/delete", auth, publishCtrl.deletePublication)
 
 module.exports = router;

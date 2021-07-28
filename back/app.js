@@ -37,7 +37,8 @@ db.sequelize.sync().then((req) => {
     
     app.use("/pictures", express.static(path.join(__dirname, "pictures")));
     app.use("/api/auth", userRoutes);
-    app.use("/api/publish", publishRoutes, commentRoutes);
+    app.use("/api/publish", publishRoutes);
+    app.use("/api/comment", commentRoutes);
 });
 
 

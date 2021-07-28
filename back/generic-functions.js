@@ -35,7 +35,7 @@ module.exports = {
         if(itemValue === "comment") item = new Comment({
             ...req.body,
             userId: userIdTok,
-            publishId: req.params.id,
+            publishId: req.body.id,
         });
         
         item.save()
@@ -53,7 +53,7 @@ module.exports = {
         User.findOne({ where: { id: userIdTok } })
         .then(user => {
 
-            itemModel.findOne({ where: { id: req.params.id } })
+            itemModel.findOne({ where: { id: req.body.id } })
             .then(post => {
                 
                 if(user.isAdmin === true || post.userId === user.id) callback(itemModel, post, req, res, next);

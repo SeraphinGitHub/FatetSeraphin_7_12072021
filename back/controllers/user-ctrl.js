@@ -192,7 +192,7 @@ exports.deleteUser = (req, res, next) => {
                    
                     res.cookie("Session", {}, {maxAge: 0});
 
-                    if(user.imageUrl) {
+                    if(user.imageUrl !== "../pictures/Default.jpg") {
 
                         const pictureName = user.imageUrl.split("/pictures/")[1];
                         fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, res));
