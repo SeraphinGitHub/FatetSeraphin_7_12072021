@@ -1,4 +1,6 @@
 
+require("dotenv").config();
+
 // ========== API init ==========
 const express = require("express");
 const app = express();
@@ -31,7 +33,7 @@ db.sequelize.sync().then((req) => {
     
     initDB;
     
-    app.use(cookieParser());
+    app.use(cookieParser(process.env.Cookies_Key));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
     

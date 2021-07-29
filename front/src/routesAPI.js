@@ -18,7 +18,7 @@ const write_Base = async (url, data, method) => {
     const response = await fetch(url, {
         headers: {"Content-Type": "application/json; charset=UTF-8"},
         method: method,
-        body: JSON.stringify({ data }) // ==> data = {object}
+        body: JSON.stringify( data ) // ==> data = {object}
     });
     
     try { return await response.json() }
@@ -33,7 +33,7 @@ const write_Base_WithID = async (url, data, postId, method) => {
     const response = await fetch(url, {
         headers: {"Content-Type": "application/json; charset=UTF-8"},
         method: method,
-        body: JSON.stringify({ data, postId }) // ==> data = {object}, postId = [array]
+        body: JSON.stringify( data, postId ) // ==> data = {object}, postId = [array]
     });
     
     try { return await response.json() }

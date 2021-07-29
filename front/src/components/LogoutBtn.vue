@@ -14,8 +14,23 @@
         name: 'LogoutBtn',
 
         methods: {
-            logOut: function() {
+            async logOut() {
+
+                const fakeUser = {
+                    email: "test@gmail.com",
+                    password: "azerty1234"
+                }
+
+                const response = await fetch("http://localhost:3000/api/auth/login", {
+                    headers: {"Content-Type": "application/json; charset=UTF-8"},
+                    credentials: 'include',
+                    method: "POST",
+                    body: JSON.stringify( fakeUser )
+                });
                 
+                try { return await response.json() }
+                catch(error) { console.log("error", error) }
+                return {}
             },
         }
     }

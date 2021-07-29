@@ -6,16 +6,21 @@
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish = !isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish = !isPublish" type="button">Annuler</button>
         
-        <!-- <transition name="slide"> -->
-            <component v-show="isPublish" :is="publishComp"></component>
-        <!-- </transition> -->
 
-        <transition name="slide">
-            <ul v-show="!isPublish" class="flexCenter flow">
-                <Publication/>
-                <Publication/>
-            </ul>
+        <transition name="slidePublish">
+            <component v-if="isPublish" :is="publishComp"></component>
         </transition>
+
+        <transition-group name="slideFlow">
+            
+            <!-- <ul v-for="item in items" :key="item.id" v-show="!isPublish" class="flexCenter flow"> -->
+            
+            <ul v-for="item in items" :key="item" v-show="!isPublish" class="flexCenter flow">
+                
+                <Publication :key="item.id" :post="item"/>
+
+            </ul>
+        </transition-group>
 
     </section>
 </template>
@@ -36,14 +41,45 @@
             return {
                 isPublish: false,
                 publishComp: Publish,
+                   
+                // isOwner:"",
+
+                items: {
+
+                    post: {
+                        name: "Seraphin",
+                        email: "aze@aze.aze",
+                        age: "456",
+                    }
+
+                    // {
+                    //     postId:"3",
+                    //     userPhoto:"",
+                    //     userName:"Séraphin",
+                    //     position:"Welder",
+                    //     service:"Workshop",
+                    //     publishedTime:"20/07/2021",
+                    //     filePicture:"",
+                    //     textContent:"Thi is a line of text for test.",
+                    // }
+                },
             }
         },
 
         methods: {
-            showActu: function() {
+            showActu() {
                 document.querySelector(".actu").style.zIndex = "10";
                 document.querySelector(".private-wall").style.zIndex = "5";
                 document.querySelector(".profile").style.zIndex = "5";
+
+
+                this.getAllPublish_API();
+            },
+
+            async getAllPublish_API() {
+                return await fetch("http://localhost:3000/api/publish")
+                .then(response => response.json())
+                .then(data => { return data });
             },
         }
     }
@@ -52,7 +88,7 @@
 
 <style>
     .user-pict {
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         height: 80px;
         width: 100%;
     }
@@ -68,6 +104,7 @@
     .user-infos {
         height: 90%;
         width: 57% !important;
+        margin-left: 15px;
         justify-content: flex-start;
         align-content: space-between;
         text-align: left;
@@ -91,26 +128,29 @@
 
 <style scoped lang="scss">
 
-    .toggle-publish-btn {
-        width: 65%;
-        background: linear-gradient(to bottom right, rgb(179, 0, 255), violet);
+    $flowHeight: 420px;
+    $flowMarginTop: 10px;
+    
+    .flow {
+        height: $flowHeight;
+        margin-top: $flowMarginTop;
     }
 
     .toggle-publish-btn,
     .cancel-btn {
-        margin-top: 10px;
+        margin-top: $flowMarginTop;
         margin-bottom: 5px;
+    }
+
+    .toggle-publish-btn {
+        width: 65%;
+        background: linear-gradient(to bottom right, rgb(179, 0, 255), violet);
     }
 
     .cancel-btn {
         width: 50%;
     }
     
-    .flow {
-        height: 410px;
-        margin-top: 10px;
-    }
-
     $pageColor: rgb(60, 180, 255);
 
     /* ========== COMMENT CONTENT ========== */
@@ -136,25 +176,45 @@
         background-color: $pageColor;
     }
 
-    // **************************************************
-    // Transitions
-    // **************************************************
-    // .slide-enter-active {
-    //     height: 410px !important;
-    // }
 
-    // .slide-leave-active {
-    //     height: 0px;
-    //     transition-duration: 1s;
-    // }
+    // ****************************************************************************************************
+    // ==>      Transitions     <==
+    // ****************************************************************************************************
+    
+    $slideDuration: 1s;
+
+    .slidePublish-enter-active,
+    .slideFlow-enter-active {
+        transition-delay: $slideDuration;
+        transition-duration: $slideDuration;
+    }
+
+    .slidePublish-leave-active,
+    .slideFlow-leave-active {
+        transition-duration: $slideDuration;
+    }
 
 
-    .slide-enter,
-    .slide-leave-to { height: 0 }
+    // ========== Flow ==========
+    .slideFlow-enter-from,
+    .slideFlow-leave-to { 
+        height: 0;
+    }
 
-    .slide-leave,
-    .slide-enter-to { height: 410px }
+    .slideFlow-leave-from,
+    .slideFlow-enter-to {
+        height: $flowHeight;
+    }
 
-    .slide-enter-active,
-    .slide-leave-active { transition: height 1s }
+    
+    // ========== Publish ==========
+    .slidePublish-enter-from,
+    .slidePublish-leave-to { 
+        height: 0;
+    }
+
+    .slidePublish-leave-from,
+    .slidePublish-enter-to {
+        height: 90%;
+    }
 </style>

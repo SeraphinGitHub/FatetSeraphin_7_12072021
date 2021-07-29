@@ -53,6 +53,6 @@
     }
 
     .flow {
-        height: 410px;
+        height: 460px;
     }
 </style>

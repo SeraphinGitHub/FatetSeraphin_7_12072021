@@ -1,35 +1,35 @@
 <template>
-    <li class="flexCenter post" :id="postId">
+    <!-- <li class="flexCenter post" :id="postInfos.postId">
 
         <div class="flexCenter caption">
             <figure class="flexCenter user-pict">
-                <img :src="userPhoto" alt="photo de profile">
+                <img :src="postInfos.userPhoto" alt="photo de profile">
 
                 <figcaption class="flexCenter user-infos">
-                    <h2>{{ userName }}</h2>
-                    <p>{{ position }}</p>
-                    <p>{{ service }}</p>
+                    <h2>{{ postInfos.userName }}</h2>
+                    <p>{{ postInfos.position }}</p>
+                    <p>{{ postInfos.service }}</p>
                 </figcaption>
             </figure>
             
-            <div class="flexCenter post-btn">
+            <div v-if="isOwner" class="flexCenter post-btn">
                 <button class="btn modify-btn" @click.prevent="modifyComment()" type="submit">Modifier</button>
                 <button class="btn red-btn delete-btn" @click.prevent="deleteComment()" type="submit">Supprimer</button>
             </div>
 
-            <span class="flexCenter time-stamp">Publié le <h3>{{ publishedTime }}</h3></span>
+            <span class="flexCenter time-stamp">Publié le <h3>{{ postInfos.publishedTime }}</h3></span>
         </div>
 
         <figure class="file-pict">
             <img :src="filePicture" alt="image de publication">
         </figure>
 
-        <p class="content">{{ textContent }}</p>
+        <p class="content">{{ postInfos.textContent }}</p>
 
         <form class="flexCenter commentate" method="POST">
             <UserCaption/>
             
-            <div class="flexCenter field-container">
+            <div class="flexCenter comment-container">
                 <label for="comment">Espace commentaires</label>
                 <textarea name="comment" id="comment" type="text" placeholder="Laissr un commentaire" value=""></textarea>
             </div>
@@ -37,57 +37,61 @@
             <button class="btn green-btn add-comment-btn" @click.prevent="postComment()" type="submit">Publier</button>
         </form>
         
+    </li> -->
+
+    <li class="flexCenter post">
+
+        <p class="content">{{ post }}</p>
+
     </li>
+
+
 </template>
 
 
 <script>
-    import UserCaption from "../UserCaption.vue"
+    // import UserCaption from "../UserCaption.vue"
 
     export default {
         name: "Publication",
 
         components: {
-            UserCaption,
+            // UserCaption,
+        },
+
+        props:  {
+            post: Object,
         },
 
         data() {
-            return {
-                postId: 123,
-                // userPhoto: null,
-                // userName: null,
-                // position: null,
-                // service: null,
-                // publishedTime: null,
-                // filePicture: null,
-                // textContent: null,
 
-                userPhoto: require("../../../../public/Onin_Pecker.jpg"),
-                userName: "Fatet séraphin",
-                position: "Développeur web",                                    // ==> Infos of publish Owner
-                service: "Recherche et développement",
-                publishedTime: "19/05/2021 à 14:37",
-                filePicture: require("../../../../public/stone_pit.jpg"),
-                textContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            // console.log(this.post);
+
+            return {
+
+                isOwner: true,
+
+                // postId: 123,
+                // userPhoto: require("../../../../public/Onin_Pecker.jpg"),
+                // userName: "Fatet séraphin",
+                // position: "Développeur web",                                    // ==> Infos of publish Owner
+                // service: "Recherche et développement",
+                // publishedTime: "19/05/2021 à 14:37",
+                // filePicture: require("../../../../public/stone_pit.jpg"),
+                // textContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
             };
         },
 
-        // created() {
-        //     fetch("https://api.npms.io/v2/search?q=vue")
-        //     .then(response => response.json())
-        //     .then(data => (this.userPhoto = data.userPhoto));
-        // },
-
         methods: {
-            postComment: function() {
+            postComment() {
 
             },
 
-            modifyComment: function() {
+            modifyComment() {
 
             },
 
-            deleteComment: function() {
+            deleteComment() {
 
             },
         }
@@ -142,9 +146,13 @@
     .user-pict,
     .post-btn,
     .time-stamp,
-    .field-container {
+    .comment-container {
         margin: 15px;
         margin-bottom: 8px;
+    }
+
+    .comment-container {
+        width: 90%;
     }
 
 

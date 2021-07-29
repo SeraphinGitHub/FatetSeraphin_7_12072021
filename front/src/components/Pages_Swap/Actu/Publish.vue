@@ -1,21 +1,25 @@
 <template>
-    <form class="flexCenter post-form" method="POST">
-        
-        <UserCaption/>
-        
-        <div class="flexCenter textarea-container">
-            <label for="post">Ajouter une publication</label>
-            <textarea name="post" id="post" type="text" placeholder="Écrivez quelque chose" value=""></textarea>
-            <img class="imagePreview">
-        </div>
+    <section class="flexCenter publish-flow">
 
-        <div class="flexCenter add-file-container">
-            <input type="file" name="file" id="file" accept="image/*" @change="preview()" ref="addFile">
-            <button class="btn add-image-btn" @click="$refs.addFile.click()" type="button">Ajouter une image</button>
-            <button class="btn green-btn publish-btn" @click.prevent="postArticle()" type="submit">Publier</button>
-        </div>
+        <form class="flexCenter post-form" method="POST">
+            
+            <UserCaption/>
+            
+            <div class="flexCenter post-container">
+                <label for="post">Ajouter une publication</label>
+                <textarea name="post" id="post" type="text" placeholder="Écrivez quelque chose" value=""></textarea>
+                <img class="imagePreview">
+            </div>
 
-    </form>
+            <div class="flexCenter add-file-container">
+                <input type="file" name="file" id="file" accept="image/*" @change="preview()" ref="addFile">
+                <button class="btn add-image-btn" @click="$refs.addFile.click()" type="button">Ajouter une image</button>
+                <button class="btn green-btn publish-btn" @click.prevent="postArticle()" type="submit">Publier</button>
+            </div>
+
+        </form>
+
+    </section>
 </template>
 
 
@@ -48,8 +52,12 @@
 
 
 <style scoped>
+    .publish-flow {
+        overflow: hidden;
+        align-items: flex-start;
+        height: 90%; 
+    }
     .post-form {
-        display: none;
         height: auto;
         border-radius: 20px;
     }
@@ -59,17 +67,17 @@
         margin: 8px;
     }
 
-    .textarea-container {
+    .post-container {
         justify-content: space-between;
         width: 90%;
     }
 
-    .textarea-container label {
+    .post-container label {
         margin-top: 5px;
         text-align: center;
     }
 
-    .textarea-container textarea {
+    .post-container textarea {
         height: 50px;
     }
 

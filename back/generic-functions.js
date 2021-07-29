@@ -101,7 +101,12 @@ module.exports = {
     // ==================================================================================
     verifyToken: function(req, res, next, elseValue) {
         try {
-            const token = req.cookies.Session;
+            const token = req.signedCookies.Session;
+
+            console.log("/");
+            console.log(req.signedCookies.Session);
+            console.log("/");
+
             if(typeof token === "undefined") res.status(401).json({ message: "Session expired !" });
             else if(elseValue === "userId") return jwt.verify(token, process.env.Token_Key).userId;
             else if(elseValue === "next") next();

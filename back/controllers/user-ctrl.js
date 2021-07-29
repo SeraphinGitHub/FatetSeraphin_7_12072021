@@ -67,10 +67,14 @@ exports.login = (req, res, next) => {
                         maxAge: 48*60*60*1000,  // 48h
                         // maxAge: 30*1000, // 30 seconds
                         httpOnly: true,
-                    }                         
+                        signed: true,
+                    }
 
                     res.cookie("Session", session.token, cookieOptions);
                     res.status(200).json({ session, message: `${user.userName} logged successfully !` });
+                    
+                    console.log({ Session_Cookie : req.signedCookies.Session });
+                    console.log({ script: "user-ctrl ==> l.75"});
 
                 } else return res.status(401).json({ message: "Invalid password !" });
             }).catch(() => res.status(501).json({ message: `${user.userName} could NOT log !` }));
