@@ -25,26 +25,48 @@
 
 <script>
     import UserCaption from "../UserCaption.vue"
+    import routesAPI from "../../../routesAPI.js"
 
     export default {
         name: "Publish",
+
+        mixins: [
+            routesAPI,
+        ],
 
         components: {
             UserCaption,            
         },
 
+        data(){
+            return {
+                file: "",
+            }
+        },
+
         methods: {
             preview() {
                 const file = document.getElementById("file").files;
+
                 if(file.length > 0) {
                     const fileReader = new FileReader();
                     fileReader.onload = (event) => document.querySelector(".imagePreview").setAttribute("src", event.target.result);
                     fileReader.readAsDataURL(file[0]);
                 }
+
+                this.file = this.$refs.addFile.files[0];
             },
 
             postArticle() {
-                
+                const postForm = document.querySelector(".post-form");
+                let formData = new FormData(postForm);
+
+                formData.set("file", this.file);
+                formData.forEach((key, value) => formData[value] = key);
+
+                console.log(formData);
+
+                this.createPublish_API(formData);
             },
         }
     }

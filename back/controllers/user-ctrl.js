@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const generic = require("../generic-functions");
 const db = require("../models");
+const { strict } = require("assert");
 const User = db.User;
 const Publish = db.Publish;
 
@@ -68,13 +69,16 @@ exports.login = (req, res, next) => {
                         // maxAge: 30*1000, // 30 seconds
                         httpOnly: true,
                         signed: true,
+                        secure: true,
                     }
 
                     res.cookie("Session", session.token, cookieOptions);
                     res.status(200).json({ session, message: `${user.userName} logged successfully !` });
                     
-                    console.log({ Session_Cookie : req.signedCookies.Session });
-                    console.log({ script: "user-ctrl ==> l.75"});
+                    // **************************************************
+                    // console.log({ Session: req.signedCookies.Session });
+                    // console.log({ message: "user-ctrl: l.80" });
+                    // **************************************************
 
                 } else return res.status(401).json({ message: "Invalid password !" });
             }).catch(() => res.status(501).json({ message: `${user.userName} could NOT log !` }));

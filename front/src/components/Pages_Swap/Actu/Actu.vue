@@ -7,20 +7,29 @@
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish = !isPublish" type="button">Annuler</button>
         
 
-        <transition name="slidePublish">
+        <!-- <transition name="slidePublish"> -->
             <component v-if="isPublish" :is="publishComp"></component>
-        </transition>
+        <!-- </transition>
 
-        <transition-group name="slideFlow">
+        <transition-group name="slideFlow"> -->
             
-            <!-- <ul v-for="item in items" :key="item.id" v-show="!isPublish" class="flexCenter flow"> -->
-            
-            <ul v-for="item in items" :key="item" v-show="!isPublish" class="flexCenter flow">
+            <ul :key="post" v-show="!isPublish" class="flexCenter flow">
                 
-                <Publication :key="item.id" :post="item"/>
+                <Publication v-for="post in publications" :key="post.id"
+                
+                    :postId="post.postId"
+                    :userPhoto="post.userPhoto"
+                    :userName="post.userName"
+                    :position="post.position"
+                    :service="post.service"
+                    :publishedTime="new Date(post.createdAt).toLocaleString()"
+                    :title="post.title"
+                    :filePicture="post.filePicture"
+                    :textContent="post.textContent"
+                />
 
             </ul>
-        </transition-group>
+        <!-- </transition-group> -->
 
     </section>
 </template>
@@ -29,10 +38,15 @@
 <script>
     import Publication from "./Publication.vue"
     import Publish from "./Publish.vue"
+    import routesAPI from "../../../routesAPI.js"
 
     export default {
         name: "Actu",
         
+        mixins: [
+            routesAPI,
+        ],
+
         components: {
             Publication,
         },
@@ -41,29 +55,13 @@
             return {
                 isPublish: false,
                 publishComp: Publish,
-                   
-                // isOwner:"",
 
-                items: {
-
-                    post: {
-                        name: "Seraphin",
-                        email: "aze@aze.aze",
-                        age: "456",
-                    }
-
-                    // {
-                    //     postId:"3",
-                    //     userPhoto:"",
-                    //     userName:"Séraphin",
-                    //     position:"Welder",
-                    //     service:"Workshop",
-                    //     publishedTime:"20/07/2021",
-                    //     filePicture:"",
-                    //     textContent:"Thi is a line of text for test.",
-                    // }
-                },
+                publications: {},
             }
+        },
+
+        beforeMount() {
+            this.callAPI();
         },
 
         methods: {
@@ -71,17 +69,15 @@
                 document.querySelector(".actu").style.zIndex = "10";
                 document.querySelector(".private-wall").style.zIndex = "5";
                 document.querySelector(".profile").style.zIndex = "5";
-
-
-                this.getAllPublish_API();
             },
 
-            async getAllPublish_API() {
-                return await fetch("http://localhost:3000/api/publish")
-                .then(response => response.json())
-                .then(data => { return data });
-            },
-        }
+            async callAPI() {
+                this.publications = await this.getAllPublish_API();
+                
+                console.log( this.publications[0] );
+                
+            }
+        },
     }
 </script>
 
@@ -181,40 +177,40 @@
     // ==>      Transitions     <==
     // ****************************************************************************************************
     
-    $slideDuration: 1s;
+    // $slideDuration: 1s;
 
-    .slidePublish-enter-active,
-    .slideFlow-enter-active {
-        transition-delay: $slideDuration;
-        transition-duration: $slideDuration;
-    }
+    // .slidePublish-enter-active,
+    // .slideFlow-enter-active {
+    //     transition-delay: $slideDuration;
+    //     transition-duration: $slideDuration;
+    // }
 
-    .slidePublish-leave-active,
-    .slideFlow-leave-active {
-        transition-duration: $slideDuration;
-    }
+    // .slidePublish-leave-active,
+    // .slideFlow-leave-active {
+    //     transition-duration: $slideDuration;
+    // }
 
 
-    // ========== Flow ==========
-    .slideFlow-enter-from,
-    .slideFlow-leave-to { 
-        height: 0;
-    }
+    // // ========== Flow ==========
+    // .slideFlow-enter-from,
+    // .slideFlow-leave-to { 
+    //     height: 0;
+    // }
 
-    .slideFlow-leave-from,
-    .slideFlow-enter-to {
-        height: $flowHeight;
-    }
+    // .slideFlow-leave-from,
+    // .slideFlow-enter-to {
+    //     height: $flowHeight;
+    // }
 
     
-    // ========== Publish ==========
-    .slidePublish-enter-from,
-    .slidePublish-leave-to { 
-        height: 0;
-    }
+    // // ========== Publish ==========
+    // .slidePublish-enter-from,
+    // .slidePublish-leave-to { 
+    //     height: 0;
+    // }
 
-    .slidePublish-leave-from,
-    .slidePublish-enter-to {
-        height: 90%;
-    }
+    // .slidePublish-leave-from,
+    // .slidePublish-enter-to {
+    //     height: 90%;
+    // }
 </style>

@@ -25,22 +25,39 @@ module.exports = {
     // Create One Item
     // ==================================================================================
     createOneItem: function(itemValue, req, res, next) {
-        const userIdTok = this.verifyToken(req, res, next, "userId");
         
-        if(itemValue === "publication") item = new Publish({
-            ...req.body,
-            userId: userIdTok
-        });
+        // const userIdTok = this.verifyToken(req, res, next, "userId");
+        const userIdTok = 3 ;
+        
+        if(itemValue === "publication") {
+            // const itemObject = JSON.parse(req.body.item)
+            
+            const item = new Publish({
+                ...req.body,
+                userId: userIdTok,
+                // imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}`,
+            });
 
-        if(itemValue === "comment") item = new Comment({
-            ...req.body,
-            userId: userIdTok,
-            publishId: req.body.id,
-        });
+            console.log(item);
+            
+            item.save()
+            .then(() => res.status(200).json({ message: "Publication created successfully !" }))
+            .catch(() => res.status(501).json({ message: "Publication NOT created !" }));
+        }
         
-        item.save()
-        .then(() => res.status(200).json({ message: "Publication created successfully !" }))
-        .catch(() => res.status(501).json({ message: "Publication NOT created !" }));
+
+        if(itemValue === "comment") {
+
+            const item = new Comment({
+                ...req.body,
+                userId: userIdTok,
+                publishId: req.body.id,
+            });
+            
+            item.save()
+            .then(() => res.status(200).json({ message: "Publication created successfully !" }))
+            .catch(() => res.status(501).json({ message: "Publication NOT created !" }));
+        }
     },
 
 
@@ -94,7 +111,7 @@ module.exports = {
         .then(() => res.status(200).json({ message: `${itemName} deleted successfully !` }))
         .catch(() => res.status(500).json({ message: `${itemName} NOT deleted !` }));
     },
-
+    
 
     // ==================================================================================
     // Get User ID by Token
@@ -103,9 +120,10 @@ module.exports = {
         try {
             const token = req.signedCookies.Session;
 
-            console.log("/");
+            // ******************************************************
             console.log(req.signedCookies.Session);
-            console.log("/");
+            console.log({ message: "generic-func: l.106" });
+            // ******************************************************
 
             if(typeof token === "undefined") res.status(401).json({ message: "Session expired !" });
             else if(elseValue === "userId") return jwt.verify(token, process.env.Token_Key).userId;

@@ -1,6 +1,6 @@
 <template>
 
-    <button class="flexCenter btn red-btn logout-btn" @click.prevent="logOut()" type="submit">
+    <button class="flexCenter btn red-btn logout-btn" @click.prevent="logout()" type="submit">
         <figure class="flexCenter">
             <i class="fas fa-power-off"></i>
         </figure>
@@ -10,28 +10,17 @@
 
 
 <script>
+    import routesAPI from "../routesAPI.js"
+
     export default {
-        name: 'LogoutBtn',
+        name: "LogoutBtn",
+
+        mixins: [
+            routesAPI,
+        ],
 
         methods: {
-            async logOut() {
-
-                const fakeUser = {
-                    email: "test@gmail.com",
-                    password: "azerty1234"
-                }
-
-                const response = await fetch("http://localhost:3000/api/auth/login", {
-                    headers: {"Content-Type": "application/json; charset=UTF-8"},
-                    credentials: 'include',
-                    method: "POST",
-                    body: JSON.stringify( fakeUser )
-                });
-                
-                try { return await response.json() }
-                catch(error) { console.log("error", error) }
-                return {}
-            },
+            logout() { this.logoutUser_API() }
         }
     }
 </script>

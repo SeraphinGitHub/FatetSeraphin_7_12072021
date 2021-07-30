@@ -1,98 +1,119 @@
 
-"use strict"
+module.exports = { 
+    methods: {
+        
+        urlAPI() { return "http://localhost:3000/api" },
 
-const fromAPI = "http://localhost:3000/api";
 
-// ========== GET ==========
-const read_Base = async (url) => {
-    
-    return await fetch(url)
-    .then(response => response.json())
-    .then(data => { return data });
+        // ========== GET ==========
+        async read_Base(url) {
+            
+            return await fetch(url)
+            .then(response => response.json())
+            .then(data => { return data });
+        },
+
+
+        // ========== POST / PUT / DELETE ==========
+        async write_Base(url, data, method) {
+            
+            const response = await fetch(url, {
+                headers: {"Content-Type": "application/json; charset=UTF-8"},
+                credentials: "include",
+                method: method,
+                body: JSON.stringify( data ) // ==> data = {object}
+            });
+            
+            try { return await response.json() }
+            catch(error) { console.log("error", error) }
+            return {}
+        },
+
+
+        // ========== POST / PUT / DELETE ==========
+        async write_Base_WithID(url, data, postId, method) {
+            
+            const response = await fetch(url, {
+                headers: {"Content-Type": "application/json; charset=UTF-8"},
+                credentials: "include",
+                method: method,
+                body: JSON.stringify( data, postId ) // ==> data = {object}, postId = [array]
+            });
+            
+            try { return await response.json() }
+            catch(error) { console.log("error", error) }
+            return {}
+        },
+
+        
+        // ==================================================================================
+        // ==> USER
+        // ==================================================================================
+        async signinUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/signin`, formData, "POST") },
+
+        // ----------------------------------------------------------------------------------
+        async loginUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/login`, formData, "POST") },
+        
+        // ----------------------------------------------------------------------------------
+        async logoutUser_API() { this.write_Base(`${this.urlAPI()}/auth/logout`, {}, "POST") },
+        
+        // ----------------------------------------------------------------------------------
+        async wallUser_API() { return await this.read_Base(`${this.urlAPI()}/auth/wall`) },
+        
+        // ----------------------------------------------------------------------------------
+        async profileUser_API() { return await this.read_Base(`${this.urlAPI()}/auth/profile`) },
+        
+        // ----------------------------------------------------------------------------------
+        async updateUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/updateUser`, formData, "PUT") },
+        
+        // ----------------------------------------------------------------------------------
+        async updateUserEmail_API(formData) { this.write_Base(`${this.urlAPI()}/auth/updateUser/email`, formData, "PUT") },
+        
+        // ----------------------------------------------------------------------------------
+        async updateUserPsw_API(formData) { this.write_Base(`${this.urlAPI()}/auth/updateUser/password`, formData, "PUT") },
+        
+        // ----------------------------------------------------------------------------------
+        async deleteUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/delete`, formData, "DELETE") },
+        
+        // ----------------------------------------------------------------------------------
+
+
+        // ==================================================================================
+        //  ==> PUBLISH
+        // ==================================================================================
+        async getAllPublish_API() { return await this.read_Base(`${this.urlAPI()}/publish`) },
+        // ----------------------------------------------------------------------------------
+
+        async createPublish_API(formData) { this.write_Base(`${this.urlAPI()}/publish/create`, formData, "POST") },
+        // ----------------------------------------------------------------------------------
+
+        async modifyPublish_API(formData, postId) {
+        this.write_Base_WithID(`${this.urlAPI()}/publish/modify`, formData, postId, "PUT") }, // publishId
+        // ----------------------------------------------------------------------------------
+
+        async deletePublish_API(formData, postId) {
+        this.write_Base_WithID(`${this.urlAPI()}/publish/delete`, formData, postId, "DELETE") }, // publishId
+        // ----------------------------------------------------------------------------------
+
+
+
+        // ==================================================================================
+        //  ==> COMMENT
+        // ==================================================================================
+        async getAllComment_API(postId) {
+            this.write_Base_WithID(`${this.urlAPI()}/comment`, {}, postId, "POST") }, // publishId
+        // ----------------------------------------------------------------------------------
+
+        async createComment_API(formData, postId) { 
+        this.write_Base_WithID(`${this.urlAPI()}/comment/create`, formData, postId, "POST") }, // publishId
+        // ----------------------------------------------------------------------------------
+        
+        async modifyComment_API(formData, postId) {
+        this.write_Base_WithID(`${this.urlAPI()}/comment/modify`, formData, postId, "PUT") }, // commentId
+        // ----------------------------------------------------------------------------------
+
+        async deleteComment_API(formData, postId) {
+        this.write_Base_WithID(`${this.urlAPI()}/comment/delete`, formData, postId, "DELETE") }, // commentId
+        // ----------------------------------------------------------------------------------
+    }
 }
-
-
-// ========== POST / PUT / DELETE ==========
-const write_Base = async (url, data, method) => {
-    
-    const response = await fetch(url, {
-        headers: {"Content-Type": "application/json; charset=UTF-8"},
-        method: method,
-        body: JSON.stringify( data ) // ==> data = {object}
-    });
-    
-    try { return await response.json() }
-    catch(error) { console.log("error", error) }
-    return {}
-}
-
-
-// ========== POST / PUT / DELETE ==========
-const write_Base_WithID = async (url, data, postId, method) => {
-    
-    const response = await fetch(url, {
-        headers: {"Content-Type": "application/json; charset=UTF-8"},
-        method: method,
-        body: JSON.stringify( data, postId ) // ==> data = {object}, postId = [array]
-    });
-    
-    try { return await response.json() }
-    catch(error) { console.log("error", error) }
-    return {}
-}
-
-
-// ==================================================================================
-// ==> USER
-// ==================================================================================
-const signinUser_API = async (formData) => write_Base(`${fromAPI}/auth/signin`, formData, "POST");
-// ----------------------------------------------------------------------------------
-const loginUser_API = async (formData) => write_Base(`${fromAPI}/auth/login`, formData, "POST");
-// ----------------------------------------------------------------------------------
-const logoutUser_API = async () => write_Base(`${fromAPI}/auth/logout`, {}, "POST");
-// ----------------------------------------------------------------------------------
-const wallUser_API = async () => read_Base(`${fromAPI}/auth/wall`);
-// ----------------------------------------------------------------------------------
-const profileUser_API = async () => read_Base(`${fromAPI}/auth/profile`);
-// ----------------------------------------------------------------------------------
-const updateUser_API = async (formData) => write_Base(`${fromAPI}/auth/updateUser`, formData, "PUT");
-// ----------------------------------------------------------------------------------
-const updateUserEmail_API = async (formData) => write_Base(`${fromAPI}/auth/updateUser/email`, formData, "PUT");
-// ----------------------------------------------------------------------------------
-const updateUserPsw_API = async (formData) => write_Base(`${fromAPI}/auth/updateUser/password`, formData, "PUT");
-// ----------------------------------------------------------------------------------
-const deleteUser_API = async (formData) => write_Base(`${fromAPI}/auth/delete`, formData, "DELETE");
-// ----------------------------------------------------------------------------------
-
-
-// ==================================================================================
-//  ==> PUBLISH
-// ==================================================================================
-const getAllPublish_API = async () => read_Base(`${fromAPI}/publish`);
-// ----------------------------------------------------------------------------------
-const createPublish_API = async (formData) => write_Base(`${fromAPI}/publish/create`, formData, "POST");
-// ----------------------------------------------------------------------------------
-const modifyPublish_API = async (formData, postId) =>
-write_Base_WithID(`${fromAPI}/publish/modify`, formData, postId, "PUT"); // publishId
-// ----------------------------------------------------------------------------------
-const deletePublish_API = async (formData, postId) =>
-write_Base_WithID(`${fromAPI}/publish/delete`, formData, postId, "DELETE"); // publishId
-// ----------------------------------------------------------------------------------
-
-
-
-// ==================================================================================
-//  ==> COMMENT
-// ==================================================================================
-const getAllComment_API = async (postId) =>
-write_Base_WithID(`${fromAPI}/comment`, {}, postId, "POST"); // publishId
-// ----------------------------------------------------------------------------------
-const createComment_API = async (formData, postId) => 
-write_Base_WithID(`${fromAPI}/comment/create`, formData, postId, "POST"); // publishId
-// ----------------------------------------------------------------------------------
-const modifyComment_API = async (formData, postId) =>
-write_Base_WithID(`${fromAPI}/comment/modify`, formData, postId, "PUT"); // commentId
-// ----------------------------------------------------------------------------------
-const deleteComment_API = async (formData, postId) =>
-write_Base_WithID(`${fromAPI}/comment/delete`, formData, postId, "DELETE"); // commentId
-// ----------------------------------------------------------------------------------

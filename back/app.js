@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 db.sequelize.sync().then((req) => {
     
     initDB;
-    
+
     app.use(cookieParser(process.env.Cookies_Key));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
