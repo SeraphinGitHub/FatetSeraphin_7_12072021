@@ -1,30 +1,30 @@
 <template>
     <section class="flexCenter actu">
        
-        <button class="actu-btn" @click="showActu()">Actu</button>
+        <button class="actu-btn" @click="showActu(), callAPI()">Actu</button>
 
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish = !isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish = !isPublish" type="button">Annuler</button>
         
 
         <!-- <transition name="slidePublish"> -->
-            <component v-if="isPublish" :is="publishComp"></component>
+            <component v-if="isPublish" @posted="isPublish = $event" :is="publishComp"></component>
         <!-- </transition>
 
         <transition-group name="slideFlow"> -->
             
             <ul :key="post" v-show="!isPublish" class="flexCenter flow">
-                
+                <!-- :userPhoto="user.imageUrl" -->
                 <Publication v-for="post in publications" :key="post.id"
                 
-                    :postId="post.postId"
+                    :postId="post.id"
                     :userPhoto="post.userPhoto"
                     :userName="post.userName"
                     :position="post.position"
                     :service="post.service"
-                    :publishedTime="new Date(post.createdAt).toLocaleString()"
                     :title="post.title"
-                    :filePicture="post.filePicture"
+                    :publishedTime="new Date(post.createdAt).toLocaleString()"
+                    :filePicture="post.imageUrl"
                     :textContent="post.textContent"
                 />
 
@@ -55,7 +55,6 @@
             return {
                 isPublish: false,
                 publishComp: Publish,
-
                 publications: {},
             }
         },
@@ -72,11 +71,9 @@
             },
 
             async callAPI() {
-                this.publications = await this.getAllPublish_API();
-                
-                console.log( this.publications[0] );
-                
-            }
+                const allPosts = await this.getAllPublish_API();
+                this.publications = allPosts.sort().reverse();
+            },
         },
     }
 </script>

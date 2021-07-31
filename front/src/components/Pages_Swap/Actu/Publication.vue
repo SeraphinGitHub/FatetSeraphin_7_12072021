@@ -13,20 +13,32 @@
             </figure>
             
             <div v-if="isOwner" class="flexCenter post-btn">
-                <button class="btn modify-btn" @click.prevent="modifyComment()" type="submit">Modifier</button>
-                <button class="btn red-btn delete-btn" @click.prevent="deleteComment()" type="submit">Supprimer</button>
+                <button v-show="!isModifying" class="btn modify-btn" @click="onMofifyBtn()">Modifier</button>
+                <button v-show="isModifying" class="btn modify-btn" @click="isModifying = !isModifying">Annuler</button>
+                <button class="btn red-btn delete-btn" @click.prevent="deletePost()" type="submit">Supprimer</button>
             </div>
 
-            <h2 class="flexCenter post-title">{{ title }}</h2>
+            <h2 v-show="!isModifying" class="flexCenter post-title">{{ title }}</h2>
+            <input v-show="isModifying" class="flexCenter modif-title" type="text" :value="titleModif">
 
             <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
         </div>
 
+        <!-- <figure v-if="filePicture" class="file-pict"> -->
         <figure class="file-pict">
-            <img :src="filePicture" alt="image de publication">
+            <img v-show="!isModifying" :src="filePicture" alt="image de publication">
+            <img v-show="isModifying" :src="modifiedPicture" class="modif-imagePreview">
+            <!-- <img v-show="isModifying" class="modif-imagePreview"> -->
         </figure>
 
-        <p class="content">{{ textContent }}</p>
+        <p v-show="!isModifying" class="content">{{ textContent }}</p>
+        <textarea v-show="isModifying" class="modif-content" type="text" :value="textModif"></textarea>
+
+        <div v-show="isModifying" class="flexCenter add-file-container">
+            <input type="file" name="fileModif" id="fileModif" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
+            <button class="btn modif-image-btn" @click="$refs.modifAddFile.click()" type="button">Changer l'image</button>
+            <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
+        </div>
 
         <form class="flexCenter commentate" method="POST">
             <UserCaption/>
@@ -44,10 +56,15 @@
 
 
 <script>
-    import UserCaption from "../UserCaption.vue"
+    import UserCaption from "../UserCaption.vue"    
+    import routesAPI from "../../../routesAPI.js"
 
     export default {
         name: "Publication",
+
+        mixins: [
+            routesAPI,
+        ],
 
         components: {
             UserCaption,
@@ -66,22 +83,58 @@
         },
 
         data() {
+
+            // console.log(this.filePicture);
+
             return {
                 isOwner: true,
+                isModifying: false,
+                titleModif: "",
+                textModif: "",
+                modifiedPicture: "",
             };
         },
 
         methods: {
+            onMofifyBtn() {
+                this.isModifying = !this.isModifying;
+                this.modifiedPicture = this.filePicture;
+                this.titleModif = this.title;              
+                this.textModif = this.textContent;
+            },
+
+            modifyPreview() {
+                const file = document.getElementById("fileModif").files;
+
+                if(file.length > 0) {
+                    const fileReader = new FileReader();
+                    fileReader.onload = (event) => this.modifiedPicture = event.target.result;
+                    fileReader.readAsDataURL(file[0]);
+                } this.modifiedPicture = this.$refs.modifAddFile.files[0];
+
+                console.log(this.modifiedPicture);
+            },
+
+            postModifs() {
+                const titleModif = document.querySelector(".modif-title").value;              
+                const textModif = document.querySelector(".modif-content").value;
+
+                const formData = {
+                    title: titleModif,
+                    textContent: textModif,
+                    imageUrl: this.modifiedPicture,
+                }
+
+                this.modifyPublish_API(formData, { id: this.postId });
+            },
+
+            async deletePost() {
+                this.deletePublish_API({ id: this.postId });
+                setTimeout(() => this.$parent.callAPI(), 100);
+            },
+
             postComment() {
-
-            },
-
-            modifyComment() {
-
-            },
-
-            deleteComment() {
-
+                
             },
         },
     }
@@ -145,7 +198,8 @@
 
 
     /* ========== TITLE ========== */
-    .post-title {
+    .post-title,
+    .modif-title {
         margin: 10px;
         margin-bottom: 0px;
         padding: 10px;
@@ -165,7 +219,8 @@
         width: 90%;
     }
 
-    .file-pict img {
+    .file-pict img,
+    .modif-imagePreview {
         object-fit: cover;
         height: 100%;
         width: 100%;
@@ -204,9 +259,37 @@
         width: 47%;
     }
     
-    .add-comment-btn {
+    .add-comment-btn,
+    .repost-btn {
         margin: 10px;
         height: 40px;
         width: 70%;
+    }
+    
+
+    /* ================================================================================ */
+    /* --- MODIFY POST --- */
+    /* ================================================================================ */
+    .modif-title {
+        font-family: "Roboto-Medium";
+        line-height: 100%;
+        font-weight: 600;
+    }
+
+    .modif-content {
+        margin: 15px;
+        margin-top: 5px;
+        margin-bottom: 0px;
+        font-size: 100%;
+    }
+
+    .modif-image-btn {
+        width: 75%;
+        margin: 10px;
+    }
+
+    .repost-btn {
+        width: 55%;
+        margin-top: 0;
     }
 </style>

@@ -14,14 +14,14 @@ module.exports = {
         },
 
 
-        // ========== POST / PUT / DELETE ==========
+        // ========== POST / PUT ==========
         async write_Base(url, data, method) {
             
             const response = await fetch(url, {
                 headers: {"Content-Type": "application/json; charset=UTF-8"},
                 credentials: "include",
                 method: method,
-                body: JSON.stringify( data ) // ==> data = {object}
+                body: JSON.stringify(data)
             });
             
             try { return await response.json() }
@@ -30,14 +30,41 @@ module.exports = {
         },
 
 
-        // ========== POST / PUT / DELETE ==========
+        // ========== POST / PUT ==========
         async write_Base_WithID(url, data, postId, method) {
             
             const response = await fetch(url, {
                 headers: {"Content-Type": "application/json; charset=UTF-8"},
                 credentials: "include",
                 method: method,
-                body: JSON.stringify( data, postId ) // ==> data = {object}, postId = [array]
+                body: JSON.stringify(data, postId)
+            });
+            
+            try { return await response.json() }
+            catch(error) { console.log("error", error) }
+            return {}
+        },
+
+
+        // ========== DELETE ==========
+        async delete_Base(url) {
+            
+            return await fetch(url, {
+                headers: {"Content-Type": "application/json; charset=UTF-8"},
+                credentials: "include",
+                method: "DELETE"
+            });
+        },
+
+
+        // ========== DELETE ==========
+        async delete_Base_WithID(url, postId) {
+            
+            const response = await fetch(url, {
+                headers: {"Content-Type": "application/json; charset=UTF-8"},
+                credentials: "include",
+                method: "DELETE",
+                body: JSON.stringify(postId)
             });
             
             try { return await response.json() }
@@ -73,7 +100,7 @@ module.exports = {
         async updateUserPsw_API(formData) { this.write_Base(`${this.urlAPI()}/auth/updateUser/password`, formData, "PUT") },
         
         // ----------------------------------------------------------------------------------
-        async deleteUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/delete`, formData, "DELETE") },
+        async deleteUser_API() { this.delete_Base(`${this.urlAPI()}/auth/delete`) },
         
         // ----------------------------------------------------------------------------------
 
@@ -91,8 +118,8 @@ module.exports = {
         this.write_Base_WithID(`${this.urlAPI()}/publish/modify`, formData, postId, "PUT") }, // publishId
         // ----------------------------------------------------------------------------------
 
-        async deletePublish_API(formData, postId) {
-        this.write_Base_WithID(`${this.urlAPI()}/publish/delete`, formData, postId, "DELETE") }, // publishId
+        async deletePublish_API(postId) {
+        this.delete_Base_WithID(`${this.urlAPI()}/publish/delete`, postId) }, // publishId
         // ----------------------------------------------------------------------------------
 
 
@@ -112,8 +139,8 @@ module.exports = {
         this.write_Base_WithID(`${this.urlAPI()}/comment/modify`, formData, postId, "PUT") }, // commentId
         // ----------------------------------------------------------------------------------
 
-        async deleteComment_API(formData, postId) {
-        this.write_Base_WithID(`${this.urlAPI()}/comment/delete`, formData, postId, "DELETE") }, // commentId
+        async deleteComment_API(postId) {
+        this.delete_Base_WithID(`${this.urlAPI()}/comment/delete`, postId) }, // commentId
         // ----------------------------------------------------------------------------------
     }
 }

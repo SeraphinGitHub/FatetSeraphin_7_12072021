@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const generic = require("../generic-functions");
 const db = require("../models");
-const { strict } = require("assert");
 const User = db.User;
 const Publish = db.Publish;
 
@@ -133,7 +132,7 @@ exports.getUserProfile = (req, res, next) => {
 // ==================================================================================
 exports.modifyProfile = (req, res, next) => {
 
-    const userIdTok = this.verifyToken(req, res, next, "userId");
+    const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     User.findOne({ where: { id: userIdTok } })
     .then(user => {

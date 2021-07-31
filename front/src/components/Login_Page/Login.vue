@@ -8,8 +8,8 @@
                 <label for="email">E-mail</label>
                 <input name="email" id="email" type="email" placeholder="Entrer votre E-mail" value="">
 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p>
-                <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
+                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
             </div>
 
             <div class="flexCenter field-container">

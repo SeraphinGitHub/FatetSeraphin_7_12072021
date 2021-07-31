@@ -12,7 +12,21 @@ exports.showAllComment = (req, res, next) =>  {
 
 
 // "POST" ==> Create one comment in DataBase
-exports.createComment = (req, res, next) => generic.createOneItem("comment", req, res, next);
+exports.createComment = (req, res, next) => {
+
+    // const userIdTok = this.verifyToken(req, res, next, "userId");
+    const userIdTok = 3 ;
+
+    const comment = new Comment({
+        ...req.body,
+        userId: userIdTok,
+        publishId: req.body.id,
+    });
+    
+    comment.save()
+    .then(() => res.status(200).json({ message: "Comment created successfully !" }))
+    .catch(() => res.status(501).json({ message: "Comment NOT created !" }));
+};
 
 
 // "PUT" ==> Modify one comment by ID in DataBase

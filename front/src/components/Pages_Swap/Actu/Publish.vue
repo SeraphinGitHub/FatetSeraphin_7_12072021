@@ -1,13 +1,13 @@
 <template>
     <section class="flexCenter publish-flow">
-
+        
         <form class="flexCenter post-form" method="POST">
             
             <UserCaption/>
             
             <div class="flexCenter post-container">
-                <label for="post">Ajouter une publication</label>
-                <textarea name="post" id="post" type="text" placeholder="Écrivez quelque chose" value=""></textarea>
+                <input name="title" id="title" type="text" placeholder="Titre de la publication" value="">
+                <textarea name="textContent" id="textContent" type="text" placeholder="Écrivez quelque chose" value=""></textarea>
                 <img class="imagePreview">
             </div>
 
@@ -17,6 +17,9 @@
                 <button class="btn green-btn publish-btn" @click.prevent="postArticle()" type="submit">Publier</button>
             </div>
 
+            <transition name="fade">
+                <p class="flexCenter form-alert" v-if="isEmpty">{{ emptyMsg }}</p>
+            </transition>
         </form>
 
     </section>
@@ -38,9 +41,11 @@
             UserCaption,            
         },
 
-        data(){
+        data() {
             return {
                 file: "",
+                isPublish: false,
+                isEmpty: false,
             }
         },
 
@@ -50,38 +55,74 @@
 
                 if(file.length > 0) {
                     const fileReader = new FileReader();
-                    fileReader.onload = (event) => document.querySelector(".imagePreview").setAttribute("src", event.target.result);
-                    fileReader.readAsDataURL(file[0]);
-                }
+                    
+                    fileReader.onload = (event) => {
+                        const imagePreview = document.querySelector(".imagePreview");
+                        imagePreview.setAttribute("src", event.target.result);
+                    }
 
-                this.file = this.$refs.addFile.files[0];
+                    fileReader.readAsDataURL(file[0]);
+                } this.file = this.$refs.addFile.files[0];
             },
 
             postArticle() {
+                const title = document.getElementById("title").value;
+                const textContent = document.getElementById("textContent").value;
+
                 const postForm = document.querySelector(".post-form");
                 let formData = new FormData(postForm);
 
                 formData.set("file", this.file);
                 formData.forEach((key, value) => formData[value] = key);
 
-                console.log(formData);
+                if(title !== "" && textContent !== "" || title !== "" && this.file ) {
+                    this.createPublish_API(formData);
+                    this.$emit("posted", this.isPublish);
+                    setTimeout(() => this.$parent.callAPI(), 100);
+                }
 
-                this.createPublish_API(formData);
+                else {
+                    this.isEmpty = true;
+                    this.emptyMsg = "Vous devez renseigner un titre et écrire du texte ou importer une image !";
+                    setTimeout(() => this.isEmpty = false , 3000);
+                }
             },
         }
     }
 </script>
 
 
-<style scoped>
+<style lang="scss">
+
+    .add-file-container input[type=file] {
+        display: none;
+    }
+</style>
+
+
+<style scoped lang="scss">
     .publish-flow {
         overflow: hidden;
         align-items: flex-start;
         height: 90%; 
     }
-    .post-form {
+
+    .post-form {        
+        position: relative;
         height: auto;
         border-radius: 20px;
+    }
+
+    /* ========== Alert message ========== */
+    .form-alert {
+        position: absolute;
+        height: 60px;
+        width: 85%;
+        margin: 0;
+        padding: 5px;
+        bottom: 45px;
+        font-size: 100%;
+        line-height: 110%;
     }
 
     .post-form,
@@ -94,17 +135,9 @@
         width: 90%;
     }
 
-    .post-container label {
-        margin-top: 5px;
-        text-align: center;
-    }
-
     .post-container textarea {
+        margin-top: 5px;
         height: 50px;
-    }
-
-    .add-file-container input[type=file] {
-        display: none;
     }
 
 
@@ -135,5 +168,27 @@
 
     .publish-btn {
         margin-bottom: 10px;
+    }
+
+
+    // ****************************************************************************************************
+    // ==>      Transitions     <==
+    // ****************************************************************************************************
+    
+    .fade-enter-active,
+    .fade-leave-active {
+        transition-duration: 1s;
+    }
+
+
+    // ========== Fade ==========
+    .fade-enter-from,
+    .fade-leave-to { 
+        opacity: 0%;
+    }
+
+    .fade-leave-from,
+    .fade-enter-to {
+        opacity: 100%;
     }
 </style>

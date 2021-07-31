@@ -9,7 +9,21 @@ exports.showAllPublication = (req, res, next) => generic.getAllItem(Publish, {},
 
 
 // "POST" ==> Create one publication in DataBase
-exports.createPublication = (req, res, next) => generic.createOneItem("publication", req, res, next);
+exports.createPublication = (req, res, next) => {
+
+    // const userIdTok = this.verifyToken(req, res, next, "userId");
+    const userIdTok = 3 ;
+
+    const post = new Publish({
+        ...req.body,
+        userId: userIdTok,
+        // imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.filename}`,
+    });
+
+    post.save()
+    .then(() => res.status(200).json({ message: "Publication created successfully !" }))
+    .catch(() => res.status(501).json({ message: "Publication NOT created !" }));
+}
 
 
 // "PUT" ==> Modify one publication by ID in DataBase
