@@ -30,22 +30,6 @@ module.exports = {
         },
 
 
-        // ========== POST / PUT ==========
-        async write_Base_WithID(url, data, postId, method) {
-            
-            const response = await fetch(url, {
-                headers: {"Content-Type": "application/json; charset=UTF-8"},
-                credentials: "include",
-                method: method,
-                body: JSON.stringify(data, postId)
-            });
-            
-            try { return await response.json() }
-            catch(error) { console.log("error", error) }
-            return {}
-        },
-
-
         // ========== DELETE ==========
         async delete_Base(url) {
             
@@ -76,12 +60,6 @@ module.exports = {
         // ==================================================================================
         // ==> USER
         // ==================================================================================
-        async signinUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/signin`, formData, "POST") },
-
-        // ----------------------------------------------------------------------------------
-        async loginUser_API(formData) { this.write_Base(`${this.urlAPI()}/auth/login`, formData, "POST") },
-        
-        // ----------------------------------------------------------------------------------
         async logoutUser_API() { this.write_Base(`${this.urlAPI()}/auth/logout`, {}, "POST") },
         
         // ----------------------------------------------------------------------------------
@@ -114,8 +92,8 @@ module.exports = {
         async createPublish_API(formData) { this.write_Base(`${this.urlAPI()}/publish/create`, formData, "POST") },
         // ----------------------------------------------------------------------------------
 
-        async modifyPublish_API(formData, postId) {
-        this.write_Base_WithID(`${this.urlAPI()}/publish/modify`, formData, postId, "PUT") }, // publishId
+        async modifyPublish_API(formData) {
+        this.write_Base(`${this.urlAPI()}/publish/modify`, formData, "PUT") }, // publishId
         // ----------------------------------------------------------------------------------
 
         async deletePublish_API(postId) {
@@ -127,16 +105,16 @@ module.exports = {
         // ==================================================================================
         //  ==> COMMENT
         // ==================================================================================
-        async getAllComment_API(postId) {
-            this.write_Base_WithID(`${this.urlAPI()}/comment`, {}, postId, "POST") }, // publishId
+        async getAllComment_API(formData) {
+            this.write_Base(`${this.urlAPI()}/comment`, formData, "POST") }, // publishId
         // ----------------------------------------------------------------------------------
 
-        async createComment_API(formData, postId) { 
-        this.write_Base_WithID(`${this.urlAPI()}/comment/create`, formData, postId, "POST") }, // publishId
+        async createComment_API(formData) { 
+        this.write_Base(`${this.urlAPI()}/comment/create`, formData, "POST") }, // publishId
         // ----------------------------------------------------------------------------------
         
-        async modifyComment_API(formData, postId) {
-        this.write_Base_WithID(`${this.urlAPI()}/comment/modify`, formData, postId, "PUT") }, // commentId
+        async modifyComment_API(formData) {
+        this.write_Base(`${this.urlAPI()}/comment/modify`, formData, "PUT") }, // commentId
         // ----------------------------------------------------------------------------------
 
         async deleteComment_API(postId) {

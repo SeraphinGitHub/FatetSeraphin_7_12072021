@@ -7,17 +7,13 @@
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
                 <input name="email" id="email" type="email" placeholder="Entrer votre E-mail" value="">
-
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
                 <input name="password" id="password" type="password" placeholder="Entrer votre mot de passe" value="">
-            
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
             </div>
 
             <button class="btn" @click.prevent="login()" type="submit">Se Connecter</button>
@@ -26,10 +22,31 @@
 
 </template>
 
-
 <script>
+
+
+
+    // const newRequest = req.clone({
+    //     headers: req.headers.set('Authorization', 'Bearer ' + authToken)
+    // });
+
+
+
     export default {
         name: 'Login',
+
+        data() {
+            return {
+                emailAlert: false,
+                emailMsg: "azerty",
+                
+                pswAlert: false,
+                pswMsg: "azerty",
+
+                // "Le champ est vide !"
+                // "Champ invalide !"
+            }
+        },
         
         methods: {
             showLogin() {
@@ -42,16 +59,7 @@
                 // const email = document.getElementById("email").value;
                 // const password = document.getElementById("password").value
                 
-                // const response = await fetch("http://localhost:3000/api/auth/login", {
-                    
-                //     headers: {"Content-Type": "application/json; charset=UTF-8"},
-                //     method: "POST",
-                //     body: JSON.stringify({email, password})
-                // });
-                
-                // try {return await response.json()}
-                // catch(error) {console.log("error", error)}
-                // return {}
+                // this.$parent.loginUser_API();
             },
         }
     }
@@ -90,5 +98,25 @@
     .form-alert {
         height: 30px;
         bottom: -38px;
+    }
+
+
+    // ****************************************************************************************************
+    // ==>      Transitions     <==
+    // ****************************************************************************************************
+    .fade-enter-active,
+    .fade-leave-active {
+        transition-duration: 1s;
+    }
+
+    // ========== Fade ==========
+    .fade-enter-from,
+    .fade-leave-to { 
+        opacity: 0%;
+    }
+
+    .fade-leave-from,
+    .fade-enter-to {
+        opacity: 100%;
     }
 </style>

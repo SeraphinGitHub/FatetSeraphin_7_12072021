@@ -1,109 +1,255 @@
 <template>
-
     <section class="flexCenter signin">
+
         <button class="signin-btn" @click="showSignin()">Inscription</button>
         
         <form class="flexCenter signin-form" method="POST">
             
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
-                <input name="email" id="email" type="email" placeholder="Entrer votre E-mail">
+                <input name="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
-                <input name="password" id="password" type="password" placeholder="Entrer votre mot de passe">
+                <input name="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
-                <label for="confirmPassword">Confirmer le mot de passe</label>
-                <input name="confirmPassword" id="confirmPassword" type="password" placeholder="Confirmer votre mot de passe">
+                <label for="confirmPsw">Confirmer le mot de passe</label>
+                <input name="confirmPsw" type="password" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="dismatchPsw">{{ dismatchPswMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ pswConfirmMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="userName">Nom et Prénom</label>
-                <input name="userName" id="userName" type="text" placeholder="Entrer votre nom et prénom">
+                <input name="userName" type="text" placeholder="Entrer votre nom et prénom" ref="userNameRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="userNameAlert">{{ userNameMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="position">Poste occupé</label>
-                <input name="position" id="position" type="text" placeholder="Votre poste dans l'entreprise">
+                <input name="position" type="text" placeholder="Votre poste dans l'entreprise" ref="positionRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="positionAlert">{{ positionMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="department">Service</label>
-                <input name="department" id="department" type="text" placeholder="Votre service dans l'entreprise">
+                <input name="department" type="text" placeholder="Votre service dans l'entreprise" ref="departmentRef">
                 
-                <!-- <p class="flexCenter form-alert" v-if="empty">{{ emptyMsg }}</p> -->
-                <!-- <p class="flexCenter form-alert" v-if="wrongRegEx">{{ wrongRegExMsg }}</p> -->
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="departmentAlert">{{ departmentMsg }}</p>
+                </transition>
             </div>
-                
+            
             <button class="btn" @click.prevent="signin()" type="submit">S'inscrire</button>
-
         </form>
-    </section>
 
+    </section>
 </template>
 
 
 <script>
-export default {
-    name: 'Signin',
-    
-    methods: {
-        showSignin() {
-            document.querySelector(".signin").style.zIndex = "10";
-            document.querySelector(".login").style.zIndex = "1";
+    export default {
+        name: "Signin",
+
+        props: {
+            isLoading: Boolean,
         },
 
-        async signin() {
-            
-            // const email = document.getElementById("email").value;
-            // const password = document.getElementById("password").value;
-            // const confirmPassword = document.getElementById("confirmPassword").value;
-            // const userName = document.getElementById("userName").value;
-            // const position = document.getElementById("position").value;
-            // const department = document.getElementById("department").value;
+        data() {
+            return {
+                emailValid: false,
+                emailAlert: false,
+                emailMsg: "",
 
-            // Have to contain: 
-            //  LETTER || letter || number || dot || under score || dash
-            //  && at (@) &&
-            //  LETTER || letter || number && dot && LETTER || letter
-        // const emailRegEx = new RegExp(/^[A-Za-z0-9\._-]+[@]+[A-Za-z0-9]+[\.]+[A-Za-z]+$/);
+                passwordValid: false,
+                pswAlert: false,
+                pswMsg: "",
 
-            // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
-        // const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9].{9,}$/);
-
-            // const response = await fetch("http://localhost:3000/api/auth/signin", {
+                confirmPswValid: false,
+                pswConfirmAlert: false,
+                pswConfirmMsg: "",
                 
-            //     headers: {"Content-Type": "application/json; charset=UTF-8"},
-            //     method: "POST",
-            //     body: JSON.stringify({email, password, confirmPassword, userName, position, department})
-            // });
-            
-            // try {return await response.json()}
-            // catch(error) {console.log("error", error)}
-            // return {}
+                userNameValid: false,
+                userNameAlert: false,
+                userNameMsg: "",
+                
+                positionValid: false,
+                positionAlert: false,
+                positionMsg: "",
+                
+                departmentValid: false,
+                departmentAlert: false,
+                departmentMsg: "",
+
+                emptyField: "Le champ est vide !",
+                wrongRegEx: "Champ invalide !",
+                pswUnderRegEx: "Champ invalide ou moins de 10 caractères !",
+                dismatchPsw: "Les mots de passe ne correspondent pas !",
+
+                passwordMatched: false,
+                isInfosCorrects: false,
+            }
+        },
+        
+        methods: {
+            showSignin() {
+                document.querySelector(".signin").style.zIndex = "10";
+                document.querySelector(".login").style.zIndex = "1";
+            },
+
+            matchingPsw() {                
+                const password = this.$refs.passwordRef;
+                const confirmPsw = this.$refs.confirmPswRef;
+
+                if(confirmPsw.value !== password.value) {
+                    this.pswConfirmAlert = true;
+                    this.pswConfirmMsg = this.dismatchPsw;
+                }
+
+                else this.passwordMatched = true;
+            },
+
+            formValid(formData, inputField, regEx, elemString) {
+                // If input field is empty
+                if (inputField.value === "") {
+                    if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.emptyField}
+                    if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.emptyField}
+                    if(elemString === "confirmPsw") {this.pswConfirmAlert = true; this.pswConfirmMsg = this.emptyField}
+                    if(elemString === "userName") {this.userNameAlert = true; this.userNameMsg = this.emptyField}
+                    if(elemString === "position") {this.positionAlert = true; this.positionMsg = this.emptyField}
+                    if(elemString === "department") {this.departmentAlert = true; this.departmentMsg = this.emptyField}
+                }
+
+                // If regEx is wrong
+                else if (!regEx.test(inputField.value)) {
+                    if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.wrongRegEx}
+                    if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.pswUnderRegEx}
+                    if(elemString === "confirmPsw") {this.pswConfirmAlert = true; this.pswConfirmMsg = this.pswUnderRegEx}
+                    if(elemString === "userName") {this.userNameAlert = true; this.userNameMsg = this.wrongRegEx}
+                    if(elemString === "position") {this.positionAlert = true; this.positionMsg = this.wrongRegEx}
+                    if(elemString === "department") {this.departmentAlert = true; this.departmentMsg = this.wrongRegEx}
+                }
+                
+                // If all informations are corrects
+                else {
+                    formData.set(inputField.name, inputField.value);
+                    
+                    if(elemString === "email") this.emailValid = true;
+                    if(elemString === "password") this.passwordValid = true;
+                    if(elemString === "confirmPsw") this.confirmPswValid = true;
+                    if(elemString === "userName") this.userNameValid = true;
+                    if(elemString === "position") this.positionValid = true;
+                    if(elemString === "department") this.departmentValid = true;
+                }
+            },
+
+            getPersonInfos() {
+                // Have to contain: 
+                //  LETTER || letter || number || dot || under score || dash
+                //  && at (@) &&
+                //  LETTER || letter || number && dot && LETTER || letter
+                const emailRegEx = new RegExp(/^[A-Za-z0-9._-]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$/);
+
+                // Have to contain: LETTER || letter || accent letters || spaces || dash
+                const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-]+$/);
+
+                // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
+                const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9].{9,}$/);
+
+                const email = this.$refs.emailRef;
+                const password = this.$refs.passwordRef;
+                const confirmPsw = this.$refs.confirmPswRef;
+                const userName = this.$refs.userNameRef;
+                const position = this.$refs.positionRef;
+                const department = this.$refs.departmentRef;
+                
+                const postForm = document.querySelector(".signin-form");
+                const formData = new FormData(postForm)
+
+                this.formValid(formData, email, emailRegEx, "email");
+                this.formValid(formData, password, passwordRegEx, "password");
+                this.formValid(formData, confirmPsw, passwordRegEx, "confirmPsw");
+                this.formValid(formData, userName, normalTextRegEx, "userName");
+                this.formValid(formData, position, normalTextRegEx, "position");
+                this.formValid(formData, department, normalTextRegEx, "department");
+
+                if(this.emailValid === true
+                && this.passwordValid === true
+                && this.confirmPswValid === true
+                && this.userNameValid === true
+                && this.positionValid === true
+                && this.departmentValid === true
+                && this.passwordMatched === true) {
+
+                    this.isInfosCorrects = true;
+                }
+
+                return formData;
+            },
+
+            async signin() {
+                const timeOutDuration = 2500; // <== miliseconds
+
+                const formData = this.getPersonInfos();
+                formData.forEach((key, value) => formData[value] = key);
+                this.matchingPsw();
+
+                if(this.isInfosCorrects === true) {
+                    this.$parent.isLoading = true;
+
+                    const response = await fetch("http://localhost:3000/api/auth/signin", {
+                        headers: {"Content-Type": "application/json; charset=UTF-8"},
+                        credentials: "include",
+                        method: "POST",
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    try {
+                        this.$parent.isLoading = false;
+                        const resObj = await response.json();
+
+                        if(resObj.message === "This e-mail already exists !") {
+                            this.emailAlert = true;
+                            this.emailMsg = "Cet e-mail est déjà pris !";
+                            setTimeout(() => this.emailAlert = false, timeOutDuration);
+                        }
+
+                    }
+                    catch(error) { console.log("error", error) }
+                    return {}
+                }
+                
+                setTimeout(() => {
+                    this.emailAlert = false;
+                    this.pswAlert = false;
+                    this.pswConfirmAlert = false;
+                    this.userNameAlert = false;
+                    this.positionAlert = false;
+                    this.departmentAlert = false;
+                    this.pswConfirmAlert = false;
+                }, timeOutDuration);
+            },
         }
     }
-}
 </script>
 
 
@@ -112,9 +258,9 @@ export default {
     /* --- Alert Message --- */
     .form-alert {
         position: absolute;
-        height: 20px;
-        width: 85%;
-        bottom: -28px;
+        height: 30px;
+        width: 80% !important;
+        bottom: -30px;
         left: center;
 
         font-size: 90%;
@@ -149,5 +295,25 @@ export default {
     .signin-form {
         align-content: space-between;
         height: 95%;
+    }
+
+
+    // ****************************************************************************************************
+    // ==>      Transitions     <==
+    // ****************************************************************************************************
+    .fade-enter-active,
+    .fade-leave-active {
+        transition-duration: 0.8s;
+    }
+
+    // ========== Fade ==========
+    .fade-enter-from,
+    .fade-leave-to { 
+        opacity: 0%;
+    }
+
+    .fade-leave-from,
+    .fade-enter-to {
+        opacity: 100%;
     }
 </style>

@@ -3,6 +3,7 @@
                 
         <Login/>
         <Signin/>
+        <LoadingSpinner v-show="isLoading"/>
 
     </section>
 </template>
@@ -11,23 +12,29 @@
 <script>    
     import Login from "./Login.vue"
     import Signin from "./Signin.vue"
+    import routesAPI from "../../routesAPI.js"
+    import LoadingSpinner from "../LoadingSpinner.vue"
 
     export default {
         name: "PagesLog",
+
+        mixins: [
+            routesAPI,
+        ],
         
         components: {
             Login,
-            Signin
+            Signin,
+            LoadingSpinner,
         },
 
         data() {
             return {
-                // ***********************************
+                isLoading: false,
 
-                isVisible: false,
-                // isVisible: true,
-                
-                // ***********************************
+
+                // isVisible: false,
+                isVisible: true,
             }
         },
 
@@ -68,7 +75,7 @@
 
     input {
         text-align: left;
-        height: 20px;
+        height: 30px;
         margin-top: 3px;
         padding-left: 15px;
         border-radius: 8px;

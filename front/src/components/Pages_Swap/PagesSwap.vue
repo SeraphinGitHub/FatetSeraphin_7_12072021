@@ -27,8 +27,8 @@
             return {
                 // ***********************************
 
-                isVisible: true,
-                // isVisible: false,
+                // isVisible: true,
+                isVisible: false,
                 
                 // ***********************************
             }

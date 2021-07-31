@@ -42,8 +42,16 @@ exports.verifyPostOwner = (itemModel, callback, req, res, next) => {
 // Modify One Item
 // ==================================================================================
 exports.modifyOneItem = (itemModel, post, req, res, next) => {
+
+    const item = req.body.file
+    ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.name}`}
+    : {...req.body}
     
-    itemModel.update({...req.body }, { where: { id: post.id } })
+    // const item = req.file
+    // ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.name}`}
+    // : {...req.body}
+    
+    itemModel.update( item, { where: { id: post.id } })
     .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
     .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
 };

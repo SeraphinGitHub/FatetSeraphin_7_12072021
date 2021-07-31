@@ -19,27 +19,25 @@
             </div>
 
             <h2 v-show="!isModifying" class="flexCenter post-title">{{ title }}</h2>
-            <input v-show="isModifying" class="flexCenter modif-title" type="text" :value="titleModif">
+            <input v-show="isModifying" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
 
             <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
         </div>
 
-        <!-- <figure v-if="filePicture" class="file-pict"> -->
-        <figure class="file-pict">
+        <figure v-if="filePicture" class="file-pict">
             <img v-show="!isModifying" :src="filePicture" alt="image de publication">
-            <img v-show="isModifying" :src="modifiedPicture" class="modif-imagePreview">
-            <!-- <img v-show="isModifying" class="modif-imagePreview"> -->
+            <img v-show="isModifying" :src="pictureSrc" class="modif-imagePreview">
         </figure>
 
         <p v-show="!isModifying" class="content">{{ textContent }}</p>
-        <textarea v-show="isModifying" class="modif-content" type="text" :value="textModif"></textarea>
-
+        <textarea v-show="isModifying" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
+        
         <div v-show="isModifying" class="flexCenter add-file-container">
-            <input type="file" name="fileModif" id="fileModif" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
+            <input type="file" name="file" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
             <button class="btn modif-image-btn" @click="$refs.modifAddFile.click()" type="button">Changer l'image</button>
             <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
         </div>
-
+        
         <form class="flexCenter commentate" method="POST">
             <UserCaption/>
             
@@ -85,12 +83,13 @@
         data() {
 
             // console.log(this.filePicture);
-
+            
             return {
                 isOwner: true,
                 isModifying: false,
                 titleModif: "",
                 textModif: "",
+                pictureSrc: "",
                 modifiedPicture: "",
             };
         },
@@ -98,34 +97,43 @@
         methods: {
             onMofifyBtn() {
                 this.isModifying = !this.isModifying;
-                this.modifiedPicture = this.filePicture;
-                this.titleModif = this.title;              
+                this.pictureSrc = this.filePicture;
+                this.titleModif = this.title;
                 this.textModif = this.textContent;
             },
 
             modifyPreview() {
-                const file = document.getElementById("fileModif").files;
-
+                const file = this.$refs.modifAddFile.files;
+                
                 if(file.length > 0) {
                     const fileReader = new FileReader();
-                    fileReader.onload = (event) => this.modifiedPicture = event.target.result;
+
+                    fileReader.onload = (event) => this.pictureSrc = event.target.result;
                     fileReader.readAsDataURL(file[0]);
                 } this.modifiedPicture = this.$refs.modifAddFile.files[0];
-
-                console.log(this.modifiedPicture);
             },
 
             postModifs() {
-                const titleModif = document.querySelector(".modif-title").value;              
-                const textModif = document.querySelector(".modif-content").value;
+                const formatedFile = {
+                    name: this.modifiedPicture.name,
+                    lastModified: this.modifiedPicture.lastModified,
+                    webkitRelativePath: this.modifiedPicture.webkitRelativePath,
+                    size: this.modifiedPicture.size,
+                    type: this.modifiedPicture.type
+                };
 
                 const formData = {
-                    title: titleModif,
-                    textContent: textModif,
-                    imageUrl: this.modifiedPicture,
-                }
+                    id: this.postId,
+                    title: this.$refs.titleModif_Ref.value,
+                    textContent: this.$refs.textModif_Ref.value,
 
-                this.modifyPublish_API(formData, { id: this.postId });
+                    file: formatedFile,
+                    // file: this.modifiedPicture,
+                };
+
+                this.modifyPublish_API(formData);
+                this.isModifying = !this.isModifying;
+                setTimeout(() => this.$parent.callAPI(), 100);
             },
 
             async deletePost() {

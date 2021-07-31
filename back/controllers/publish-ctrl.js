@@ -14,10 +14,13 @@ exports.createPublication = (req, res, next) => {
     // const userIdTok = this.verifyToken(req, res, next, "userId");
     const userIdTok = 3 ;
 
+    // const azeObject = JSON.parse(req.body.file);
+
     const post = new Publish({
         ...req.body,
+        // ...azeObject,
         userId: userIdTok,
-        // imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.filename}`,
+        imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.name}`,
     });
 
     post.save()
