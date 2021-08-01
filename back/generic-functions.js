@@ -10,7 +10,8 @@ const User = db.User;
 // ==================================================================================
 // Get All Item
 // ==================================================================================
-exports.getAllItem = (itemModel, whereObject, res) => {
+exports.getAllItem = (itemModel, whereObject, req,res) => {
+    
     itemModel.findAll(whereObject)
     .then((item) => res.status(200).json(item))
     .catch(() => res.status(404).json({ message: "Publication NOT found !" }));
@@ -26,10 +27,10 @@ exports.verifyPostOwner = (itemModel, callback, req, res, next) => {
 
     User.findOne({ where: { id: userIdTok } })
     .then(user => {
-
+        
         itemModel.findOne({ where: { id: req.body.id } })
         .then(post => {
-
+            
             // if(user.isAdmin === true || post.userId === userIdTok) callback(itemModel, post, req, res, next);
             if(post.userId === userIdTok) callback(itemModel, post, req, res, next);
 
@@ -42,14 +43,10 @@ exports.verifyPostOwner = (itemModel, callback, req, res, next) => {
 // Modify One Item
 // ==================================================================================
 exports.modifyOneItem = (itemModel, post, req, res, next) => {
-
-    const item = req.body.file
-    ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.name}`}
+   
+    const item = req.file
+    ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.name}`}
     : {...req.body}
-    
-    // const item = req.file
-    // ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.name}`}
-    // : {...req.body}
     
     itemModel.update( item, { where: { id: post.id } })
     .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
@@ -85,14 +82,9 @@ exports.destroyItem = (item, itemName, res) => {
 // ==================================================================================
 exports.verifyToken = (req, res, next, elseValue) => {
     try {
-        const token = req.signedCookies.Session;
-
-        // ******************************************************
-        console.log(req.signedCookies.Session);
-        console.log({ message: "generic-func: l.106" });
-        // ******************************************************
-
-        if(typeof token === "undefined") res.status(401).json({ message: "Session expired !" });
+        const token = req.headers.authorization.split(" ")[1];
+        
+        if(typeof token === "undefined") res.status(401).json({ message: "Session expirée !" });
         else if(elseValue === "userId") return jwt.verify(token, process.env.Token_Key).userId;
         else if(elseValue === "next") next();
     }

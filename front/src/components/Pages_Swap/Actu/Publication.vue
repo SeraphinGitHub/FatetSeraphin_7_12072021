@@ -2,15 +2,7 @@
     <li class="flexCenter post" :id="postId">
 
         <div class="flexCenter caption">
-            <figure class="flexCenter user-pict">
-                <img :src="userPhoto" alt="photo de profile">
-
-                <figcaption class="flexCenter user-infos">
-                    <h2>{{ userName }}</h2>
-                    <p>{{ position }}</p>
-                    <p>{{ service }}</p>
-                </figcaption>
-            </figure>
+            <PostUserInfos :userId="userId"/>
             
             <div v-if="isOwner" class="flexCenter post-btn">
                 <button v-show="!isModifying" class="btn modify-btn" @click="onMofifyBtn()">Modifier</button>
@@ -19,21 +11,21 @@
             </div>
 
             <h2 v-show="!isModifying" class="flexCenter post-title">{{ title }}</h2>
-            <input v-show="isModifying" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
+            <input v-show="isModifying" name="title" class="flexCenter modif-title" type="text" :value="titleModif">
 
             <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
         </div>
 
-        <figure v-if="filePicture" class="file-pict">
+        <p v-show="!isModifying" class="content">{{ textContent }}</p>
+        <textarea v-show="isModifying" name="textContent" class="modif-content" type="text" :value="textModif"></textarea>
+
+        <figure v-if="hasPicture()" class="file-pict">
             <img v-show="!isModifying" :src="filePicture" alt="image de publication">
             <img v-show="isModifying" :src="pictureSrc" class="modif-imagePreview">
         </figure>
-
-        <p v-show="!isModifying" class="content">{{ textContent }}</p>
-        <textarea v-show="isModifying" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
         
         <div v-show="isModifying" class="flexCenter add-file-container">
-            <input type="file" name="file" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
+            <input type="file" name="image" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
             <button class="btn modif-image-btn" @click="$refs.modifAddFile.click()" type="button">Changer l'image</button>
             <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
         </div>
@@ -54,36 +46,27 @@
 
 
 <script>
-    import UserCaption from "../UserCaption.vue"    
-    import routesAPI from "../../../routesAPI.js"
+    import UserCaption from "./UserCaption.vue"    
+    import PostUserInfos from "./PostUserInfos.vue"
 
     export default {
         name: "Publication",
 
-        mixins: [
-            routesAPI,
-        ],
-
         components: {
             UserCaption,
+            PostUserInfos,
         },
 
         props: {
             postId: Number,
-            userPhoto: String,
-            userName: String,
-            position: String,
-            service: String,
+            userId: Number,
             title: String,
+            textContent: String,
             publishedTime: String,
             filePicture: String,
-            textContent: String,
         },
 
         data() {
-
-            // console.log(this.filePicture);
-            
             return {
                 isOwner: true,
                 isModifying: false,
@@ -95,6 +78,24 @@
         },
 
         methods: {
+            async modifyPublish(formData) {
+                const token = window.localStorage.getItem("Token");
+
+                const response = await fetch("http://localhost:3000/api/publish/modify", {
+                    headers: {
+                        "Content-Type": "multipart/form-data; boundary=something",
+                        "Authorization": "Bearer" + token
+                    },
+                    method: "PUT",
+                    body: formData
+                });
+                
+                try { return await response }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
+            
             onMofifyBtn() {
                 this.isModifying = !this.isModifying;
                 this.pictureSrc = this.filePicture;
@@ -102,44 +103,59 @@
                 this.textModif = this.textContent;
             },
 
+
+            hasPicture() {
+                if(this.filePicture || this.pictureSrc) return true;
+            },
+
+
             modifyPreview() {
                 const file = this.$refs.modifAddFile.files;
                 
                 if(file.length > 0) {
                     const fileReader = new FileReader();
-
                     fileReader.onload = (event) => this.pictureSrc = event.target.result;
                     fileReader.readAsDataURL(file[0]);
                 } this.modifiedPicture = this.$refs.modifAddFile.files[0];
             },
 
+
             postModifs() {
-                const formatedFile = {
-                    name: this.modifiedPicture.name,
-                    lastModified: this.modifiedPicture.lastModified,
-                    webkitRelativePath: this.modifiedPicture.webkitRelativePath,
-                    size: this.modifiedPicture.size,
-                    type: this.modifiedPicture.type
-                };
+                let formData = new FormData();
 
-                const formData = {
-                    id: this.postId,
-                    title: this.$refs.titleModif_Ref.value,
-                    textContent: this.$refs.textModif_Ref.value,
-
-                    file: formatedFile,
-                    // file: this.modifiedPicture,
-                };
-
-                this.modifyPublish_API(formData);
+                formData.set("id", this.postId);
+                formData.set("title", this.$refs.titleModif_Ref.value);
+                formData.set("textContent", this.$refs.textModif_Ref.value);
+                formData.set("file", this.modifiedPicture);
+                
+                formData.forEach((key, value) => formData[value] = key);
+                
+                this.modifyPublish(formData);
                 this.isModifying = !this.isModifying;
-                setTimeout(() => this.$parent.callAPI(), 100);
+                setTimeout(() => this.$parent.getAllPost(), 100);
             },
+
 
             async deletePost() {
-                this.deletePublish_API({ id: this.postId });
-                setTimeout(() => this.$parent.callAPI(), 100);
+                const token = window.localStorage.getItem("Token");
+
+                const response = await fetch("http://localhost:3000/api/publish/delete", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": "Bearer" + token
+                    },
+                    method: "DELETE",
+                    body: JSON.stringify({ id: this.postId })
+                });
+                
+                try {
+                    this.$parent.getAllPost();
+                    return await response.json();
+                }
+                catch(error) { console.log("error", error) }
+                return {}
             },
+
 
             postComment() {
                 
@@ -168,10 +184,6 @@
         border-bottom: double rgb(0, 100, 200) 5px;
     }
 
-    .user-pict img {
-        border-radius: 10px;
-    }
-
     .post-btn {
         justify-content: space-between;
         height: auto;
@@ -192,7 +204,6 @@
         font-weight: 400;
     }
 
-    .user-pict,
     .post-btn,
     .time-stamp,
     .comment-container {
@@ -223,7 +234,7 @@
     /* ========== PICTURE ========== */
     .file-pict {
         margin: 0;
-        margin-top: 15px;
+        margin-bottom: 10px;
         width: 90%;
     }
 
@@ -286,14 +297,13 @@
 
     .modif-content {
         margin: 15px;
-        margin-top: 5px;
-        margin-bottom: 0px;
         font-size: 100%;
     }
 
     .modif-image-btn {
         width: 75%;
         margin: 10px;
+        margin-top: 0px;
     }
 
     .repost-btn {

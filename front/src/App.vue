@@ -5,20 +5,24 @@
       <img alt="logo" src="./assets/grp-black.png">
     </figure>
     
-    <!-- <LoadingSpinner/> -->
+    <transition name="slideSide" id="popupTrans">
+      <h3 class="flexCenter swap-pages-alert" v-show="swapPageAlert">{{ swapPageMsg }}</h3>
+    </transition>
+
     <LogoutBtn/>
-    <PagesLog/>
-    <PagesSwap/>
+    <PagesLog v-show="isLogPages"/>
+    <PagesSwap v-show="isSwapPages"/>
+    <LoadingSpinner v-show="isLoading"/>
 
   </section>
 </template>
 
 
 <script>
-  // import LoadingSpinner from "./components/LoadingSpinner.vue"
   import LogoutBtn from "./components/LogoutBtn.vue"
   import PagesLog from "./components/Login_Page/PagesLog.vue"
   import PagesSwap from "./components/Pages_Swap/PagesSwap.vue"
+  import LoadingSpinner from "./components/LoadingSpinner.vue"
  
   export default {
     created() {document.title = "Groupomania"},
@@ -26,16 +30,54 @@
     name: "App",
     
     components: {
-      // LoadingSpinner,
       LogoutBtn,
       PagesLog,
       PagesSwap,
+      LoadingSpinner,
+    },
+
+    data() {
+      return {
+        isLogPages: true,
+        isSwapPages: false,
+        isLoading: false,
+
+        swapPageAlert: false,
+        swapPageMsg: "",
+
+        publications: {},
+
+        popupDuration: 1000, // milliseconds
+      }
+    },
+
+    // beforeMount() {
+    //   this.getAllPost();
+    // },
+
+    methods: {
+      async getAllPost() {
+        const token = window.localStorage.getItem("Token");
+
+        const allPosts = await fetch("http://localhost:3000/api/publish", {
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+              "Authorization": "Bearer" + token
+            },
+            method: "GET",
+        })
+        .then(response => response.json())
+        .then(data => { return data });
+
+        this.publications = allPosts.sort().reverse();
+        this.isLoading = false;
+      },
     }
   }
 </script>
 
 
-<style>
+<style lang="scss">
   .logo {
     position: relative;
     margin: 12px;
@@ -185,5 +227,66 @@
     border-top: solid grey 5px;
     border-left: solid grey 5px;
     transition-duration: 0s;
+  }
+
+  /* --- Alert Message --- */
+  .swap-pages-alert {
+    z-index: 30;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    height: 90px;
+    width: 77%;
+    margin: 0px;
+
+    font-size: 120%;
+    font-weight: 400;
+    line-height: 140%;
+
+    border-radius: 10px;
+    border: double green 5px;
+    transform: translateX(-50%);
+    background: lightgreen;
+  }
+
+
+  // ****************************************************************************************************
+  // ==>      Transitions     <==
+  // ****************************************************************************************************
+  
+  // ========== Fade ==========
+  .fade-enter-active,
+  .fade-leave-active {
+    transition-duration: 0.5s;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to { 
+    opacity: 0%;
+  }
+
+  .fade-leave-from,
+  .fade-enter-to {
+    opacity: 100%;
+  }
+
+
+  // ========== Slide ==========
+  .slideSide-enter-active {
+    animation: slide 1s linear;
+    animation-timing-function: ease-in-out;
+  }
+
+  .slideSide-leave-active {
+    animation: slide 1s linear reverse;
+    animation-timing-function: ease-in-out;
+  }
+
+  @keyframes slide {
+    0% {transform: translateX(-200%)}
+    50% {transform: translateX(-38%)}
+    70% {transform: translateX(-54%)}
+    90% {transform: translateX(-48%)}
+    100% {transform: translateX(-50%)}
   }
 </style>

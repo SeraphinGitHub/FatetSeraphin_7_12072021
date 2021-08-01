@@ -6,15 +6,25 @@
         <form class="flexCenter login-form" method="POST">
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
-                <input name="email" id="email" type="email" placeholder="Entrer votre E-mail" value="">
-                <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
+                <input class="log-input" name="email" id="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
+
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
+                </transition>
             </div>
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
-                <input name="password" id="password" type="password" placeholder="Entrer votre mot de passe" value="">
-                <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
+                <input class="log-input" name="password" id="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
+                
+                <transition name="fade">
+                    <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
+                </transition>
             </div>
+
+            <transition name="slideSide">
+                <h3 class="flexCenter form-alert server-alert" v-show="serverAlert">{{ serverMsg }}</h3>
+            </transition>
 
             <button class="btn" @click.prevent="login()" type="submit">Se Connecter</button>
         </form>
@@ -23,28 +33,33 @@
 </template>
 
 <script>
-
-
-
-    // const newRequest = req.clone({
-    //     headers: req.headers.set('Authorization', 'Bearer ' + authToken)
-    // });
-
-
-
     export default {
-        name: 'Login',
+        name: "Login",
+
+        props: {
+            isLoading: Boolean,
+            isSwapPages: Boolean,
+            swapPageAlert: Boolean,
+            swapPageMsg: String,
+        },
 
         data() {
             return {
+                emailValid: false,
                 emailAlert: false,
-                emailMsg: "azerty",
+                emailMsg: "",
                 
+                passwordValid: false,
                 pswAlert: false,
-                pswMsg: "azerty",
+                pswMsg: "",
 
-                // "Le champ est vide !"
-                // "Champ invalide !"
+                isInfosCorrects: false,
+
+                emptyField: "Le champ est vide !",
+                wrongRegEx: "Champ invalide !",
+
+                serverAlert: false,
+                serverMsg: "",
             }
         },
         
@@ -54,12 +69,111 @@
                 document.querySelector(".signin").style.zIndex = "1";
             },
 
-            async login() {
 
-                // const email = document.getElementById("email").value;
-                // const password = document.getElementById("password").value
+            async postDataLogin(formData, timeOutDuration) {
+                const response = await fetch("http://localhost:3000/api/auth/login", {
+                    headers: {"Content-Type": "application/json; charset=UTF-8"},
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
                 
-                // this.$parent.loginUser_API();
+                try {
+                    this.$parent.$parent.isLoading = false;
+                    const resObj = await response.json();
+
+                    if(resObj.message.includes("invalide")) {
+                        this.serverAlert = true;
+                        this.serverMsg = resObj.message;
+                        setTimeout(() => this.serverAlert = false, timeOutDuration);
+                    }
+
+                    else if(resObj.message.includes("vous êtes connecté")) {
+                        this.$parent.$parent.getAllPost();
+                        
+                        this.$parent.$parent.isLogPages = false;
+                        this.$parent.$parent.isSwapPages = true;
+
+                        this.$parent.$parent.swapPageAlert = true;
+                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
+                        
+                        this.clearInputFields();
+                    }
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
+
+            formValid(formData, inputField, regEx, elemString) {
+                // If input field is empty
+                if (inputField.value === "") {
+                    if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.emptyField}
+                    if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.emptyField}
+                }
+
+                // If regEx is wrong
+                else if (!regEx.test(inputField.value)) {
+                    if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.wrongRegEx}
+                    if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.wrongRegEx}
+                }
+                
+                // If all informations are corrects
+                else {
+                    formData.set(inputField.name, inputField.value);
+
+                    if(elemString === "email") this.emailValid = true;
+                    if(elemString === "password") this.passwordValid = true;
+                }
+            },
+
+
+            getPersonInfos() {
+                // Have to contain: 
+                //  LETTER || letter || number || dot || under score || dash
+                //  && at (@) &&
+                //  LETTER || letter || number && dot && LETTER || letter
+                const emailRegEx = new RegExp(/^[A-Za-z0-9._-]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$/);
+
+                // Have to contain: LETTER || letter || number || accent letters || number
+                const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*]+$/);
+
+                const email = this.$refs.emailRef;
+                const password = this.$refs.passwordRef;
+                
+                const postForm = document.querySelector(".login-form");
+                const formData = new FormData(postForm)
+
+                this.formValid(formData, email, emailRegEx, "email");
+                this.formValid(formData, password, passwordRegEx, "password");
+
+                if(this.emailValid && this.passwordValid) this.isInfosCorrects = true;
+
+                return formData;
+            },
+
+
+            clearInputFields() {
+                const allFields = document.querySelectorAll(".log-input");
+                allFields.forEach( field => field.value = "");
+            },
+
+
+            login() {
+                const timeOutDuration = 2500; // <== miliseconds
+
+                const formData = this.getPersonInfos();
+                formData.forEach((key, value) => formData[value] = key);
+
+                if(this.isInfosCorrects) {
+                    this.$parent.$parent.isLoading = true;
+                    this.postDataLogin(formData, timeOutDuration);
+                }
+                
+                setTimeout(() => {
+                    this.emailAlert = false;
+                    this.pswAlert = false;
+                }, timeOutDuration);
             },
         }
     }
@@ -92,6 +206,7 @@
 
     input {
         height: 30px;
+        margin-top: 8px;
     }
     
     /* --- Alert Message --- */
@@ -100,23 +215,14 @@
         bottom: -38px;
     }
 
-
-    // ****************************************************************************************************
-    // ==>      Transitions     <==
-    // ****************************************************************************************************
-    .fade-enter-active,
-    .fade-leave-active {
-        transition-duration: 1s;
-    }
-
-    // ========== Fade ==========
-    .fade-enter-from,
-    .fade-leave-to { 
-        opacity: 0%;
-    }
-
-    .fade-leave-from,
-    .fade-enter-to {
-        opacity: 100%;
+    .server-alert {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        height: 40px;
+        margin-top: 30px;
+        font-size: 100%;
+        font-weight: 400;
+        transform: translateX(-50%);
     }
 </style>

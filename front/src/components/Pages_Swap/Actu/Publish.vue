@@ -1,7 +1,7 @@
 <template>
     <section class="flexCenter publish-flow">
         
-        <form class="flexCenter post-form" method="POST">
+        <form class="flexCenter post-form" method="POST" enctype="multipart/form-data">
             
             <UserCaption/>
             
@@ -12,7 +12,7 @@
             </div>
 
             <div class="flexCenter add-file-container">
-                <input type="file" name="file" id="file" accept="image/*" @change="preview()" ref="addFile">
+                <input type="file" name="image" id="file" accept="image/*" @change="preview()" ref="addFile">
                 <button class="btn add-image-btn" @click="$refs.addFile.click()" type="button">Ajouter une image</button>
                 <button class="btn green-btn publish-btn" @click.prevent="postArticle()" type="submit">Publier</button>
             </div>
@@ -27,15 +27,10 @@
 
 
 <script>
-    import UserCaption from "../UserCaption.vue"
-    import routesAPI from "../../../routesAPI.js"
+    import UserCaption from "./UserCaption.vue"
 
     export default {
         name: "Publish",
-
-        mixins: [
-            routesAPI,
-        ],
 
         components: {
             UserCaption,            
@@ -50,6 +45,24 @@
         },
 
         methods: {
+            async createPublish(formData) {
+                const token = window.localStorage.getItem("Token");
+
+                const response = await fetch("http://localhost:3000/api/publish/create", {
+                    headers: {
+                        "Content-Type": "multipart/form-data; boundary=something",
+                        "Authorization": "Bearer" + token
+                    },
+                    method: "POST",
+                    body: formData
+                });
+                
+                try { return await response }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
+            
             preview() {
                 const file = document.getElementById("file").files;
 
@@ -65,18 +78,17 @@
                 } this.file = this.$refs.addFile.files[0];
             },
 
+
             postArticle() {
                 const title = document.getElementById("title").value;
                 const textContent = document.getElementById("textContent").value;
 
                 const postForm = document.querySelector(".post-form");
                 let formData = new FormData(postForm);
-
-                formData.set("file", this.file);
                 formData.forEach((key, value) => formData[value] = key);
 
                 if(title !== "" && textContent !== "" || title !== "" && this.file ) {
-                    this.createPublish_API(formData);
+                    this.createPublish(formData);
                     this.$emit("posted", this.isPublish);
                     setTimeout(() => this.$parent.callAPI(), 100);
                 }
@@ -111,6 +123,10 @@
         position: relative;
         height: auto;
         border-radius: 20px;
+    }
+
+    #title {
+        height: 20px;
     }
 
     /* ========== Alert message ========== */

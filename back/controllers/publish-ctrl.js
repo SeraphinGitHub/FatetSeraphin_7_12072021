@@ -5,7 +5,7 @@ const Publish = db.Publish;
 
 
 // "GET" ==> Get all publications by ID in DataBase
-exports.showAllPublication = (req, res, next) => generic.getAllItem(Publish, {}, res);
+exports.showAllPublication = (req, res, next) => generic.getAllItem(Publish, {}, req, res);
 
 
 // "POST" ==> Create one publication in DataBase
@@ -14,13 +14,10 @@ exports.createPublication = (req, res, next) => {
     // const userIdTok = this.verifyToken(req, res, next, "userId");
     const userIdTok = 3 ;
 
-    // const azeObject = JSON.parse(req.body.file);
-
     const post = new Publish({
         ...req.body,
-        // ...azeObject,
         userId: userIdTok,
-        imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.body.file.name}`,
+        // imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}`,
     });
 
     post.save()
@@ -30,7 +27,7 @@ exports.createPublication = (req, res, next) => {
 
 
 // "PUT" ==> Modify one publication by ID in DataBase
-exports.modifyPublication = (req, res, next) => 
+exports.modifyPublication = (req, res, next) =>
 generic.verifyPostOwner(Publish, generic.modifyOneItem, req, res, next);
 
 

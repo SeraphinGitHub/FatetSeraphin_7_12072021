@@ -8,6 +8,7 @@ const multer = require("../middleware/multer-config");
 router.post("/signin", userCtrl.signin);
 router.post("/login", userCtrl.login);
 router.post("/logout", auth, userCtrl.logout);
+router.post("/user", auth, userCtrl.getUserCaption);
 router.get("/wall", auth, userCtrl.userWall);
 router.get("/profile", auth, userCtrl.getUserProfile);
 router.put("/updateUser", auth, multer, userCtrl.modifyProfile);

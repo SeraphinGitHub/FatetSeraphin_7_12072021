@@ -7,7 +7,6 @@ const app = express();
 const initDB = require("./init_DB");
 
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const path = require("path");
 const db = require("./models");
 
@@ -25,6 +24,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+    res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
 
@@ -32,8 +32,7 @@ app.use((req, res, next) => {
 db.sequelize.sync().then((req) => {
     
     initDB;
-
-    app.use(cookieParser(process.env.Cookies_Key));
+    
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
     

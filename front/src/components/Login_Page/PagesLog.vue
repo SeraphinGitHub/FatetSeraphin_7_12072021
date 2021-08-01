@@ -1,9 +1,8 @@
 <template>
-    <section class="flexCenter pages-container" v-if="isVisible">
-                
+    <section class="flexCenter pages-container">
+
         <Login/>
         <Signin/>
-        <LoadingSpinner v-show="isLoading"/>
 
     </section>
 </template>
@@ -12,36 +11,14 @@
 <script>    
     import Login from "./Login.vue"
     import Signin from "./Signin.vue"
-    import routesAPI from "../../routesAPI.js"
-    import LoadingSpinner from "../LoadingSpinner.vue"
 
     export default {
         name: "PagesLog",
-
-        mixins: [
-            routesAPI,
-        ],
         
         components: {
             Login,
             Signin,
-            LoadingSpinner,
-        },
-
-        data() {
-            return {
-                isLoading: false,
-
-
-                // isVisible: false,
-                isVisible: true,
-            }
-        },
-
-        methods: {
-
-            
-        },        
+        },    
     }
 </script>
 

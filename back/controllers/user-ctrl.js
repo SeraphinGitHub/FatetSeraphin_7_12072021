@@ -18,7 +18,7 @@ exports.signin = (req, res, next) => {
     .then(async (users) => {
 
         const matchUserArray = await generic.userProbe(users, req.body.email, res);
-        if(matchUserArray.length) return res.status(401).json({ message: "This e-mail already exists !" });
+        if(matchUserArray.length) return res.status(401).json({ message: "Cet e-mail est déjà pris !" });
 
         else bcrypt.hash(req.body.email, 12)
         .then(emailHashed => {
@@ -33,8 +33,10 @@ exports.signin = (req, res, next) => {
                 })
 
                 user.save()
-                .then(() => res.status(200).json({ message: `${user.userName} created successfully !` }))
+                .then(() => res.status(200).json({ message: `Bonjour ${user.userName}, compte créé avec succès !` }))
                 .catch(() => res.status(502).json({ message: `${user.userName} could NOT be created !` }));
+
+                this.login(req, res, next);
 
             }).catch(() => res.status(401).json({ message: "Invalid password !" }));
         }).catch(() => res.status(400).json({ message: "Invalid E-mail !" }));
@@ -62,28 +64,14 @@ exports.login = (req, res, next) => {
                         userId: user.id,
                         token: jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" })
                     }
-                 
-                    const cookieOptions = {
-                        maxAge: 48*60*60*1000,  // 48h
-                        // maxAge: 30*1000, // 30 seconds
-                        httpOnly: true,
-                        signed: true,
-                        secure: true,
-                    }
-
-                    res.cookie("Session", session.token, cookieOptions);
-                    res.status(200).json({ session, message: `${user.userName} logged successfully !` });
                     
-                    // **************************************************
-                    // console.log({ Session: req.signedCookies.Session });
-                    // console.log({ message: "user-ctrl: l.80" });
-                    // **************************************************
+                    res.status(200).json({ session, message: `Bonjour ${user.userName}, vous êtes connecté !` });
 
-                } else return res.status(401).json({ message: "Invalid password !" });
-            }).catch(() => res.status(501).json({ message: `${user.userName} could NOT log !` }));
+                } else return res.status(401).json({ message: "Mot de passe invalide !" });
+            }).catch(() => res.status(501).json({ message: `${user.userName} n'a pas pû se connecter !` }));
 
-        } else return res.status(400).json({ message: "Invalid E-mail !" });
-    }).catch(() => res.status(500).json({ message: "No users found !" }));
+        } else return res.status(400).json({ message: "E-mail invalide !" });
+    }).catch(() => res.status(500).json({ message: "Aucun utilisateur trouvé !" }));
 };
 
 
@@ -92,12 +80,11 @@ exports.login = (req, res, next) => {
 // ==================================================================================
 exports.logout = (req, res, next) => {
 
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
+    // const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     User.findOne({ where: { id: userIdTok } })
     .then(user => {
-       
-        res.cookie("Session", {}, {maxAge: 0});
+        
         res.status(202).json({ message: `${user.userName} logged Out successfully !` });
 
     }).catch(() => res.status(404).json({ message: "User NOT found !" }));
@@ -108,7 +95,7 @@ exports.logout = (req, res, next) => {
 // "GET" ==> User Wall
 // ==================================================================================
 exports.userWall = (req, res, next) => {
-
+    
     const userIdTok = generic.verifyToken(req, res, next, "userId");
     const whereObject = { where: { userId: userIdTok } };
     generic.getAllItem(Publish, whereObject, res);
@@ -116,11 +103,32 @@ exports.userWall = (req, res, next) => {
 
 
 // ==================================================================================
+// "POST" ==> Get User Caption
+// ==================================================================================
+exports.getUserCaption = (req, res, next) => {
+
+    User.findOne({ where: { id: req.body.id } })
+    .then((user) => {
+
+        const userCaption = {
+            userName: user.userName,
+            position: user.position,
+            department: user.department,
+            imageUrl: user.imageUrl,
+        };
+
+        res.status(200).json(userCaption);
+
+    }).catch(() => res.status(403).json({ message: "User NOT found !" }));
+};
+
+
+// ==================================================================================
 // "GET" ==> User Profile
 // ==================================================================================
 exports.getUserProfile = (req, res, next) => {
-    
     const userIdTok = generic.verifyToken(req, res, next, "userId");
+    
     User.findOne({ where: { id: userIdTok } })
     .then((user) => res.status(200).json(user))
     .catch(() => res.status(404).json({ message: "User NOT found !" }));
@@ -197,14 +205,17 @@ exports.deleteUser = (req, res, next) => {
             .then(passwordValid => {
                 if(passwordValid) {
                    
-                    res.cookie("Session", {}, {maxAge: 0});
-
-                    if(user.imageUrl !== "../pictures/Default.jpg") {
+                    if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
 
                         const pictureName = user.imageUrl.split("/pictures/")[1];
                         fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, res));
         
                     } else generic.destroyItem(user, user.userName, res);
+
+
+                    // Grab each post, then Grab each comment of each post, then delete all (foreach loop)
+
+
 
                 } else return res.status(401).json({ message: "Invalid password !" });
             }).catch(() => res.status(501).json({ message: "Unexpected token ! -Delete User-" }));

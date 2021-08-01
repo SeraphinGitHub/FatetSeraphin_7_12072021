@@ -7,7 +7,7 @@
             
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
-                <input name="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
+                <input class="log-input" name="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
@@ -16,7 +16,7 @@
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
-                <input name="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
+                <input class="log-input" name="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
@@ -25,7 +25,7 @@
 
             <div class="flexCenter field-container">
                 <label for="confirmPsw">Confirmer le mot de passe</label>
-                <input name="confirmPsw" type="password" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
+                <input class="log-input" name="confirmPsw" type="password" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ pswConfirmMsg }}</p>
@@ -34,7 +34,7 @@
 
             <div class="flexCenter field-container">
                 <label for="userName">Nom et Prénom</label>
-                <input name="userName" type="text" placeholder="Entrer votre nom et prénom" ref="userNameRef">
+                <input class="log-input"  name="userName" type="text" placeholder="Entrer votre nom et prénom" ref="userNameRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="userNameAlert">{{ userNameMsg }}</p>
@@ -43,7 +43,7 @@
 
             <div class="flexCenter field-container">
                 <label for="position">Poste occupé</label>
-                <input name="position" type="text" placeholder="Votre poste dans l'entreprise" ref="positionRef">
+                <input class="log-input" name="position" type="text" placeholder="Votre poste dans l'entreprise" ref="positionRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="positionAlert">{{ positionMsg }}</p>
@@ -52,7 +52,7 @@
 
             <div class="flexCenter field-container">
                 <label for="department">Service</label>
-                <input name="department" type="text" placeholder="Votre service dans l'entreprise" ref="departmentRef">
+                <input class="log-input" name="department" type="text" placeholder="Votre service dans l'entreprise" ref="departmentRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="departmentAlert">{{ departmentMsg }}</p>
@@ -72,6 +72,7 @@
 
         props: {
             isLoading: Boolean,
+            isLogPages: Boolean,
         },
 
         data() {
@@ -106,7 +107,6 @@
                 dismatchPsw: "Les mots de passe ne correspondent pas !",
 
                 passwordMatched: false,
-                isInfosCorrects: false,
             }
         },
         
@@ -115,6 +115,43 @@
                 document.querySelector(".signin").style.zIndex = "10";
                 document.querySelector(".login").style.zIndex = "1";
             },
+
+
+            async postDataSignin(formData, timeOutDuration) {
+                const response = await fetch("http://localhost:3000/api/auth/signin", {
+                    headers: {"Content-Type": "application/json; charset=UTF-8"},
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+                
+                try {
+                    this.$parent.$parent.isLoading = false;
+                    const resObj = await response.json();
+
+                    if(resObj.message.includes("déjà pris")) {
+                        this.emailAlert = true;
+                        this.emailMsg = resObj.message;
+                        setTimeout(() => this.emailAlert = false, timeOutDuration);
+                    }
+
+                    else if(resObj.message.includes("avec succès")) {
+                        this.$parent.$parent.isLogPages = false;
+                        this.$parent.$parent.isSwapPages = true;
+
+                        document.querySelector(".signin").style.zIndex = "1";
+                        document.querySelector(".login").style.zIndex = "10";
+
+                        this.$parent.$parent.swapPageAlert = true;
+                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
+
+                        this.clearInputFields();
+                    }
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
 
             matchingPsw() {                
                 const password = this.$refs.passwordRef;
@@ -127,6 +164,7 @@
 
                 else this.passwordMatched = true;
             },
+
 
             formValid(formData, inputField, regEx, elemString) {
                 // If input field is empty
@@ -162,6 +200,7 @@
                 }
             },
 
+
             getPersonInfos() {
                 // Have to contain: 
                 //  LETTER || letter || number || dot || under score || dash
@@ -173,7 +212,7 @@
                 const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-]+$/);
 
                 // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
-                const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9].{9,}$/);
+                const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
 
                 const email = this.$refs.emailRef;
                 const password = this.$refs.passwordRef;
@@ -191,51 +230,33 @@
                 this.formValid(formData, userName, normalTextRegEx, "userName");
                 this.formValid(formData, position, normalTextRegEx, "position");
                 this.formValid(formData, department, normalTextRegEx, "department");
-
-                if(this.emailValid === true
-                && this.passwordValid === true
-                && this.confirmPswValid === true
-                && this.userNameValid === true
-                && this.positionValid === true
-                && this.departmentValid === true
-                && this.passwordMatched === true) {
-
-                    this.isInfosCorrects = true;
-                }
-
+                
                 return formData;
             },
 
-            async signin() {
-                const timeOutDuration = 2500; // <== miliseconds
 
+            clearInputFields() {
+                const allFields = document.querySelectorAll(".log-input");
+                allFields.forEach( field => field.value = "");
+            },
+
+
+            signin() {
+                const timeOutDuration = 2500; // <== miliseconds
                 const formData = this.getPersonInfos();
                 formData.forEach((key, value) => formData[value] = key);
                 this.matchingPsw();
+                
+                if(this.emailValid
+                && this.passwordValid
+                && this.confirmPswValid
+                && this.userNameValid
+                && this.positionValid
+                && this.departmentValid
+                && this.passwordMatched) {
 
-                if(this.isInfosCorrects === true) {
-                    this.$parent.isLoading = true;
-
-                    const response = await fetch("http://localhost:3000/api/auth/signin", {
-                        headers: {"Content-Type": "application/json; charset=UTF-8"},
-                        credentials: "include",
-                        method: "POST",
-                        body: JSON.stringify(formData)
-                    });
-                    
-                    try {
-                        this.$parent.isLoading = false;
-                        const resObj = await response.json();
-
-                        if(resObj.message === "This e-mail already exists !") {
-                            this.emailAlert = true;
-                            this.emailMsg = "Cet e-mail est déjà pris !";
-                            setTimeout(() => this.emailAlert = false, timeOutDuration);
-                        }
-
-                    }
-                    catch(error) { console.log("error", error) }
-                    return {}
+                    this.$parent.$parent.isLoading = true;
+                    this.postDataSignin(formData, timeOutDuration);
                 }
                 
                 setTimeout(() => {
@@ -274,7 +295,7 @@
 
 <style scoped lang="scss">
     
-    $pageColor: violet;
+    $pageColor: rgb(115, 253, 23);
 
     .signin {
         z-index: 1;
@@ -295,25 +316,5 @@
     .signin-form {
         align-content: space-between;
         height: 95%;
-    }
-
-
-    // ****************************************************************************************************
-    // ==>      Transitions     <==
-    // ****************************************************************************************************
-    .fade-enter-active,
-    .fade-leave-active {
-        transition-duration: 0.8s;
-    }
-
-    // ========== Fade ==========
-    .fade-enter-from,
-    .fade-leave-to { 
-        opacity: 0%;
-    }
-
-    .fade-leave-from,
-    .fade-enter-to {
-        opacity: 100%;
     }
 </style>

@@ -10,20 +10,57 @@
 
 
 <script>
-    import routesAPI from "../routesAPI.js"
-
     export default {
         name: "LogoutBtn",
 
-        mixins: [
-            routesAPI,
-        ],
+        props: {
+            isLogPages: Boolean,
+            isSwapPages: Boolean,
+            swapPageAlert: Boolean,
+            swapPageMsg: String,
+            popupDuration: Number,
+        },
 
         methods: {
-            logout() { this.logoutUser_API() }
+            async logout() {
+                const token = window.localStorage.getItem("Token");
+                
+                const response = await fetch("http://localhost:3000/api/auth/logout", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": "Bearer" + token
+                    },
+                    method: "POST",
+                });
+                
+                try {
+                    await response.json();
+                    this.$parent.isLogPages = true;
+                    this.$parent.isSwapPages = false;
+
+                    this.$parent.swapPageAlert = true;
+                    this.$parent.swapPageMsg = "Vous êtes déconnecté";
+
+                    const popup = document.querySelector(".swap-pages-alert");
+                    popup.classList.add("red-popup");
+                    
+                    setTimeout(() => this.$parent.swapPageAlert = false, this.$parent.popupDuration * 2 );
+                    setTimeout(() => popup.classList.remove("red-popup"), this.$parent.popupDuration * 3);
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+            }
         }
     }
 </script>
+
+
+<style>
+    .red-popup {
+        border-color: red !important;
+        background: rgb(255, 210, 210) !important;
+    }
+</style>
 
 
 <style scoped>

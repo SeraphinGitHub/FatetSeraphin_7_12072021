@@ -1,5 +1,5 @@
 <template>
-    <section class="flexCenter pages-container" v-if="isVisible">
+    <section class="flexCenter pages-container">
                 
         <UserProfile/>
         <UserWall/>
@@ -22,25 +22,12 @@
             UserWall,
             UserProfile,
         },
-
-        data() {
-            return {
-                // ***********************************
-
-                // isVisible: true,
-                isVisible: false,
-                
-                // ***********************************
-            }
-        },
     }
 </script>
 
 
 <style>
     .flow {
-        /* display: none !important; */
-        
         justify-content: flex-start !important;
         overflow: scroll;
         width: 95% !important;
@@ -69,5 +56,25 @@
         line-height: 100%;
         font-weight: 400;
         font-size: 95%;
+    }
+</style>
+
+
+<style scoped>
+    /* --- Alert Message --- */
+    .form-alert {
+        height: 30px;
+        bottom: -38px;
+    }
+
+    .server-alert {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        height: 40px;
+        margin-top: 30px;
+        font-size: 100%;
+        font-weight: 400;
+        transform: translateX(-50%);
     }
 </style>

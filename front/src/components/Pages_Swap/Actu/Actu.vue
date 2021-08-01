@@ -1,33 +1,27 @@
 <template>
     <section class="flexCenter actu">
        
-        <button class="actu-btn" @click="showActu(), callAPI()">Actu</button>
+        <button class="actu-btn" @click="showActu(), getAllPostActu()">Actu</button>
 
-        <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish = !isPublish">Exprimez-vous</button>
-        <button v-show="isPublish" class="btn cancel-btn" @click="isPublish = !isPublish" type="button">Annuler</button>
+        <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish=!isPublish">Exprimez-vous</button>
+        <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
         
 
         <!-- <transition name="slidePublish"> -->
-            <component v-if="isPublish" @posted="isPublish = $event" :is="publishComp"></component>
-        <!-- </transition>
+            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComp"></component>
+        <!-- </transition> -->
 
-        <transition-group name="slideFlow"> -->
-            
+        <!-- <transition-group name="slideFlow"> -->
             <ul :key="post" v-show="!isPublish" class="flexCenter flow">
-                <!-- :userPhoto="user.imageUrl" -->
-                <Publication v-for="post in publications" :key="post.id"
                 
+                <Publication v-for="post in publications" :key="post.id"
                     :postId="post.id"
-                    :userPhoto="post.userPhoto"
-                    :userName="post.userName"
-                    :position="post.position"
-                    :service="post.service"
+                    :userId="post.userId"
                     :title="post.title"
+                    :textContent="post.textContent"
                     :publishedTime="new Date(post.createdAt).toLocaleString()"
                     :filePicture="post.imageUrl"
-                    :textContent="post.textContent"
                 />
-
             </ul>
         <!-- </transition-group> -->
 
@@ -38,29 +32,27 @@
 <script>
     import Publication from "./Publication.vue"
     import Publish from "./Publish.vue"
-    import routesAPI from "../../../routesAPI.js"
 
     export default {
         name: "Actu",
-        
-        mixins: [
-            routesAPI,
-        ],
 
         components: {
             Publication,
         },
 
+        props: {
+            publications: Object,
+            allPostReceived: Boolean,
+        },
+
         data() {
+            this.publicationsActu = this.$parent.publications;
+
             return {
                 isPublish: false,
                 publishComp: Publish,
-                publications: {},
+                publicationsActu: {},
             }
-        },
-
-        beforeMount() {
-            this.callAPI();
         },
 
         methods: {
@@ -70,9 +62,8 @@
                 document.querySelector(".profile").style.zIndex = "5";
             },
 
-            async callAPI() {
-                const allPosts = await this.getAllPublish_API();
-                this.publications = allPosts.sort().reverse();
+            async getAllPostActu() {
+                this.$parent.$parent.getAllPost();
             },
         },
     }
