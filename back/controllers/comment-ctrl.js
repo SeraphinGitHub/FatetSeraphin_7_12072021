@@ -14,13 +14,12 @@ exports.showAllComment = (req, res, next) =>  {
 // "POST" ==> Create one comment in DataBase
 exports.createComment = (req, res, next) => {
 
-    // const userIdTok = this.verifyToken(req, res, next, "userId");
-    const userIdTok = 3 ;
+    const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     const comment = new Comment({
         ...req.body,
         userId: userIdTok,
-        publishId: req.body.id,
+        publishId: req.body.postId,
     });
     
     comment.save()
@@ -31,9 +30,9 @@ exports.createComment = (req, res, next) => {
 
 // "PUT" ==> Modify one comment by ID in DataBase
 exports.modifyComment = (req, res, next) => 
-generic.verifyPostOwner(Comment, generic.modifyOneItem, req, res, next);
+generic.verifyPostOwner(Comment, "modifyItem", req, res, next);
 
 
 // "DELETE" ==> Delete one comment by ID in DataBase
 exports.deleteComment = (req, res, next) => 
-generic.verifyPostOwner(Comment, generic.deleteOneItem, req, res, next);
+generic.verifyPostOwner(Comment, "deleteItem", req, res, next);

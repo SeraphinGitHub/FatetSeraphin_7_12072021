@@ -25,7 +25,7 @@
 
             <div class="flexCenter field-container">
                 <label for="confirmPsw">Confirmer le mot de passe</label>
-                <input class="log-input" name="confirmPsw" type="password" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
+                <input class="log-input" name="confirmPsw" type="password" @input="matchingPsw()" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ pswConfirmMsg }}</p>
@@ -77,6 +77,8 @@
 
         data() {
             return {
+                alertMsgDuration: 2500,  // <== miliseconds
+
                 emailValid: false,
                 emailAlert: false,
                 emailMsg: "",
@@ -117,42 +119,6 @@
             },
 
 
-            async postDataSignin(formData, timeOutDuration) {
-                const response = await fetch("http://localhost:3000/api/auth/signin", {
-                    headers: {"Content-Type": "application/json; charset=UTF-8"},
-                    method: "POST",
-                    body: JSON.stringify(formData)
-                });
-                
-                try {
-                    this.$parent.$parent.isLoading = false;
-                    const resObj = await response.json();
-
-                    if(resObj.message.includes("déjà pris")) {
-                        this.emailAlert = true;
-                        this.emailMsg = resObj.message;
-                        setTimeout(() => this.emailAlert = false, timeOutDuration);
-                    }
-
-                    else if(resObj.message.includes("avec succès")) {
-                        this.$parent.$parent.isLogPages = false;
-                        this.$parent.$parent.isSwapPages = true;
-
-                        document.querySelector(".signin").style.zIndex = "1";
-                        document.querySelector(".login").style.zIndex = "10";
-
-                        this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = resObj.message;
-                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
-
-                        this.clearInputFields();
-                    }
-                }
-                catch(error) { console.log("error", error) }
-                return {}
-            },
-
-
             matchingPsw() {                
                 const password = this.$refs.passwordRef;
                 const confirmPsw = this.$refs.confirmPswRef;
@@ -162,7 +128,10 @@
                     this.pswConfirmMsg = this.dismatchPsw;
                 }
 
-                else this.passwordMatched = true;
+                else {
+                    this.passwordMatched = true;
+                    this.pswConfirmAlert = false;
+                } 
             },
 
 
@@ -235,6 +204,44 @@
             },
 
 
+            async postDataSignin(formData) {
+                const response = await fetch("http://localhost:3000/api/auth/signin", {
+                    headers: {"Content-Type": "application/json; charset=UTF-8"},
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+                
+                try {
+                    this.$parent.$parent.isLoading = false;
+                    const resObj = await response.json();
+
+                    if(resObj.message.includes("déjà pris")) {
+                        this.emailAlert = true;
+                        this.emailMsg = resObj.message;
+                        setTimeout(() => this.emailAlert = false, this.alertMsgDuration);
+                    }
+
+                    else if(resObj.message.includes("avec succès")) {
+                        localStorage.setItem("Token", resObj.session);
+                        
+                        this.$parent.$parent.isLogPages = false;
+                        this.$parent.$parent.isSwapPages = true;
+
+                        document.querySelector(".signin").style.zIndex = "1";
+                        document.querySelector(".login").style.zIndex = "10";
+
+                        this.$parent.$parent.swapPageAlert = true;
+                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, this.alertMsgDuration);
+
+                        this.clearInputFields();
+                    }
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
+
             clearInputFields() {
                 const allFields = document.querySelectorAll(".log-input");
                 allFields.forEach( field => field.value = "");
@@ -242,10 +249,8 @@
 
 
             signin() {
-                const timeOutDuration = 2500; // <== miliseconds
                 const formData = this.getPersonInfos();
                 formData.forEach((key, value) => formData[value] = key);
-                this.matchingPsw();
                 
                 if(this.emailValid
                 && this.passwordValid
@@ -256,7 +261,7 @@
                 && this.passwordMatched) {
 
                     this.$parent.$parent.isLoading = true;
-                    this.postDataSignin(formData, timeOutDuration);
+                    this.postDataSignin(formData);
                 }
                 
                 setTimeout(() => {
@@ -266,8 +271,7 @@
                     this.userNameAlert = false;
                     this.positionAlert = false;
                     this.departmentAlert = false;
-                    this.pswConfirmAlert = false;
-                }, timeOutDuration);
+                }, this.alertMsgDuration);
             },
         }
     }
@@ -295,7 +299,7 @@
 
 <style scoped lang="scss">
     
-    $pageColor: rgb(115, 253, 23);
+    $pageColor: rgb(197, 61, 255);
 
     .signin {
         z-index: 1;

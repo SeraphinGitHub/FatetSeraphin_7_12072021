@@ -1,27 +1,24 @@
 <template>
     <section class="flexCenter actu">
        
-        <button class="actu-btn" @click="showActu(), getAllPostActu()">Actu</button>
+        <button class="actu-btn" @click="showActu(), getAllPost()">Actu</button>
 
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish=!isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
         
 
         <!-- <transition name="slidePublish"> -->
-            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComp"></component>
+            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
         <!-- </transition> -->
 
         <!-- <transition-group name="slideFlow"> -->
             <ul :key="post" v-show="!isPublish" class="flexCenter flow">
-                
+
                 <Publication v-for="post in publications" :key="post.id"
-                    :postId="post.id"
-                    :userId="post.userId"
-                    :title="post.title"
-                    :textContent="post.textContent"
-                    :publishedTime="new Date(post.createdAt).toLocaleString()"
-                    :filePicture="post.imageUrl"
+                    :post="post"
+                    :user="user"
                 />
+
             </ul>
         <!-- </transition-group> -->
 
@@ -40,30 +37,64 @@
             Publication,
         },
 
-        props: {
-            publications: Object,
-            allPostReceived: Boolean,
-        },
-
         data() {
-            this.publicationsActu = this.$parent.publications;
-
             return {
                 isPublish: false,
-                publishComp: Publish,
-                publicationsActu: {},
+                publishComponent: Publish,
+
+                publications: {},
+                allPostReceived: false,
+
+                user: {},
+                token: window.localStorage.getItem("Token"),
             }
+        },
+
+        beforeMount() {
+            this.getAllPost();
+            this.getLoggedUserInfos();
         },
 
         methods: {
             showActu() {
                 document.querySelector(".actu").style.zIndex = "10";
-                document.querySelector(".private-wall").style.zIndex = "5";
+                document.querySelector(".user-wall").style.zIndex = "5";
                 document.querySelector(".profile").style.zIndex = "5";
             },
 
-            async getAllPostActu() {
-                this.$parent.$parent.getAllPost();
+
+            async getAllPost() {
+                const allPosts = await fetch("http://localhost:3000/api/publish", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "GET",
+                })
+                .then(response => response.json())
+                .then(data => { return data });
+
+                this.publications = allPosts.sort().reverse();
+                this.$parent.isLoading = false;
+                this.allPostReceived = true;
+            },
+
+
+            async getLoggedUserInfos() {                
+                const response = await fetch("http://localhost:3000/api/auth/user", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "GET",
+                });
+                
+                try {
+                    const resObj = await response.json();
+                    this.user = resObj;
+                }
+                catch(error) { console.log("error", error) }
+                return {}
             },
         },
     }

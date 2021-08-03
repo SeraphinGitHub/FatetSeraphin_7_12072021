@@ -36,7 +36,7 @@
 
     /* ======== Pages Swap => Buttons ======== */
     .actu-btn,
-    .private-wall-btn,
+    .user-wall-btn,
     .profile-btn {
         width: 32%;
     }

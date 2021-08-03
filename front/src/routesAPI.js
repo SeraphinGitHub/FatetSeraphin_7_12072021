@@ -4,12 +4,12 @@ module.exports = {
 
         // const token = window.localStorage.getItem("Token");
         
-        // async read_Base("http://localhost:3000/api", token) {
+        // async read_Base() {
             
-        //     return await fetch(url, {
+        //     return await fetch("http://localhost:3000/api", {
         //         headers: {
         //             "Content-Type": "application/json; charset=UTF-8",
-        //             "Authorization": "Bearer" + token
+        //             "Authorization": `Bearer ${token}`
         //         },
         //         method: "GET",
         //     })
@@ -25,7 +25,7 @@ module.exports = {
         //     const response = await fetch("http://localhost:3000/api", {
         //         headers: {
         //             "Content-Type": "application/json; charset=UTF-8",
-        //             "Authorization": "Bearer" + token
+        //             "Authorization": `Bearer ${token}`
         //         },
         //         method: "PUT",
         //         body: JSON.stringify(data)
@@ -44,7 +44,7 @@ module.exports = {
         //     const response = await fetch(url, {
         //         headers: {
         //             "Content-Type": "multipart/form-data; boundary=something",
-        //             "Authorization": "Bearer" + token
+        //             "Authorization": `Bearer ${token}`
         //         },
         //         method: "PUT",
         //         body: data
@@ -63,7 +63,7 @@ module.exports = {
         //     return await fetch("http://localhost:3000/api", {
         //         headers: {
         //             "Content-Type": "application/json; charset=UTF-8",
-        //             "Authorization": "Bearer" + token
+        //             "Authorization": `Bearer ${token}`
         //         },
         //         method: "DELETE"
         //     });
@@ -75,7 +75,7 @@ module.exports = {
         // ==================================================================================
         
         // ----------------------------------------------------------------------------------
-        async wallUser_API(token) { return await this.read_Base(`${this.urlAPI()}/auth/wall`, token) },
+        
         // ----------------------------------------------------------------------------------
         async profileUser_API() { return await this.read_Base(`${this.urlAPI()}/auth/profile`) },
         // ----------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ module.exports = {
         // const response = await fetch("http://localhost:3000/api/comment", {
         //     headers: {
         //         "Content-Type": "application/json; charset=UTF-8",
-        //         "Authorization": "Bearer" + token
+        //         "Authorization": `Bearer ${token}`
         //     },
         //     method: method,
         //     body: JSON.stringify(data)
@@ -128,7 +128,7 @@ module.exports = {
         // const response = await fetch("http://localhost:3000/api/comment/delete", {
         //     headers: {
         //         "Content-Type": "application/json; charset=UTF-8",
-        //         "Authorization": "Bearer" + token
+        //         "Authorization": `Bearer ${token}`
         //     },
         //     method: "DELETE",
         //     body: JSON.stringify(postId)

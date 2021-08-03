@@ -15,7 +15,7 @@
     import UserData from "./UserData.vue"
 
     export default {
-        name: 'Profile',
+        name: "Profile",
 
         components: {
             UserData,
@@ -24,7 +24,7 @@
         methods: {
             showProfile: function() {
                 document.querySelector(".actu").style.zIndex = "5";
-                document.querySelector(".private-wall").style.zIndex = "5";
+                document.querySelector(".user-wall").style.zIndex = "5";
                 document.querySelector(".profile").style.zIndex = "10";
             },
         }

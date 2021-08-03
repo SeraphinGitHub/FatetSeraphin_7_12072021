@@ -6,8 +6,8 @@
             <UserCaption/>
             
             <div class="flexCenter post-container">
-                <input name="title" id="title" type="text" placeholder="Titre de la publication" value="">
-                <textarea name="textContent" id="textContent" type="text" placeholder="Écrivez quelque chose" value=""></textarea>
+                <input name="title" id="title" type="text" placeholder="Titre de la publication">
+                <textarea name="textContent" id="textContent" type="text" placeholder="Écrivez quelque chose"></textarea>
                 <img class="imagePreview">
             </div>
 
@@ -36,6 +36,10 @@
             UserCaption,            
         },
 
+        props: {
+            isLoading: Boolean,
+        },
+
         data() {
             return {
                 file: "",
@@ -44,25 +48,7 @@
             }
         },
 
-        methods: {
-            async createPublish(formData) {
-                const token = window.localStorage.getItem("Token");
-
-                const response = await fetch("http://localhost:3000/api/publish/create", {
-                    headers: {
-                        "Content-Type": "multipart/form-data; boundary=something",
-                        "Authorization": "Bearer" + token
-                    },
-                    method: "POST",
-                    body: formData
-                });
-                
-                try { return await response }
-                catch(error) { console.log("error", error) }
-                return {}
-            },
-
-            
+        methods: {            
             preview() {
                 const file = document.getElementById("file").files;
 
@@ -90,7 +76,6 @@
                 if(title !== "" && textContent !== "" || title !== "" && this.file ) {
                     this.createPublish(formData);
                     this.$emit("posted", this.isPublish);
-                    setTimeout(() => this.$parent.callAPI(), 100);
                 }
 
                 else {
@@ -98,6 +83,30 @@
                     this.emptyMsg = "Vous devez renseigner un titre et écrire du texte ou importer une image !";
                     setTimeout(() => this.isEmpty = false , 3000);
                 }
+            },
+
+
+            async createPublish(formData) {
+                this.$parent.$parent.isLoading = true;
+                const token = window.localStorage.getItem("Token");
+
+                const response = await fetch("http://localhost:3000/api/publish/create", {
+                    headers: {
+                        "Content-Type": "multipart/form-data; boundary=something",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    method: "POST",
+                    body: formData
+                });
+                
+                try {
+                    await response
+                    this.$parent.$parent.isLoading = false;
+                    this.isPublish = !this.isPublish;
+                    this.$parent.getAllPost();
+                }
+                catch(error) { console.log("error", error) }
+                return {}
             },
         }
     }

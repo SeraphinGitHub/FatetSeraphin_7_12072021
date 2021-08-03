@@ -70,41 +70,6 @@
             },
 
 
-            async postDataLogin(formData, timeOutDuration) {
-                const response = await fetch("http://localhost:3000/api/auth/login", {
-                    headers: {"Content-Type": "application/json; charset=UTF-8"},
-                    method: "POST",
-                    body: JSON.stringify(formData)
-                });
-                
-                try {
-                    this.$parent.$parent.isLoading = false;
-                    const resObj = await response.json();
-
-                    if(resObj.message.includes("invalide")) {
-                        this.serverAlert = true;
-                        this.serverMsg = resObj.message;
-                        setTimeout(() => this.serverAlert = false, timeOutDuration);
-                    }
-
-                    else if(resObj.message.includes("vous êtes connecté")) {
-                        this.$parent.$parent.getAllPost();
-                        
-                        this.$parent.$parent.isLogPages = false;
-                        this.$parent.$parent.isSwapPages = true;
-
-                        this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = resObj.message;
-                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
-                        
-                        this.clearInputFields();
-                    }
-                }
-                catch(error) { console.log("error", error) }
-                return {}
-            },
-
-
             formValid(formData, inputField, regEx, elemString) {
                 // If input field is empty
                 if (inputField.value === "") {
@@ -150,6 +115,41 @@
                 if(this.emailValid && this.passwordValid) this.isInfosCorrects = true;
 
                 return formData;
+            },
+
+
+            async postDataLogin(formData, timeOutDuration) {
+                const response = await fetch("http://localhost:3000/api/auth/login", {
+                    headers: {"Content-Type": "application/json; charset=UTF-8"},
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+                
+                try {
+                    this.$parent.$parent.isLoading = false;
+                    const resObj = await response.json();
+
+                    if(resObj.message.includes("invalide")) {
+                        this.serverAlert = true;
+                        this.serverMsg = resObj.message;
+                        setTimeout(() => this.serverAlert = false, timeOutDuration);
+                    }
+
+                    else if(resObj.message.includes("vous êtes connecté")) {
+                        localStorage.setItem("Token", resObj.session);
+                        
+                        this.$parent.$parent.isLogPages = false;
+                        this.$parent.$parent.isSwapPages = true;
+
+                        this.$parent.$parent.swapPageAlert = true;
+                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
+                        
+                        this.clearInputFields();
+                    }
+                }
+                catch(error) { console.log("error", error) }
+                return {}
             },
 
 

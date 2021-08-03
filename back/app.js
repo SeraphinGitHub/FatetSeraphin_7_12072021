@@ -5,8 +5,6 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const initDB = require("./init_DB");
-
-const bodyParser = require("body-parser");
 const path = require("path");
 const db = require("./models");
 
@@ -29,13 +27,10 @@ app.use((req, res, next) => {
 });
 
 
-db.sequelize.sync().then((req) => {
+db.sequelize.sync().then((req, res, next) => {
     
     initDB;
-    
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({extended: false}));
-    
+
     app.use("/pictures", express.static(path.join(__dirname, "pictures")));
     app.use("/api/auth", userRoutes);
     app.use("/api/publish", publishRoutes);

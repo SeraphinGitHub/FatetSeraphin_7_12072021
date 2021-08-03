@@ -1,41 +1,41 @@
 <template>
-    <li class="flexCenter post" :id="postId">
+    <li class="flexCenter post" :id="post.id">
 
         <div class="flexCenter caption">
-            <PostUserInfos :userId="userId"/>
+            <PostUserInfos :userId="post.userId"/>
             
             <div v-if="isOwner" class="flexCenter post-btn">
                 <button v-show="!isModifying" class="btn modify-btn" @click="onMofifyBtn()">Modifier</button>
                 <button v-show="isModifying" class="btn modify-btn" @click="isModifying = !isModifying">Annuler</button>
                 <button class="btn red-btn delete-btn" @click.prevent="deletePost()" type="submit">Supprimer</button>
             </div>
-
-            <h2 v-show="!isModifying" class="flexCenter post-title">{{ title }}</h2>
-            <input v-show="isModifying" name="title" class="flexCenter modif-title" type="text" :value="titleModif">
+            
+            <h2 v-show="!isModifying" class="flexCenter post-title">{{ post.title }}</h2>
+            <input v-show="isModifying" name="title" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
 
             <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
         </div>
 
-        <p v-show="!isModifying" class="content">{{ textContent }}</p>
-        <textarea v-show="isModifying" name="textContent" class="modif-content" type="text" :value="textModif"></textarea>
+        <p v-show="!isModifying" class="content">{{ post.textContent }}</p>
+        <textarea v-show="isModifying" name="textContent" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
 
         <figure v-if="hasPicture()" class="file-pict">
-            <img v-show="!isModifying" :src="filePicture" alt="image de publication">
+            <img v-show="!isModifying" :src="post.imageUrl" alt="image de publication">
             <img v-show="isModifying" :src="pictureSrc" class="modif-imagePreview">
         </figure>
         
         <div v-show="isModifying" class="flexCenter add-file-container">
-            <input type="file" name="image" accept="image/*" @change="modifyPreview()" ref="modifAddFile">
-            <button class="btn modif-image-btn" @click="$refs.modifAddFile.click()" type="button">Changer l'image</button>
+            <input type="file" name="image" accept="image/*" @change="modifyPreview()" ref="modifAddFile_Ref">
+            <button class="btn modif-image-btn" @click="$refs.modifAddFile_Ref.click()" type="button">Ajouter une image</button>
             <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
         </div>
         
         <form class="flexCenter commentate" method="POST">
-            <UserCaption/>
+            <UserCaption :user="user"/>
             
             <div class="flexCenter comment-container">
-                <label for="comment">Espace commentaires</label>
-                <textarea name="comment" id="comment" type="text" placeholder="Laissr un commentaire" value=""></textarea>
+                <label for="textContent">Espace commentaires</label>
+                <textarea name="textContent" type="text" placeholder="Laissr un commentaire" ref="comment_Ref"></textarea>
             </div>
             
             <button class="btn green-btn add-comment-btn" @click.prevent="postComment()" type="submit">Publier</button>
@@ -58,44 +58,36 @@
         },
 
         props: {
-            postId: Number,
-            userId: Number,
-            title: String,
-            textContent: String,
-            publishedTime: String,
-            filePicture: String,
+            post: Object,
+            user: Object,
         },
 
         data() {
+
+            // *********************************************************************************
+
+            // if(this.post.userId === this.user.id) this.isOwner = true;
+
+            // console.log(this.user.id);
+            // console.log(this.post.userId);
+
+            // *********************************************************************************
+
             return {
-                isOwner: true,
+                publishedTime: new Date(this.post.createdAt).toLocaleString(),
+
+                isOwner: false,
+                
                 isModifying: false,
                 titleModif: "",
                 textModif: "",
                 pictureSrc: "",
                 modifiedPicture: "",
+                token: window.localStorage.getItem("Token"),
             };
         },
 
         methods: {
-            async modifyPublish(formData) {
-                const token = window.localStorage.getItem("Token");
-
-                const response = await fetch("http://localhost:3000/api/publish/modify", {
-                    headers: {
-                        "Content-Type": "multipart/form-data; boundary=something",
-                        "Authorization": "Bearer" + token
-                    },
-                    method: "PUT",
-                    body: formData
-                });
-                
-                try { return await response }
-                catch(error) { console.log("error", error) }
-                return {}
-            },
-
-            
             onMofifyBtn() {
                 this.isModifying = !this.isModifying;
                 this.pictureSrc = this.filePicture;
@@ -105,18 +97,18 @@
 
 
             hasPicture() {
-                if(this.filePicture || this.pictureSrc) return true;
+                if(this.post.imageUrl || this.pictureSrc) return true;
             },
 
 
             modifyPreview() {
-                const file = this.$refs.modifAddFile.files;
+                const file = this.$refs.modifAddFile_Ref.files;
                 
                 if(file.length > 0) {
                     const fileReader = new FileReader();
                     fileReader.onload = (event) => this.pictureSrc = event.target.result;
                     fileReader.readAsDataURL(file[0]);
-                } this.modifiedPicture = this.$refs.modifAddFile.files[0];
+                } this.modifiedPicture = this.$refs.modifAddFile_Ref.files[0];
             },
 
 
@@ -127,38 +119,76 @@
                 formData.set("title", this.$refs.titleModif_Ref.value);
                 formData.set("textContent", this.$refs.textModif_Ref.value);
                 formData.set("file", this.modifiedPicture);
-                
+
                 formData.forEach((key, value) => formData[value] = key);
-                
                 this.modifyPublish(formData);
-                this.isModifying = !this.isModifying;
-                setTimeout(() => this.$parent.getAllPost(), 100);
             },
 
 
-            async deletePost() {
-                const token = window.localStorage.getItem("Token");
+            async modifyPublish(formData) {
+                this.$parent.$parent.isLoading = true;
 
-                const response = await fetch("http://localhost:3000/api/publish/delete", {
+                const response = await fetch("http://localhost:3000/api/publish/modify", {
                     headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": "Bearer" + token
+                        "Content-Type": "multipart/form-data; boundary=something",
+                        "Authorization": `Bearer ${this.token}`
                     },
-                    method: "DELETE",
-                    body: JSON.stringify({ id: this.postId })
+                    method: "PUT",
+                    body: formData
                 });
                 
                 try {
+                    await response
+                    this.$parent.$parent.isLoading = false;
+                    this.isModifying = !this.isModifying;
                     this.$parent.getAllPost();
-                    return await response.json();
                 }
                 catch(error) { console.log("error", error) }
                 return {}
             },
 
 
-            postComment() {
+            async deletePost() {
+                const response = await fetch("http://localhost:3000/api/publish/delete", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "DELETE",
+                    body: JSON.stringify({ id: this.postId })
+                });
                 
+                try {
+                    await response.json();
+                    this.$parent.getAllPost();
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+            },
+
+
+            async postComment() {
+                const commentate = document.querySelector(".commentate");
+                const formData = new FormData(commentate);
+
+                formData.set("postId", this.post.id);
+                formData.forEach((key, value) => formData[value] = key);
+
+                const response = await fetch("http://localhost:3000/api/comment/create", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+                
+                try {
+                    await response.json();
+                    this.$refs.comment_Ref.value = "";
+                }
+                catch(error) { console.log("error", error) }
+                return {}
             },
         },
     }

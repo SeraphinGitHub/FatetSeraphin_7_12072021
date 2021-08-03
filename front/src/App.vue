@@ -9,9 +9,9 @@
       <h3 class="flexCenter swap-pages-alert" v-show="swapPageAlert">{{ swapPageMsg }}</h3>
     </transition>
 
-    <LogoutBtn/>
-    <PagesLog v-show="isLogPages"/>
-    <PagesSwap v-show="isSwapPages"/>
+    <LogoutBtn v-if="isSwapPages"/>
+    <PagesLog v-if="isLogPages"/>
+    <PagesSwap v-if="isSwapPages"/>
     <LoadingSpinner v-show="isLoading"/>
 
   </section>
@@ -45,34 +45,24 @@
         swapPageAlert: false,
         swapPageMsg: "",
 
-        publications: {},
-
         popupDuration: 1000, // milliseconds
       }
     },
 
-    // beforeMount() {
-    //   this.getAllPost();
-    // },
+    beforeMount() {
+      this.checkUserToken();
+    },
 
     methods: {
-      async getAllPost() {
+      checkUserToken() {
         const token = window.localStorage.getItem("Token");
 
-        const allPosts = await fetch("http://localhost:3000/api/publish", {
-            headers: {
-              "Content-Type": "application/json; charset=UTF-8",
-              "Authorization": "Bearer" + token
-            },
-            method: "GET",
-        })
-        .then(response => response.json())
-        .then(data => { return data });
-
-        this.publications = allPosts.sort().reverse();
-        this.isLoading = false;
+        if(token) {
+          this.isLogPages = false;
+          this.isSwapPages = true;
+        }
       },
-    }
+    },
   }
 </script>
 
@@ -106,7 +96,7 @@
   .login-btn,
   .signin-btn,
   .actu-btn,
-  .private-wall-btn,
+  .user-wall-btn,
   .profile-btn {
     position: absolute;
     height: 40px;
@@ -123,7 +113,7 @@
   .login,
   .signin,
   .actu,
-  .private-wall,
+  .user-wall,
   .profile {
     position: absolute;
     height: 100%;

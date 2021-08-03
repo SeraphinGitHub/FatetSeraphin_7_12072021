@@ -28,18 +28,20 @@
                 const response = await fetch("http://localhost:3000/api/auth/logout", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": "Bearer" + token
+                        "Authorization": `Bearer ${token}`
                     },
                     method: "POST",
                 });
                 
                 try {
-                    await response.json();
+                    const resObj = await response.json();
+                    window.localStorage.clear();
+
                     this.$parent.isLogPages = true;
                     this.$parent.isSwapPages = false;
 
                     this.$parent.swapPageAlert = true;
-                    this.$parent.swapPageMsg = "Vous êtes déconnecté";
+                    this.$parent.swapPageMsg = resObj.message;
 
                     const popup = document.querySelector(".swap-pages-alert");
                     popup.classList.add("red-popup");

@@ -13,17 +13,42 @@ const User = db.User;
 exports.getAllItem = (itemModel, whereObject, req,res) => {
     
     itemModel.findAll(whereObject)
-    .then((item) => res.status(200).json(item))
+    .then(item => res.status(200).json(item))
     .catch(() => res.status(404).json({ message: "Publication NOT found !" }));
+};
+
+
+// ==================================================================================
+// Get User Infos
+// ==================================================================================
+exports.getUserDetails = (userId, valueString, req, res, next) => {
+
+    User.findOne({ where: { id: userId } })
+    .then((user) => {
+                
+        const userCaption = {
+            id: user.id,
+            isAdmin: user.isAdmin,
+            userName: user.userName,
+            position: user.position,
+            department: user.department,
+            imageUrl: user.imageUrl,
+        };
+
+        const { isAdmin, ...securedUserCaption } = userCaption;
+
+        if(valueString === "loggedUser") res.status(200).json(userCaption);
+        if(valueString === "postUser") res.status(201).json(securedUserCaption);
+
+    }).catch(() => res.status(403).json({ message: "User NOT found !" }));
 };
 
 
 // ==================================================================================
 // Check post User in order to Update/Delete (Base function)
 // ==================================================================================
-exports.verifyPostOwner = (itemModel, callback, req, res, next) => {
-    // const userIdTok = this.verifyToken(req, res, next, "userId");
-    const userIdTok = 3;
+exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {
+    const userIdTok = this.verifyToken(req, res, next, "userId");
 
     User.findOne({ where: { id: userIdTok } })
     .then(user => {
@@ -31,8 +56,11 @@ exports.verifyPostOwner = (itemModel, callback, req, res, next) => {
         itemModel.findOne({ where: { id: req.body.id } })
         .then(post => {
             
-            // if(user.isAdmin === true || post.userId === userIdTok) callback(itemModel, post, req, res, next);
-            if(post.userId === userIdTok) callback(itemModel, post, req, res, next);
+            if(user.isAdmin === true || post.userId === user.id) {
+                
+                if(valueString === "modifyItem") this.modifyOneItem(itemModel, post, req, res, next);
+                if(valueString === "deleteItem") this.deleteOneItem(post, req, res, next);
+            }
 
         }).catch(() => res.status(404).json({ message: "Publication NOT found !" }));
     }).catch(() => res.status(500).json({ message: "Publication's user NOT found !" }));
@@ -57,7 +85,7 @@ exports.modifyOneItem = (itemModel, post, req, res, next) => {
 // ==================================================================================
 // Delete One Item
 // ==================================================================================
-exports.deleteOneItem = (itemModel, post, req, res, next) => {
+exports.deleteOneItem = (post, req, res, next) => {
     
     if(post.imageUrl) {
         const pictureName = post.imageUrl.split("/pictures/")[1];
@@ -83,12 +111,12 @@ exports.destroyItem = (item, itemName, res) => {
 exports.verifyToken = (req, res, next, elseValue) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
-        
+
         if(typeof token === "undefined") res.status(401).json({ message: "Session expirée !" });
         else if(elseValue === "userId") return jwt.verify(token, process.env.Token_Key).userId;
         else if(elseValue === "next") next();
     }
-    catch (error) { res.status(403).json({ message: "None authentified request !" }) }
+    catch (error) { res.status(403).json({ message: "Requêtte non authentifiée !" }) }
 };
 
 
