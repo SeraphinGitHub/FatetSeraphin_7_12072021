@@ -7,19 +7,19 @@
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
         
 
-        <!-- <transition name="slidePublish"> -->
-            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
+        <!-- <transition name="slidePublish" @leave="getAllPost()"> -->
+            <component v-show="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
         <!-- </transition> -->
 
-        <!-- <transition-group name="slideFlow"> -->
-            <ul :key="post" v-show="!isPublish" class="flexCenter flow">
+        <!-- <transition name="slideFlow"> -->
+            <div :key="post" v-show="!isPublish" class="flexCenter flow">
 
                 <Publication v-for="post in publications" :key="post.id"
                     :post="post"
                 />
 
-            </ul>
-        <!-- </transition-group> -->
+            </div>
+        <!-- </transition> -->
 
     </section>
 </template>
@@ -39,6 +39,7 @@
         data() {
             return {
                 isPublish: false,
+                allPostsReceived: false,
                 publishComponent: Publish,
                 publications: {},
                 token: window.localStorage.getItem("Token"),
@@ -68,8 +69,9 @@
                 .then(response => response.json())
                 .then(data => { return data });
 
-                this.publications = allPosts.sort().reverse();
+                this.publications = await allPosts.sort().reverse();
                 this.$parent.isLoading = false;
+                this.allPostsReceived = true;
             },
         },
     }
@@ -77,20 +79,6 @@
 
 
 <style>
-    .user-pict {
-        justify-content: flex-start !important;
-        height: 80px;
-        width: 100%;
-    }
-
-    .user-pict img,
-    .circle-user-img {
-        object-fit: cover;
-        height: 100%;
-        width: 80px;
-        box-shadow: black 5px 5px 5px;
-    }
-
     .user-infos {
         height: 90%;
         width: 57% !important;
@@ -171,40 +159,40 @@
     // ==>      Transitions     <==
     // ****************************************************************************************************
     
-    // $slideDuration: 1s;
+    $slideDuration: 1s;
 
-    // .slidePublish-enter-active,
-    // .slideFlow-enter-active {
-    //     transition-delay: $slideDuration;
-    //     transition-duration: $slideDuration;
-    // }
+    .slidePublish-enter-active,
+    .slideFlow-enter-active {
+        transition-delay: $slideDuration;
+        transition-duration: $slideDuration;
+    }
 
-    // .slidePublish-leave-active,
-    // .slideFlow-leave-active {
-    //     transition-duration: $slideDuration;
-    // }
+    .slidePublish-leave-active,
+    .slideFlow-leave-active {
+        transition-duration: $slideDuration;
+    }
 
 
-    // // ========== Flow ==========
-    // .slideFlow-enter-from,
-    // .slideFlow-leave-to { 
-    //     height: 0;
-    // }
+    // ========== Flow ==========
+    .slideFlow-enter-from,
+    .slideFlow-leave-to { 
+        height: 0;
+    }
 
-    // .slideFlow-leave-from,
-    // .slideFlow-enter-to {
-    //     height: $flowHeight;
-    // }
+    .slideFlow-leave-from,
+    .slideFlow-enter-to {
+        height: $flowHeight;
+    }
 
     
-    // // ========== Publish ==========
-    // .slidePublish-enter-from,
-    // .slidePublish-leave-to { 
-    //     height: 0;
-    // }
+    // ========== Publish ==========
+    .slidePublish-enter-from,
+    .slidePublish-leave-to { 
+        height: 0;
+    }
 
-    // .slidePublish-leave-from,
-    // .slidePublish-enter-to {
-    //     height: 90%;
-    // }
+    .slidePublish-leave-from,
+    .slidePublish-enter-to {
+        height: 90%;
+    }
 </style>

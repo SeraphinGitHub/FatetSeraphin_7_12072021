@@ -72,7 +72,7 @@ exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {
 // ==================================================================================
 exports.modifyOneItem = (itemModel, post, req, res, next) => {
     
-    if(post.imageUrl) {
+    if(post.imageUrl && req.file) {
         const pictureName = post.imageUrl.split("/pictures/")[1];
         fs.unlink(`pictures/${pictureName}`,(() => {
 
@@ -82,6 +82,15 @@ exports.modifyOneItem = (itemModel, post, req, res, next) => {
             .then(() => res.status(202).json({ message: "Publication with file modified successfully !" }))
             .catch(() => res.status(503).json({ message: "Publication with file NOT modified !" }));
         }));
+    }
+
+    else if(!post.imageUrl && req.file) {
+
+        const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
+
+        itemModel.update( item, { where: { id: post.id } })
+        .then(() => res.status(202).json({ message: "Publication with file modified successfully !" }))
+        .catch(() => res.status(503).json({ message: "Publication with file NOT modified !" }));
     }
 
     else {

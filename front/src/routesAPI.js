@@ -93,11 +93,9 @@ module.exports = {
         // ==================================================================================
         //  ==> COMMENT
         // ==================================================================================
-        async getAllComment_API(formData) {
-            this.write_Base(`${this.urlAPI()}/comment`, formData, "POST") }, // publishId
+        
         // ----------------------------------------------------------------------------------
-        async createComment_API(formData) { 
-        this.write_Base(`${this.urlAPI()}/comment/create`, formData, "POST") }, // publishId
+        
         // ----------------------------------------------------------------------------------
         async modifyComment_API(formData) {
         this.write_Base(`${this.urlAPI()}/comment/modify`, formData, "PUT") }, // commentId

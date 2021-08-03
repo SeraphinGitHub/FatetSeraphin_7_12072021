@@ -18,7 +18,8 @@
         name: "UserCaption",
 
         props: {
-            isOwner: Boolean,
+            isPostOwner: Boolean,
+            isCommentOwner: Boolean,
             post: Object,
             userId: Number,
         },
@@ -49,8 +50,7 @@
                     this.user = resObj;
 
                     if(this.$parent.post) {
-                        if(this.$parent.post.userId === this.user.id
-                        || this.user.isAdmin) this.$parent.isOwner = true;
+                        if(this.$parent.post.userId === this.user.id || this.user.isAdmin) this.$parent.isPostOwner = true;
                     }
                 }
                 catch(error) { console.log("error", error) }
@@ -63,10 +63,18 @@
 
 <style scoped>
     .circle-user-img {
-        border-radius: 50% !important;
-    }
+        object-fit: cover;
+        height: 100%;
+        width: 80px;
 
+        border-radius: 50% !important;
+        box-shadow: black 5px 5px 5px;
+    }
+    
     .user-pict {
+        justify-content: flex-start !important;
+        height: 80px;
+        width: 100%;
         margin: 15px;
         margin-bottom: 8px;
     }

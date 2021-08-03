@@ -45,6 +45,7 @@
                 file: "",
                 isPublish: false,
                 isEmpty: false,
+                token: window.localStorage.getItem("Token"),
             }
         },
 
@@ -81,24 +82,20 @@
                 else {
                     this.isEmpty = true;
                     this.emptyMsg = "Vous devez renseigner un titre et écrire du texte !";
-                    setTimeout(() => this.isEmpty = false , 2000);
+                    setTimeout(() => this.isEmpty = false, 2000);
                 }
             },
 
 
             async createPublish(formData) {
-                this.$parent.$parent.isLoading = true;
-                const token = window.localStorage.getItem("Token");
-
                 const response = await fetch("http://localhost:3000/api/publish/create", {
-                    headers: { "Authorization": `Bearer ${token}` },
+                    headers: { "Authorization": `Bearer ${this.token}` },
                     method: "POST",
                     body: formData
                 });
                 
                 try {
                     await response;
-                    this.$parent.$parent.isLoading = false;
                     this.isPublish = !this.isPublish;
                     this.$parent.getAllPost();
                 }

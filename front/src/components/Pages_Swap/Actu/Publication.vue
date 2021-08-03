@@ -4,7 +4,7 @@
         <div class="flexCenter caption">
             <PostUserInfos :userId="post.userId"/>
             
-            <div v-if="isOwner" class="flexCenter post-btn">
+            <div v-if="isPostOwner" class="flexCenter post-btn">
                 <button v-show="!isModifying" class="btn modify-btn" @click="onMofifyBtn()">Modifier</button>
                 <button v-show="isModifying" class="btn modify-btn" @click="isModifying = !isModifying">Annuler</button>
                 <button class="btn red-btn delete-btn" @click.prevent="deletePost()" type="submit">Supprimer</button>
@@ -29,8 +29,24 @@
             <button class="btn modif-image-btn" @click="$refs.modifAddFile_Ref.click()" type="button">Ajouter une image</button>
             <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
         </div>
+
+
+        <!-- ************************************************************************** -->
+       
+        <div :key="com" v-if="toggleComment" class="flexCenter comment-flow">
+
+            <Comment v-for="com in comments" :key="com.id"
+                :comment="com"
+            />
+
+        </div>
+
+        <!-- ************************************************************************** -->
         
+
         <form class="flexCenter commentate" method="POST">
+            <button class="btn add-comment-btn" @click.prevent="toggleComment=!toggleComment">Commentaires</button>
+            
             <UserCaption/>
 
             <div class="flexCenter comment-container">
@@ -48,6 +64,7 @@
 <script>
     import UserCaption from "./UserCaption.vue"    
     import PostUserInfos from "./PostUserInfos.vue"
+    import Comment from "./Comment.vue"
 
     export default {
         name: "Publication",
@@ -55,21 +72,29 @@
         components: {
             UserCaption,
             PostUserInfos,
+            Comment,
         },
 
         props: {
             post: Object,
+            allPostsReceived: Boolean,
         },
 
         data() {
+            if(this.$parent.allPostsReceived) this.getPostComments();
+
             return {
-                publishedTime: new Date(this.post.createdAt).toLocaleString(),
-                isOwner: false,                
+                isPostOwner: false,
                 isModifying: false,
+                toggleComment: false,
+
                 titleModif: "",
                 textModif: "",
                 pictureSrc: "",
                 modifiedPicture: "",
+                comments: {},
+
+                publishedTime: new Date(this.post.createdAt).toLocaleString(),
                 token: window.localStorage.getItem("Token"),
             };
         },
@@ -156,6 +181,7 @@
                 const formData = new FormData(commentate);
 
                 formData.set("postId", this.post.id);
+                formData.set("textContent", this.$refs.comment_Ref.value);
                 formData.forEach((key, value) => formData[value] = key);
 
                 const response = await fetch("http://localhost:3000/api/comment/create", {
@@ -170,9 +196,30 @@
                 try {
                     await response.json();
                     this.$refs.comment_Ref.value = "";
+                    this.getPostComments();
                 }
                 catch(error) { console.log("error", error) }
                 return {}
+            },
+
+
+            async getPostComments() {
+                const response = await fetch("http://localhost:3000/api/comment", {
+                    headers: {
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ id: this.post.id })
+                });
+                
+                try {
+                    const allComments = await response.json();
+                    this.comments = allComments.sort();
+                }
+                catch(error) { console.log("error", error) }
+                return {}
+
             },
         },
     }
@@ -283,6 +330,10 @@
         line-height: 100%;
         font-weight: 400;
         font-size: 100%;
+    }
+
+    .comment-flow {
+        margin-top: 10px;
     }
 
     /* ========== Buttons ========== */

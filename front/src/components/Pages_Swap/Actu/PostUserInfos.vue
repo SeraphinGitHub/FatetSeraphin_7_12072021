@@ -56,12 +56,19 @@
 
 
 <style scoped>
-    .user-pict img {
-        border-radius: 10px;
-    }
-
     .user-pict {
+        justify-content: flex-start !important;
+        height: 80px;
+        width: 100%;
         margin: 15px;
         margin-bottom: 8px;
+    }
+
+    .user-pict img {
+        object-fit: cover;
+        height: 100%;
+        width: 80px;
+        border-radius: 10px;
+        box-shadow: black 5px 5px 5px;
     }
 </style>
