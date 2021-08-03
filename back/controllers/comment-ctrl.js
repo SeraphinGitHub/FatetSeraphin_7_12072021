@@ -7,13 +7,12 @@ const Comment = db.Comment;
 // "GET" ==> Get all comments by ID in DataBase
 exports.showAllComment = (req, res, next) =>  {
     const whereObject = { where: { publishId: req.body.id } };
-    generic.getAllItem(Comment, whereObject, res);
+    generic.getAllItem(Comment, whereObject, req, res, next);
 }
 
 
 // "POST" ==> Create one comment in DataBase
 exports.createComment = (req, res, next) => {
-
     const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     const comment = new Comment({

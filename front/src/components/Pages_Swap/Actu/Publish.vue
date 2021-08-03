@@ -1,7 +1,7 @@
 <template>
     <section class="flexCenter publish-flow">
         
-        <form class="flexCenter post-form" method="POST" enctype="multipart/form-data">
+        <form class="flexCenter post-form" method="POST">
             
             <UserCaption/>
             
@@ -73,15 +73,15 @@
                 let formData = new FormData(postForm);
                 formData.forEach((key, value) => formData[value] = key);
 
-                if(title !== "" && textContent !== "" || title !== "" && this.file ) {
+                if(title !== "" && textContent !== "") {
                     this.createPublish(formData);
                     this.$emit("posted", this.isPublish);
                 }
 
                 else {
                     this.isEmpty = true;
-                    this.emptyMsg = "Vous devez renseigner un titre et écrire du texte ou importer une image !";
-                    setTimeout(() => this.isEmpty = false , 3000);
+                    this.emptyMsg = "Vous devez renseigner un titre et écrire du texte !";
+                    setTimeout(() => this.isEmpty = false , 2000);
                 }
             },
 
@@ -91,16 +91,13 @@
                 const token = window.localStorage.getItem("Token");
 
                 const response = await fetch("http://localhost:3000/api/publish/create", {
-                    headers: {
-                        "Content-Type": "multipart/form-data; boundary=something",
-                        "Authorization": `Bearer ${token}`
-                    },
+                    headers: { "Authorization": `Bearer ${token}` },
                     method: "POST",
                     body: formData
                 });
                 
                 try {
-                    await response
+                    await response;
                     this.$parent.$parent.isLoading = false;
                     this.isPublish = !this.isPublish;
                     this.$parent.getAllPost();
@@ -141,13 +138,13 @@
     /* ========== Alert message ========== */
     .form-alert {
         position: absolute;
-        height: 60px;
+        height: 40px;
         width: 85%;
         margin: 0;
         padding: 5px;
         bottom: 45px;
         font-size: 100%;
-        line-height: 110%;
+        line-height: 120%;
     }
 
     .post-form,
@@ -201,7 +198,7 @@
     // ****************************************************************************************************
     .fade-enter-active,
     .fade-leave-active {
-        transition-duration: 1s;
+        transition-duration: 0.8s;
     }
 
 

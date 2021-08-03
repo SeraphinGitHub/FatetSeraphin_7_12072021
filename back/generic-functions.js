@@ -10,7 +10,7 @@ const User = db.User;
 // ==================================================================================
 // Get All Item
 // ==================================================================================
-exports.getAllItem = (itemModel, whereObject, req,res) => {
+exports.getAllItem = (itemModel, whereObject, req, res, next) => {
     
     itemModel.findAll(whereObject)
     .then(item => res.status(200).json(item))
@@ -71,14 +71,26 @@ exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {
 // Modify One Item
 // ==================================================================================
 exports.modifyOneItem = (itemModel, post, req, res, next) => {
-   
-    const item = req.file
-    ? {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.name}`}
-    : {...req.body}
     
-    itemModel.update( item, { where: { id: post.id } })
-    .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
-    .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
+    if(post.imageUrl) {
+        const pictureName = post.imageUrl.split("/pictures/")[1];
+        fs.unlink(`pictures/${pictureName}`,(() => {
+
+            const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
+
+            itemModel.update( item, { where: { id: post.id } })
+            .then(() => res.status(202).json({ message: "Publication with file modified successfully !" }))
+            .catch(() => res.status(503).json({ message: "Publication with file NOT modified !" }));
+        }));
+    }
+
+    else {
+        const item = { ...req.body };
+
+        itemModel.update( item, { where: { id: post.id } })
+        .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
+        .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
+    }
 };
 
 
@@ -89,15 +101,15 @@ exports.deleteOneItem = (post, req, res, next) => {
     
     if(post.imageUrl) {
         const pictureName = post.imageUrl.split("/pictures/")[1];
-        fs.unlink(`pictures/${pictureName}`, () => this.destroyItem(post, "Publication", res));
-    } else this.destroyItem(post, "Publication", res);
+        fs.unlink(`pictures/${pictureName}`, () => this.destroyItem(post, "Publication", req, res, next));
+    } else this.destroyItem(post, "Publication", req, res, next);
 };
 
 
 // ==================================================================================
 // Delete Item (Base function)
 // ==================================================================================
-exports.destroyItem = (item, itemName, res) => {
+exports.destroyItem = (item, itemName, req, res, next) => {
 
     item.destroy({ where: { id: item.id } })
     .then(() => res.status(200).json({ message: `${itemName} deleted successfully !` }))
@@ -123,7 +135,7 @@ exports.verifyToken = (req, res, next, elseValue) => {
 // ==================================================================================
 // Search user by hash of req email
 // ==================================================================================
-exports.userProbe = async (users, emailReq, res) => {
+exports.userProbe = async (users, emailReq, req, res, next) => {
     let matchUserArray = [];
     
     for (i = 0; i < users.length; i++) {

@@ -11,20 +11,12 @@ const MIMES_TYPES = {
 const storage = multer.diskStorage({
     
     destination: (req, file, callback) => {
-
-        console.log({ message: "First succes !" });
-
         callback(null, "pictures");
     },
 
-    filename: (req, file, callback) => {
-        
-        console.log({ message: "Second succes !" });
-        
+    filename: (req, file, callback) => {        
         const name = file.originalname.split(" ").join("_");
-        const extension = MIMES_TYPES[file.mimetype];
-        callback(null, name + Date.now() + "." + extension);
-        // callback(null, Date.now() + "." + name);
+        callback(null, Date.now() + "." + name);
     }
 });
 

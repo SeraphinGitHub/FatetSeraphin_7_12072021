@@ -17,7 +17,7 @@ exports.signin = (req, res, next) => {
     User.findAll()
     .then(async (users) => {
 
-        const matchUserArray = await generic.userProbe(users, req.body.email, res);
+        const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
         if(matchUserArray.length) return res.status(401).json({ message: "Cet e-mail est déjà pris !" });
 
         else bcrypt.hash(req.body.email, 12)
@@ -52,7 +52,7 @@ exports.login = (req, res, next) => {
 
     User.findAll()
     .then(async (users) => {
-        const matchUserArray = await generic.userProbe(users, req.body.email, res);
+        const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
 
         if(matchUserArray.length) {
             let user = matchUserArray[0];
@@ -95,8 +95,7 @@ exports.userWall = (req, res, next) => {
     
     const userIdTok = generic.verifyToken(req, res, next, "userId");
     const whereObject = { where: { userId: userIdTok } };
-
-    generic.getAllItem(Publish, whereObject, res);
+    generic.getAllItem(Publish, whereObject, req, res, next);
 };
 
 
@@ -138,15 +137,13 @@ exports.modifyProfile = (req, res, next) => {
     User.findOne({ where: { id: userIdTok } })
     .then(user => {
         
-        if(user.isAdmin === true || user.id) {
+        const item = {...req.body };
+        const {email, password, ...securedItem} = item;
 
-            const item = {...req.body };
-            const {email, password, ...securedItem} = item;
-
-            User.update(securedItem, { where: { id: user.id } })
-            .then(() => res.status(200).json({ message: `${user.userName}'s profile update successfully !` }))
-            .catch(() => res.status(500).json({ message: `${user.userName}'s profile NOT updated !` }));
-        }        
+        User.update(securedItem, { where: { id: user.id } })
+        .then(() => res.status(200).json({ message: `${user.userName}'s profile update successfully !` }))
+        .catch(() => res.status(500).json({ message: `${user.userName}'s profile NOT updated !` }));
+            
     }).catch(() => res.status(500).json({ message: "User NOT found !" }));
 };
 
@@ -155,8 +152,8 @@ exports.modifyProfile = (req, res, next) => {
 // "PUT" ==> Update User Email
 // ==================================================================================
 exports.modifyPassword = (req, res, next) => {
-    
     const userIdTok = generic.verifyToken(req, res, next, "userId");
+
     User.findOne({ where: { id: userIdTok } })
     .then(user => generic.updateEmailOrPsw(user, "Password", req, res, next))
     .catch(() => res.status(404).json({ message: "User NOT found !" })); 
@@ -167,12 +164,11 @@ exports.modifyPassword = (req, res, next) => {
 // "PUT" ==> Update User Password
 // ==================================================================================
 exports.modifyEmail = (req, res, next) => {
-
     const userIdTok = generic.verifyToken(req, res, next, "userId");
     
     User.findAll()
     .then(async (users) => {
-        const matchUserArray = await generic.userProbe(users, req.body.newEmail, res);
+        const matchUserArray = await generic.userProbe(users, req.body.newEmail, req, res, next);
         if(matchUserArray.length) return res.status(402).json({ message: "This e-mail already exists !" });
 
         else User.findOne({ where: { id: userIdTok } })
@@ -187,7 +183,6 @@ exports.modifyEmail = (req, res, next) => {
 // "DELETE" ==> Delete User
 // ==================================================================================
 exports.deleteUser = (req, res, next) => {
-    
     const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     User.findOne({ where: { id: userIdTok } })
@@ -201,9 +196,9 @@ exports.deleteUser = (req, res, next) => {
                     if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
 
                         const pictureName = user.imageUrl.split("/pictures/")[1];
-                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, res));
+                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, req, res, next));
         
-                    } else generic.destroyItem(user, user.userName, res);
+                    } else generic.destroyItem(user, user.userName, req, res, next);
 
 
                     // Grab each post, then Grab each comment of each post, then delete all (foreach loop)

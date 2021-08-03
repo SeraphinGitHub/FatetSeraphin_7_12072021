@@ -19,25 +19,25 @@
 
         props: {
             userId: Number,
-            allPostReceived: Boolean,
         },
         
         data() {
-            if(this.$parent.$parent.allPostReceived) this.getPostUserInfos();
-
             return {
                 postUser: {},
+                token: window.localStorage.getItem("Token"),
             };
+        },
+
+        async beforeMount() {
+            await this.getPostUserInfos();
         },
 
         methods: {
             async getPostUserInfos() {
-                const token = window.localStorage.getItem("Token");
-                
                 const response = await fetch("http://localhost:3000/api/auth/postUser", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": `Bearer ${this.token}`
                     },
                     method: "POST",
                     body: JSON.stringify({ id: this.userId })

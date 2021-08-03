@@ -10,12 +10,7 @@
         <ul v-if="!isWallEmpty" :key="post" class="flexCenter flow">
                 
             <Publication v-for="post in userPosts" :key="post.id"
-                :postId="post.id"
-                :userId="post.userId"
-                :title="post.title"
-                :textContent="post.textContent"
-                :publishedTime="new Date(post.createdAt).toLocaleString()"
-                :filePicture="post.imageUrl"
+                :post="post"
             />
         </ul>
 
@@ -37,31 +32,26 @@
             return {
                 isWallEmpty: true,
                 userPosts: {},
+                token: window.localStorage.getItem("Token"),
             }
         },
 
-        beforeMount() {
-            // ****************************************************************
-            
-            // this.getUserPost();
-            
-            // ****************************************************************
+        async beforeMount() {
+            await this.getUserPost();
         },
 
         methods: {
-            showUserWall: function() {
+            showUserWall() {
                 document.querySelector(".actu").style.zIndex = "5";
                 document.querySelector(".user-wall").style.zIndex = "10";
                 document.querySelector(".profile").style.zIndex = "5";
             },
 
             async getUserPost() {
-                const token = window.localStorage.getItem("Token");
-
                 const allUserPosts = await fetch("http://localhost:3000/api/auth/wall", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": `Bearer ${this.token}`
                     },
                     method: "GET",
                 })

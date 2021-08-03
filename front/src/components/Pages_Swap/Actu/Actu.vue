@@ -16,7 +16,6 @@
 
                 <Publication v-for="post in publications" :key="post.id"
                     :post="post"
-                    :user="user"
                 />
 
             </ul>
@@ -41,18 +40,13 @@
             return {
                 isPublish: false,
                 publishComponent: Publish,
-
                 publications: {},
-                allPostReceived: false,
-
-                user: {},
                 token: window.localStorage.getItem("Token"),
             }
         },
 
-        beforeMount() {
-            this.getAllPost();
-            this.getLoggedUserInfos();
+        async beforeMount() {
+            await this.getAllPost();
         },
 
         methods: {
@@ -76,25 +70,6 @@
 
                 this.publications = allPosts.sort().reverse();
                 this.$parent.isLoading = false;
-                this.allPostReceived = true;
-            },
-
-
-            async getLoggedUserInfos() {                
-                const response = await fetch("http://localhost:3000/api/auth/user", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "GET",
-                });
-                
-                try {
-                    const resObj = await response.json();
-                    this.user = resObj;
-                }
-                catch(error) { console.log("error", error) }
-                return {}
             },
         },
     }

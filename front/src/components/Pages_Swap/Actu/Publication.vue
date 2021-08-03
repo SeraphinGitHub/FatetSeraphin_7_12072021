@@ -31,8 +31,8 @@
         </div>
         
         <form class="flexCenter commentate" method="POST">
-            <UserCaption :user="user"/>
-            
+            <UserCaption/>
+
             <div class="flexCenter comment-container">
                 <label for="textContent">Espace commentaires</label>
                 <textarea name="textContent" type="text" placeholder="Laissr un commentaire" ref="comment_Ref"></textarea>
@@ -59,25 +59,12 @@
 
         props: {
             post: Object,
-            user: Object,
         },
 
         data() {
-
-            // *********************************************************************************
-
-            // if(this.post.userId === this.user.id) this.isOwner = true;
-
-            // console.log(this.user.id);
-            // console.log(this.post.userId);
-
-            // *********************************************************************************
-
             return {
                 publishedTime: new Date(this.post.createdAt).toLocaleString(),
-
-                isOwner: false,
-                
+                isOwner: false,                
                 isModifying: false,
                 titleModif: "",
                 textModif: "",
@@ -90,9 +77,9 @@
         methods: {
             onMofifyBtn() {
                 this.isModifying = !this.isModifying;
-                this.pictureSrc = this.filePicture;
-                this.titleModif = this.title;
-                this.textModif = this.textContent;
+                this.pictureSrc = this.post.imageUrl;
+                this.titleModif = this.post.title;
+                this.textModif = this.post.textContent;
             },
 
 
@@ -115,10 +102,10 @@
             postModifs() {
                 let formData = new FormData();
 
-                formData.set("id", this.postId);
+                formData.set("id", this.post.id);
                 formData.set("title", this.$refs.titleModif_Ref.value);
                 formData.set("textContent", this.$refs.textModif_Ref.value);
-                formData.set("file", this.modifiedPicture);
+                formData.set("image", this.modifiedPicture);
 
                 formData.forEach((key, value) => formData[value] = key);
                 this.modifyPublish(formData);
@@ -129,16 +116,13 @@
                 this.$parent.$parent.isLoading = true;
 
                 const response = await fetch("http://localhost:3000/api/publish/modify", {
-                    headers: {
-                        "Content-Type": "multipart/form-data; boundary=something",
-                        "Authorization": `Bearer ${this.token}`
-                    },
+                    headers: { "Authorization": `Bearer ${this.token}` },
                     method: "PUT",
                     body: formData
                 });
                 
                 try {
-                    await response
+                    await response;
                     this.$parent.$parent.isLoading = false;
                     this.isModifying = !this.isModifying;
                     this.$parent.getAllPost();
@@ -155,7 +139,7 @@
                         "Authorization": `Bearer ${this.token}`
                     },
                     method: "DELETE",
-                    body: JSON.stringify({ id: this.postId })
+                    body: JSON.stringify({ id: this.post.id })
                 });
                 
                 try {

@@ -3,6 +3,7 @@ require("dotenv").config();
 
 // ========== API init ==========
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
 const initDB = require("./init_DB");
 const path = require("path");
@@ -22,7 +23,6 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
 
@@ -30,6 +30,9 @@ app.use((req, res, next) => {
 db.sequelize.sync().then((req, res, next) => {
     
     initDB;
+
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: false}));
 
     app.use("/pictures", express.static(path.join(__dirname, "pictures")));
     app.use("/api/auth", userRoutes);
