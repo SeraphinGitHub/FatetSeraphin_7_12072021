@@ -213,16 +213,16 @@
                 
                 try {
                     this.$parent.$parent.isLoading = false;
-                    const resObj = await response.json();
+                    const session = await response.json();
 
-                    if(resObj.message.includes("déjà pris")) {
+                    if(session.message.includes("déjà pris")) {
                         this.emailAlert = true;
-                        this.emailMsg = resObj.message;
+                        this.emailMsg = session.message;
                         setTimeout(() => this.emailAlert = false, this.alertMsgDuration);
                     }
 
-                    else if(resObj.message.includes("avec succès")) {
-                        localStorage.setItem("Token", resObj.session);
+                    else if(session.message.includes("avec succès")) {
+                        localStorage.setItem("Token", session.token);
                         
                         this.$parent.$parent.isLogPages = false;
                         this.$parent.$parent.isSwapPages = true;
@@ -231,14 +231,13 @@
                         document.querySelector(".login").style.zIndex = "10";
 
                         this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        this.$parent.$parent.swapPageMsg = session.message;
                         setTimeout(() => this.$parent.$parent.swapPageAlert = false, this.alertMsgDuration);
 
                         this.clearInputFields();
                     }
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
 
 

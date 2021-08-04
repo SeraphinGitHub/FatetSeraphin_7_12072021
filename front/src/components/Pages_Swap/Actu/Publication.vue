@@ -5,29 +5,29 @@
             <PostUserInfos :userId="post.userId"/>
             
             <div v-if="isPostOwner" class="flexCenter post-btn">
-                <button v-show="!isModifying" class="btn modify-btn" @click="onMofifyBtn()">Modifier</button>
-                <button v-show="isModifying" class="btn modify-btn" @click="isModifying = !isModifying">Annuler</button>
+                <button v-show="!isEditingPost" class="btn edit-btn" @click="editPost()">Modifier</button>
+                <button v-show="isEditingPost" class="btn cancel-btn" @click="isEditingPost=!isEditingPost">Annuler</button>
                 <button class="btn red-btn delete-btn" @click.prevent="deletePost()" type="submit">Supprimer</button>
             </div>
             
-            <h2 v-show="!isModifying" class="flexCenter post-title">{{ post.title }}</h2>
-            <input v-show="isModifying" name="title" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
+            <h2 v-show="!isEditingPost" class="flexCenter post-title">{{ post.title }}</h2>
+            <input v-show="isEditingPost" name="title" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
 
             <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
         </div>
 
-        <p v-show="!isModifying" class="content">{{ post.textContent }}</p>
-        <textarea v-show="isModifying" name="textContent" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
+        <p v-show="!isEditingPost" class="content">{{ post.textContent }}</p>
+        <textarea v-show="isEditingPost" name="textContent" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
 
         <figure v-if="hasPicture()" class="file-pict">
-            <img v-show="!isModifying" :src="post.imageUrl" alt="image de publication">
-            <img v-show="isModifying" :src="pictureSrc" class="modif-imagePreview">
+            <img v-show="!isEditingPost" :src="post.imageUrl" alt="image de publication">
+            <img v-show="isEditingPost" :src="pictureSrc" class="modif-imagePreview">
         </figure>
         
-        <div v-show="isModifying" class="flexCenter add-file-container">
+        <div v-show="isEditingPost" class="flexCenter add-file-container">
             <input type="file" name="image" accept="image/*" @change="modifyPreview()" ref="modifAddFile_Ref">
             <button class="btn modif-image-btn" @click="$refs.modifAddFile_Ref.click()" type="button">Ajouter une image</button>
-            <button class="btn green-btn repost-btn" @click.prevent="postModifs()" type="submit">Re-publier</button>
+            <button class="btn green-btn repost-btn" @click.prevent="postModifsPublish()" type="submit">Re-publier</button>
         </div>
 
 
@@ -54,7 +54,7 @@
                 <textarea name="textContent" type="text" placeholder="Laissr un commentaire" ref="comment_Ref"></textarea>
             </div>
             
-            <button class="btn green-btn add-comment-btn" @click.prevent="postComment()" type="submit">Publier</button>
+            <button class="btn green-btn add-comment-btn" @click.prevent="postOneComment()" type="submit">Publier</button>
         </form>
         
     </li>
@@ -81,17 +81,19 @@
         },
 
         data() {
-            if(this.$parent.allPostsReceived) this.getPostComments();
+            if(this.$parent.allPostsReceived) this.getPublishComments();
 
             return {
                 isPostOwner: false,
-                isModifying: false,
+                isEditingPost: false,
                 toggleComment: false,
 
                 titleModif: "",
                 textModif: "",
                 pictureSrc: "",
                 modifiedPicture: "",
+                
+                com: {},
                 comments: {},
 
                 publishedTime: new Date(this.post.createdAt).toLocaleString(),
@@ -100,8 +102,8 @@
         },
 
         methods: {
-            onMofifyBtn() {
-                this.isModifying = !this.isModifying;
+            editPost() {
+                this.isEditingPost = !this.isEditingPost;
                 this.pictureSrc = this.post.imageUrl;
                 this.titleModif = this.post.title;
                 this.textModif = this.post.textContent;
@@ -124,7 +126,7 @@
             },
 
 
-            postModifs() {
+            postModifsPublish() {
                 let formData = new FormData();
 
                 formData.set("id", this.post.id);
@@ -133,11 +135,11 @@
                 formData.set("image", this.modifiedPicture);
 
                 formData.forEach((key, value) => formData[value] = key);
-                this.modifyPublish(formData);
+                this.sendModifsPublish(formData);
             },
 
 
-            async modifyPublish(formData) {
+            async sendModifsPublish(formData) {
                 this.$parent.$parent.isLoading = true;
 
                 const response = await fetch("http://localhost:3000/api/publish/modify", {
@@ -149,11 +151,10 @@
                 try {
                     await response;
                     this.$parent.$parent.isLoading = false;
-                    this.isModifying = !this.isModifying;
-                    this.$parent.getAllPost();
+                    this.isEditingPost = !this.isEditingPost;
+                    this.$parent.refreshPosts();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
 
 
@@ -169,14 +170,13 @@
                 
                 try {
                     await response.json();
-                    this.$parent.getAllPost();
+                    this.$parent.refreshPosts();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
 
 
-            async postComment() {
+            async postOneComment() {
                 const commentate = document.querySelector(".commentate");
                 const formData = new FormData(commentate);
 
@@ -196,14 +196,13 @@
                 try {
                     await response.json();
                     this.$refs.comment_Ref.value = "";
-                    this.getPostComments();
+                    this.getPublishComments();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
 
 
-            async getPostComments() {
+            async getPublishComments() {
                 const response = await fetch("http://localhost:3000/api/comment", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
@@ -218,8 +217,6 @@
                     this.comments = allComments.sort();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
-
             },
         },
     }
@@ -337,7 +334,8 @@
     }
 
     /* ========== Buttons ========== */
-    .modify-btn,
+    .edit-btn,
+    .cancel-btn,
     .delete-btn {
         height: 40px;
         width: 47%;

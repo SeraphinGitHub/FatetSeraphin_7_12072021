@@ -61,8 +61,8 @@ exports.login = (req, res, next) => {
             .then(passwordValid => {
 
                 if(passwordValid) {
-                    const session = jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" });
-                    res.status(200).json({ session, message: `Bonjour ${user.userName}, vous êtes connecté !` });
+                    const token = jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" });
+                    res.status(200).json({ token, message: `Bonjour ${user.userName}, vous êtes connecté !` });
 
                 } else return res.status(401).json({ message: "Mot de passe invalide !" });
             }).catch(() => res.status(501).json({ message: `${user.userName} n'a pas pû se connecter !` }));

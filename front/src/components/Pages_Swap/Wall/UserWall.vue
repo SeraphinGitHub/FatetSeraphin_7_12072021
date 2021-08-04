@@ -31,13 +31,16 @@
         data() {
             return {
                 isWallEmpty: true,
+
+                post: {},
                 userPosts: {},
+                
                 token: window.localStorage.getItem("Token"),
             }
         },
 
         async beforeMount() {
-            await this.getUserPost();
+            await this.getUserPosts();
         },
 
         methods: {
@@ -47,18 +50,17 @@
                 document.querySelector(".profile").style.zIndex = "5";
             },
 
-            async getUserPost() {
-                const allUserPosts = await fetch("http://localhost:3000/api/auth/wall", {
+            async getUserPosts() {
+                const allPostsUser = await fetch("http://localhost:3000/api/auth/wall", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
                         "Authorization": `Bearer ${this.token}`
                     },
                     method: "GET",
-                })
-                .then(response => response.json())
-                .then(data => { return data });
+                }).then(data => { return data.json() })
+                .catch(error => console.log("error", error));
 
-                this.userPosts = allUserPosts.sort().reverse();
+                this.userPosts = allPostsUser.sort().reverse();
                 this.isWallEmpty = false;
             },
         }

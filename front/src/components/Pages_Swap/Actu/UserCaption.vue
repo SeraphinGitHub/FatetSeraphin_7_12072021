@@ -14,8 +14,14 @@
 
 
 <script>
+    import generic from "../../../generic-methods.js"
+
     export default {
         name: "UserCaption",
+
+        mixins: [
+            generic,
+        ],
 
         props: {
             isPostOwner: Boolean,
@@ -32,29 +38,16 @@
         },
 
         async beforeMount() {
-            await this.getLoggedUserInfos();
+            await this.loggedUser();
         },
 
         methods: {
-            async getLoggedUserInfos() {
-                const response = await fetch("http://localhost:3000/api/auth/user", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "GET",
-                });
+            async loggedUser() {
+                this.user = await this.getLoggedUserInfos();
                 
-                try {
-                    const resObj = await response.json();
-                    this.user = resObj;
-
-                    if(this.$parent.post) {
-                        if(this.$parent.post.userId === this.user.id || this.user.isAdmin) this.$parent.isPostOwner = true;
-                    }
+                if(this.$parent.post) {
+                    if(this.$parent.post.userId === this.user.id || this.user.isAdmin) this.$parent.isPostOwner = true;
                 }
-                catch(error) { console.log("error", error) }
-                return {}
             },
         },
     }

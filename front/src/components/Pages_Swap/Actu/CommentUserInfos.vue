@@ -1,82 +1,87 @@
 <template>
-
     <figure class="flexCenter user-pict">
+
         <img :src="commentUser.imageUrl" alt="photo de profile">
 
         <figcaption class="flexCenter user-infos">
             <h2>{{ commentUser.userName }}</h2>
 
-            <figure v-if="isCommentOwner" class="flexCenter btn-container">
-                <button class="btn ">M</button>
-                <button class="btn red-btn">S</button>
-            </figure>
-        </figcaption>
-    </figure>
+            <div v-if="isCommentOwner" class="flexCenter btn-container">
 
+                <button v-if="!isEditingComment" class="btn edit-btn" @click="editComment()">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+
+                <button v-if="isEditingComment" class="btn cancel-btn" @click="editComment()">
+                    <i class="fas fa-undo-alt"></i>
+                </button>
+
+                <button class="btn red-btn" @click="deleteComment()">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+
+            </div>
+        </figcaption>
+
+    </figure>
 </template>
 
 
 <script>
+    import generic from "../../../generic-methods.js"
+    
     export default {
         name: "CommentUserInfos",
 
+        mixins: [
+            generic,
+        ],
+
         props: {
             userId: Number,
+            comment: Object,
+            textModif: String,
+            isCommentOwner: Boolean,
+            isEditingComment: Boolean,
         },
         
         data() {
             return {
-                user: {},
                 commentUser: {},
-                isCommentOwner: false,
                 token: window.localStorage.getItem("Token"),
             };
         },
 
         async beforeMount() {
-            await this.getCommentUserInfos();
-            await this.getLoggedUserInfos();
+            await this.commentUserInfos();
         },
 
         methods: {
-            async getCommentUserInfos() {
-                const response = await fetch("http://localhost:3000/api/auth/postUser", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "POST",
-                    body: JSON.stringify({ id: this.userId })
-                });
-                
-                try {
-                    const resObj = await response.json();
-                    this.commentUser = resObj;
-                }
-                catch(error) { console.log("error", error) }
-                return {}
+            editComment() {
+                this.$parent.isEditingComment = !this.$parent.isEditingComment;
+                this.$parent.textModif = this.$parent.comment.textContent;
             },
 
 
-            async getLoggedUserInfos() {
-                const response = await fetch("http://localhost:3000/api/auth/user", {
+            async deleteComment() {
+                const response = await fetch("http://localhost:3000/api/comment/delete", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
                         "Authorization": `Bearer ${this.token}`
                     },
-                    method: "GET",
+                    method: "DELETE",
+                    body: JSON.stringify({ id: this.$parent.comment.id })
                 });
-                
                 try {
-                    const resObj = await response.json();
-                    this.user = resObj;
-
-                    if(this.$parent.comment) {
-                        if(this.$parent.comment.userId === this.user.id || this.user.isAdmin) this.isCommentOwner = true;
-                    }
+                    await response.json();
+                    this.$parent.$parent.getPublishComments();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
+            },
+
+
+            async commentUserInfos() {
+                this.commentUser = await this.getPostUserInfos();
             },
         },
     }
@@ -90,6 +95,7 @@
         width: 100%;
         margin: 7px;
         margin-right: 0px;
+        margin-bottom: 0px;
     }
 
     .user-pict img {
@@ -101,6 +107,7 @@
     }
 
     .user-infos {
+        justify-content: flex-start;
         align-content: center;
         height: 100%;
         width: 65% !important;
@@ -115,11 +122,12 @@
     .btn-container {
         justify-content: space-between;
         height: 60%;
-        width: 100%;
+        width: 95%;
     }
 
     .btn-container button {
-        height: 100%;
+        height: 95%;
         width: 45%;
+        margin-top: 5px;
     }
 </style>

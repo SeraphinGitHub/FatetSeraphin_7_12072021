@@ -45,6 +45,7 @@
         swapPageAlert: false,
         swapPageMsg: "",
 
+        token: window.localStorage.getItem("Token"),
         popupDuration: 1000, // milliseconds
       }
     },
@@ -55,9 +56,7 @@
 
     methods: {
       checkUserToken() {
-        const token = window.localStorage.getItem("Token");
-
-        if(token) {
+        if(this.token) {
           this.isLogPages = false;
           this.isSwapPages = true;
         }
@@ -192,7 +191,7 @@
     border-radius: 10px;
     height: 40px;
     width: 60%;
-    background: linear-gradient(to top left, rgb(255, 94, 0), rgb(255, 217, 0));
+    background: linear-gradient(to bottom right, rgb(255, 217, 0), rgb(255, 94, 0));
     transition-duration: 0.5s;
     
     font-family: "Roboto-Medium";
@@ -207,6 +206,10 @@
 
   .green-btn {
     background: linear-gradient(to bottom right, greenyellow, rgb(0, 170, 0));
+  }
+
+  .cancel-btn {
+    background: linear-gradient(to top left, rgb(255, 217, 0), rgb(255, 94, 0));
   }
 
   .btn:hover {

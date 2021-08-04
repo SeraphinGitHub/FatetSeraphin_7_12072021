@@ -70,35 +70,32 @@ exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {
 // ==================================================================================
 // Modify One Item
 // ==================================================================================
+const updateItem_Base = (itemModel, item, post, req, res, next) => {
+
+    itemModel.update( item, { where: { id: post.id } })
+    .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
+    .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
+}
+
 exports.modifyOneItem = (itemModel, post, req, res, next) => {
     
     if(post.imageUrl && req.file) {
         const pictureName = post.imageUrl.split("/pictures/")[1];
         fs.unlink(`pictures/${pictureName}`,(() => {
-
+            
             const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
-
-            itemModel.update( item, { where: { id: post.id } })
-            .then(() => res.status(202).json({ message: "Publication with file modified successfully !" }))
-            .catch(() => res.status(503).json({ message: "Publication with file NOT modified !" }));
+            updateItem_Base(itemModel, item, post, req, res, next);
         }));
     }
 
     else if(!post.imageUrl && req.file) {
-
         const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
-
-        itemModel.update( item, { where: { id: post.id } })
-        .then(() => res.status(202).json({ message: "Publication with file modified successfully !" }))
-        .catch(() => res.status(503).json({ message: "Publication with file NOT modified !" }));
+        updateItem_Base(itemModel, item, post, req, res, next);
     }
 
     else {
         const item = { ...req.body };
-
-        itemModel.update( item, { where: { id: post.id } })
-        .then(() => res.status(200).json({ message: "Publication modified successfully !" }))
-        .catch(() => res.status(500).json({ message: "Publication NOT modified !" }));
+        updateItem_Base(itemModel, item, post, req, res, next);
     }
 };
 

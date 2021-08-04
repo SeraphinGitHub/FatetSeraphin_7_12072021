@@ -1,14 +1,14 @@
 <template>
     <section class="flexCenter actu">
        
-        <button class="actu-btn" @click="showActu(), getAllPost()">Actu</button>
+        <button class="actu-btn" @click="showActu(), refreshPosts()">Actu</button>
 
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish=!isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
         
 
-        <!-- <transition name="slidePublish" @leave="getAllPost()"> -->
-            <component v-show="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
+        <!-- <transition name="slidePublish" @leave="refreshPosts()"> -->
+            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
         <!-- </transition> -->
 
         <!-- <transition name="slideFlow"> -->
@@ -28,9 +28,14 @@
 <script>
     import Publication from "./Publication.vue"
     import Publish from "./Publish.vue"
+    import generic from "../../../generic-methods.js"
 
     export default {
         name: "Actu",
+
+        mixins: [
+            generic
+        ],
 
         components: {
             Publication,
@@ -40,14 +45,17 @@
             return {
                 isPublish: false,
                 allPostsReceived: false,
-                publishComponent: Publish,
+
+                post: {},
                 publications: {},
+                
+                publishComponent: Publish,
                 token: window.localStorage.getItem("Token"),
             }
         },
 
         async beforeMount() {
-            await this.getAllPost();
+            await this.refreshPosts();
         },
 
         methods: {
@@ -58,20 +66,22 @@
             },
 
 
-            async getAllPost() {
-                const allPosts = await fetch("http://localhost:3000/api/publish", {
+            async refreshPosts() {
+                const response = await fetch("http://localhost:3000/api/publish", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
                         "Authorization": `Bearer ${this.token}`
                     },
                     method: "GET",
-                })
-                .then(response => response.json())
-                .then(data => { return data });
+                });
+                try {
+                    const allPosts = await response.json();
+                    this.publications = allPosts.sort().reverse();
 
-                this.publications = await allPosts.sort().reverse();
-                this.$parent.isLoading = false;
-                this.allPostsReceived = true;
+                    this.$parent.isLoading = false;
+                    this.allPostsReceived = true;
+                }
+                catch(error) { console.log("error", error) }                
             },
         },
     }

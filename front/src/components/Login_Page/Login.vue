@@ -127,29 +127,28 @@
                 
                 try {
                     this.$parent.$parent.isLoading = false;
-                    const resObj = await response.json();
-
-                    if(resObj.message.includes("invalide")) {
+                    const session = await response.json();
+                    
+                    if(session.message.includes("invalide")) {
                         this.serverAlert = true;
-                        this.serverMsg = resObj.message;
+                        this.serverMsg = session.message;
                         setTimeout(() => this.serverAlert = false, timeOutDuration);
                     }
 
-                    else if(resObj.message.includes("vous êtes connecté")) {
-                        localStorage.setItem("Token", resObj.session);
+                    else if(session.message.includes("vous êtes connecté")) {
+                        localStorage.setItem("Token", session.token);
                         
                         this.$parent.$parent.isLogPages = false;
                         this.$parent.$parent.isSwapPages = true;
 
                         this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = resObj.message;
+                        this.$parent.$parent.swapPageMsg = session.message;
                         setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
                         
                         this.clearInputFields();
                     }
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
 
 

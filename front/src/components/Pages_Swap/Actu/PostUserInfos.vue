@@ -14,8 +14,14 @@
 
 
 <script>
+    import generic from "../../../generic-methods.js"
+
     export default {
         name: "PostUserInfos",
+
+        mixins: [
+            generic,
+        ],
 
         props: {
             userId: Number,
@@ -29,26 +35,12 @@
         },
 
         async beforeMount() {
-            await this.getPostUserInfos();
+            await this.postUserInfos();
         },
 
         methods: {
-            async getPostUserInfos() {
-                const response = await fetch("http://localhost:3000/api/auth/postUser", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "POST",
-                    body: JSON.stringify({ id: this.userId })
-                });
-                
-                try {
-                    const resObj = await response.json();
-                    this.postUser = resObj;
-                }
-                catch(error) { console.log("error", error) }
-                return {}
+            async postUserInfos() {
+                this.postUser = await this.getPostUserInfos();
             },
         },
     }

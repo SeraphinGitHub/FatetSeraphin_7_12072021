@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
 
         textContent: {
             type: DataTypes.TEXT,
-            allowNull: true,            
+            allowNull: false,            
             validate: { notEmpty: true }
         },
 

@@ -67,8 +67,8 @@
 
 
             postArticle() {
-                const title = document.getElementById("title").value;
-                const textContent = document.getElementById("textContent").value;
+                let title = document.getElementById("title").value;
+                let textContent = document.getElementById("textContent").value;
 
                 const postForm = document.querySelector(".post-form");
                 let formData = new FormData(postForm);
@@ -93,14 +93,12 @@
                     method: "POST",
                     body: formData
                 });
-                
                 try {
                     await response;
                     this.isPublish = !this.isPublish;
-                    this.$parent.getAllPost();
+                    this.$parent.refreshPosts();
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             },
         }
     }

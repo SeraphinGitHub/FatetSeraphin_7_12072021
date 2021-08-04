@@ -4,42 +4,59 @@ module.exports = {
 
         // const token = window.localStorage.getItem("Token");
         
-        // async read_Base() {
+        async profileUser_API() {
             
-        //     return await fetch("http://localhost:3000/api", {
-        //         headers: {
-        //             "Content-Type": "application/json; charset=UTF-8",
-        //             "Authorization": `Bearer ${token}`
-        //         },
-        //         method: "GET",
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => { return data });
-        // },
+            return await fetch("http://localhost:3000/api/auth/profile", {
+                headers: {
+                    "Content-Type": "application/json; charset=UTF-8",
+                    "Authorization": `Bearer ${token}`
+                },
+                method: "GET",
+            })
+            .then(response => response.json())
+            .then(data => { return data });
+        },
 
 
         // const token = window.localStorage.getItem("Token");
         
-        // async write_Base(data) {
+        async write_Base(data) {
             
-        //     const response = await fetch("http://localhost:3000/api", {
+            const response = await fetch("http://localhost:3000/api", {
+                headers: {
+                    "Content-Type": "application/json; charset=UTF-8",
+                    "Authorization": `Bearer ${token}`
+                },
+                method: "PUT",
+                body: JSON.stringify(data)
+            });
+            
+            try { return await response.json() }
+            catch(error) { console.log("error", error) }
+        },
+
+
+        // const token = window.localStorage.getItem("Token");
+        
+        // async updateUser_API("http://localhost:3000/api/auth/updateUser", data) {
+            
+        //     const response = await fetch(url, {
         //         headers: {
-        //             "Content-Type": "application/json; charset=UTF-8",
+        //             "Content-Type": "multipart/form-data; boundary=something",
         //             "Authorization": `Bearer ${token}`
         //         },
         //         method: "PUT",
-        //         body: JSON.stringify(data)
+        //         body: data
         //     });
             
-        //     try { return await response.json() }
+        //     try { return await response }
         //     catch(error) { console.log("error", error) }
-        //     return {}
         // },
 
 
         // const token = window.localStorage.getItem("Token");
         
-        // async write_BaseFiles("http://localhost:3000/api", data) {
+        // async updateUserEmail_API("http://localhost:3000/api/auth/updateUser/email", data) {
             
         //     const response = await fetch(url, {
         //         headers: {
@@ -58,16 +75,35 @@ module.exports = {
 
         // const token = window.localStorage.getItem("Token");
         
-        // async delete_Base(url) {
+        // async updateUserPsw_API("http://localhost:3000/api/auth/updateUser/password", data) {
             
-        //     return await fetch("http://localhost:3000/api", {
+        //     const response = await fetch(url, {
         //         headers: {
-        //             "Content-Type": "application/json; charset=UTF-8",
+        //             "Content-Type": "multipart/form-data; boundary=something",
         //             "Authorization": `Bearer ${token}`
         //         },
-        //         method: "DELETE"
+        //         method: "PUT",
+        //         body: data
         //     });
+            
+        //     try { return await response }
+        //     catch(error) { console.log("error", error) }
+        //     return {}
         // },
+
+
+        // const token = window.localStorage.getItem("Token");
+        
+        async deleteUser_API(url) {
+            
+            return await fetch("http://localhost:3000/api/auth/delete", {
+                headers: {
+                    "Content-Type": "application/json; charset=UTF-8",
+                    "Authorization": `Bearer ${token}`
+                },
+                method: "DELETE"
+            });
+        },
 
         
         // ==================================================================================
@@ -87,53 +123,5 @@ module.exports = {
         // ----------------------------------------------------------------------------------
         async deleteUser_API() { this.delete_Base(`${this.urlAPI()}/auth/delete`) },
         // ----------------------------------------------------------------------------------
-
-
-
-        // ==================================================================================
-        //  ==> COMMENT
-        // ==================================================================================
-        
-        // ----------------------------------------------------------------------------------
-        
-        // ----------------------------------------------------------------------------------
-        async modifyComment_API(formData) {
-        this.write_Base(`${this.urlAPI()}/comment/modify`, formData, "PUT") }, // commentId
-        // ----------------------------------------------------------------------------------
-        async deleteComment_API(postId) {
-        this.delete_Base_WithID(`${this.urlAPI()}/comment/delete`, postId) }, // commentId
-        // ----------------------------------------------------------------------------------
-        
-        // const token = window.localStorage.getItem("Token");
-        
-        // const response = await fetch("http://localhost:3000/api/comment", {
-        //     headers: {
-        //         "Content-Type": "application/json; charset=UTF-8",
-        //         "Authorization": `Bearer ${token}`
-        //     },
-        //     method: method,
-        //     body: JSON.stringify(data)
-        // });
-        
-        // try { return await response.json() }
-        // catch(error) { console.log("error", error) }
-        // return {}
-
-
-
-        // const token = window.localStorage.getItem("Token");
-
-        // const response = await fetch("http://localhost:3000/api/comment/delete", {
-        //     headers: {
-        //         "Content-Type": "application/json; charset=UTF-8",
-        //         "Authorization": `Bearer ${token}`
-        //     },
-        //     method: "DELETE",
-        //     body: JSON.stringify(postId)
-        // });
-        
-        // try { return await response.json() }
-        // catch(error) { console.log("error", error) }
-        // return {}
     }
 }
