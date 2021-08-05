@@ -21,8 +21,14 @@
             UserData,
         },
 
+        data() {
+            return {
+                token: window.localStorage.getItem("Token"),
+            }
+        },
+
         methods: {
-            showProfile: function() {
+            showProfile() {
                 document.querySelector(".actu").style.zIndex = "5";
                 document.querySelector(".user-wall").style.zIndex = "5";
                 document.querySelector(".profile").style.zIndex = "10";

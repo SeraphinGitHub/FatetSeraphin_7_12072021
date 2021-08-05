@@ -6,8 +6,8 @@
             <UserCaption/>
             
             <div class="flexCenter post-container">
-                <input name="title" id="title" type="text" placeholder="Titre de la publication">
-                <textarea name="textContent" id="textContent" type="text" placeholder="Écrivez quelque chose"></textarea>
+                <input name="title" id="title" type="text" placeholder="Titre de la publication" v-model="title">
+                <textarea name="textContent" id="textContent" type="text" placeholder="Écrivez quelque chose" v-model="textContent"></textarea>
                 <img class="imagePreview">
             </div>
 
@@ -18,7 +18,7 @@
             </div>
 
             <transition name="fade">
-                <p class="flexCenter form-alert" v-if="isEmpty">{{ emptyMsg }}</p>
+                <p class="flexCenter form-alert" v-show="isEmpty">{{ emptyMsg }}</p>
             </transition>
         </form>
 
@@ -43,8 +43,13 @@
         data() {
             return {
                 file: "",
+                title: "",
+                textContent: "",
+                emptyMsg: "Vous devez renseigner un titre et écrire du texte !",
+                
                 isPublish: false,
                 isEmpty: false,
+
                 token: window.localStorage.getItem("Token"),
             }
         },
@@ -67,21 +72,18 @@
 
 
             postArticle() {
-                let title = document.getElementById("title").value;
-                let textContent = document.getElementById("textContent").value;
-
                 const postForm = document.querySelector(".post-form");
                 let formData = new FormData(postForm);
                 formData.forEach((key, value) => formData[value] = key);
 
-                if(title !== "" && textContent !== "") {
+                if(this.title !== "" && this.textContent !== "") {
                     this.createPublish(formData);
                     this.$emit("posted", this.isPublish);
                 }
 
                 else {
                     this.isEmpty = true;
-                    this.emptyMsg = "Vous devez renseigner un titre et écrire du texte !";
+                    this.emptyMsg;
                     setTimeout(() => this.isEmpty = false, 2000);
                 }
             },
@@ -185,26 +187,5 @@
 
     .publish-btn {
         margin-bottom: 10px;
-    }
-
-
-    // ****************************************************************************************************
-    // ==>      Transitions     <==
-    // ****************************************************************************************************
-    .fade-enter-active,
-    .fade-leave-active {
-        transition-duration: 0.8s;
-    }
-
-
-    // ========== Fade ==========
-    .fade-enter-from,
-    .fade-leave-to { 
-        opacity: 0%;
-    }
-
-    .fade-leave-from,
-    .fade-enter-to {
-        opacity: 100%;
     }
 </style>

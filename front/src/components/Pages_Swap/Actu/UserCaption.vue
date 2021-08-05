@@ -58,7 +58,7 @@
     .circle-user-img {
         object-fit: cover;
         height: 100%;
-        width: 80px;
+        width: 70px;
 
         border-radius: 50% !important;
         box-shadow: black 5px 5px 5px;
@@ -66,7 +66,7 @@
     
     .user-pict {
         justify-content: flex-start !important;
-        height: 80px;
+        height: 70px;
         width: 100%;
         margin: 15px;
         margin-bottom: 8px;

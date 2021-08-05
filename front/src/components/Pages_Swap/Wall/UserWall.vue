@@ -61,7 +61,8 @@
                 .catch(error => console.log("error", error));
 
                 this.userPosts = allPostsUser.sort().reverse();
-                this.isWallEmpty = false;
+
+                if(this.userPosts.length) this.isWallEmpty = false;
             },
         }
     }

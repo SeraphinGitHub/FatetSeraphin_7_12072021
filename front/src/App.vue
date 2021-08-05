@@ -250,7 +250,7 @@
   // ========== Fade ==========
   .fade-enter-active,
   .fade-leave-active {
-    transition-duration: 0.5s;
+    transition-duration: 0.8s;
   }
 
   .fade-enter-from,

@@ -7,6 +7,27 @@ const generic = require("../generic-functions");
 const db = require("../models");
 const User = db.User;
 const Publish = db.Publish;
+const Comment = db.Comment;
+
+
+// Have to contain: 
+//  LETTER || letter || number || dot || under score || dash
+//  && at (@) &&
+//  LETTER || letter || number && dot && LETTER || letter
+const emailRegEx = new RegExp(/^[A-Za-z0-9._-]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$/);
+
+// Have to contain: LETTER || letter || accent letters || spaces || dash
+const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-]+$/);
+
+// Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
+const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
+
+
+// ========== Token Generation ==========
+const generateToken = (user, req, res, next) => {
+    const token = jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" });
+    res.status(200).json({ token, message: `Bonjour ${user.userName}, vous êtes connecté !` });
+}
 
 
 // ==================================================================================
@@ -14,34 +35,39 @@ const Publish = db.Publish;
 // ==================================================================================
 exports.signin = (req, res, next) => {
 
-    User.findAll()
-    .then(async (users) => {
+    if(req.body.email && emailRegEx.test(req.body.email)
+    && req.body.password && passwordRegEx.test(req.body.password)
+    && req.body.confirmPsw && passwordRegEx.test(req.body.confirmPsw)
+    && req.body.userName && normalTextRegEx.test(req.body.userName)
+    && req.body.position && normalTextRegEx.test(req.body.position)
+    && req.body.department && normalTextRegEx.test(req.body.department) ) {
 
-        const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
-        if(matchUserArray.length) return res.status(401).json({ message: "Cet e-mail est déjà pris !" });
-
-        else bcrypt.hash(req.body.email, 12)
-        .then(emailHashed => {
+        User.findAll()
+        .then(async (users) => {
     
-            bcrypt.hash(req.body.password, 12)
-            .then(pswHashed => {
-
-                const user = new User({
-                    ...req.body,
-                    email: emailHashed,
-                    password: pswHashed,
-                })
-
-                user.save()
-                .then(user => {
-                    const session = jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" });
-                    res.status(200).json({ session, message: `Bonjour ${user.userName}, compte créé avec succès !` });
-
-                }).catch(() => res.status(502).json({ message: "Ce compte n'a pas pû être créé !" }));
-
-            }).catch(() => res.status(401).json({ message: "Invalid password !" }));
-        }).catch(() => res.status(400).json({ message: "Invalid E-mail !" }));
-    }).catch(() => res.status(500).json({ message: "No users found !" }));
+            const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
+            if(matchUserArray.length) return res.status(401).json({ message: "Cet e-mail est déjà pris !" });
+    
+            else bcrypt.hash(req.body.email, 12)
+            .then(emailHashed => {
+        
+                bcrypt.hash(req.body.password, 12)
+                .then(pswHashed => {
+    
+                    const user = new User({
+                        ...req.body,
+                        email: emailHashed,
+                        password: pswHashed,
+                    })
+    
+                    user.save()
+                    .then(user => generateToken(user, req, res, next))
+                    .catch(() => res.status(502).json({ message: "Ce compte n'a pas pû être créé !" }));
+    
+                }).catch(() => res.status(401).json({ message: "Invalid password !" }));
+            }).catch(() => res.status(400).json({ message: "Invalid E-mail !" }));
+        }).catch(() => res.status(500).json({ message: "No users found !" }));
+    }
 };
 
 
@@ -50,25 +76,27 @@ exports.signin = (req, res, next) => {
 // ==================================================================================
 exports.login = (req, res, next) => {
 
-    User.findAll()
-    .then(async (users) => {
-        const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
+    if(req.body.email && emailRegEx.test(req.body.email)
+    && req.body.password && passwordRegEx.test(req.body.password) ) {
 
-        if(matchUserArray.length) {
-            let user = matchUserArray[0];
-
-            bcrypt.compare(req.body.password, user.password)
-            .then(passwordValid => {
-
-                if(passwordValid) {
-                    const token = jwt.sign({ userId: user.id }, process.env.Token_Key, { expiresIn: "48h" });
-                    res.status(200).json({ token, message: `Bonjour ${user.userName}, vous êtes connecté !` });
-
-                } else return res.status(401).json({ message: "Mot de passe invalide !" });
-            }).catch(() => res.status(501).json({ message: `${user.userName} n'a pas pû se connecter !` }));
-
-        } else return res.status(400).json({ message: "E-mail invalide !" });
-    }).catch(() => res.status(500).json({ message: "Aucun utilisateur trouvé !" }));
+        User.findAll()
+        .then(async (users) => {
+            const matchUserArray = await generic.userProbe(users, req.body.email, req, res, next);
+    
+            if(matchUserArray.length) {
+                let user = matchUserArray[0];
+    
+                bcrypt.compare(req.body.password, user.password)
+                .then(passwordValid => {
+    
+                    if(passwordValid) generateToken(user, req, res, next)
+                    else return res.status(401).json({ message: "Mot de passe invalide !" });
+    
+                }).catch(() => res.status(501).json({ message: `${user.userName} n'a pas pû se connecter !` }));
+    
+            } else return res.status(400).json({ message: "E-mail invalide !" });
+        }).catch(() => res.status(500).json({ message: "Aucun utilisateur trouvé !" }));
+    }
 };
 
 
@@ -192,22 +220,37 @@ exports.deleteUser = (req, res, next) => {
             bcrypt.compare(req.body.password, user.password)
             .then(passwordValid => {
                 if(passwordValid) {
-                   
-                    if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
 
-                        const pictureName = user.imageUrl.split("/pictures/")[1];
-                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, req, res, next));
+                    Comment.destroy({ where: { userId: user.id } })
+                    .then(() => {
+
+                        Publish.findAll({ where: { userId: user.id } })
+                        .then(posts => {
+
+                            posts.forEach(post => {
+                                if(post.imageUrl) {
+                                    const pictureName = post.imageUrl.split("/pictures/")[1];
+                                    fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(post, post.title, req, res, next));
+                                }
+                            });
+
+                            Publish.destroy({ where: { userId: user.id } })
+                            .then(() => {
+    
+                                if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
+
+                                    const pictureName = user.imageUrl.split("/pictures/")[1];
+                                    fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, req, res, next));
+                                
+                                } else generic.destroyItem(user, user.userName, req, res, next); 
+
+                            }).catch(() => res.status(504).json({ message: "Post NOT deleted !" }));
+                        }).catch(() => res.status(503).json({ message: "Publications NOT found !" }));
+                    }).catch(() => res.status(502).json({ message: "Comments NOT deleted !" }));
+
+                } else return res.status(501).json({ message: "Invalid password !" });
+            }).catch(() => res.status(401).json({ message: "Invalid password !" }));
         
-                    } else generic.destroyItem(user, user.userName, req, res, next);
-
-
-                    // Grab each post, then Grab each comment of each post, then delete all (foreach loop)
-
-
-
-                } else return res.status(401).json({ message: "Invalid password !" });
-            }).catch(() => res.status(501).json({ message: "Unexpected token ! -Delete User-" }));
-
         } else return res.status(500).json({ message: "Cannot delete -Admin- user !" });
-    }).catch(() => res.status(404).json({ message: "User NOT found !" }));
+    }).catch(() => res.status(400).json({ message: "User NOT found !" }));
 };

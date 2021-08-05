@@ -83,13 +83,13 @@ exports.modifyOneItem = (itemModel, post, req, res, next) => {
         const pictureName = post.imageUrl.split("/pictures/")[1];
         fs.unlink(`pictures/${pictureName}`,(() => {
             
-            const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
+            const item = { ...req.body, imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
             updateItem_Base(itemModel, item, post, req, res, next);
         }));
     }
 
     else if(!post.imageUrl && req.file) {
-        const item = { imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
+        const item = { ...req.body, imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}` };
         updateItem_Base(itemModel, item, post, req, res, next);
     }
 

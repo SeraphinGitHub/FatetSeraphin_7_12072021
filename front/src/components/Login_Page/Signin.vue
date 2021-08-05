@@ -7,7 +7,7 @@
             
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
-                <input class="log-input" name="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
+                <input class="log-input" name="email" type="email" placeholder="Entrer votre E-mail" v-model="email">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
@@ -16,7 +16,7 @@
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
-                <input class="log-input" name="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
+                <input class="log-input" name="password" type="password" placeholder="Entrer votre mot de passe" v-model="password">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
@@ -25,7 +25,7 @@
 
             <div class="flexCenter field-container">
                 <label for="confirmPsw">Confirmer le mot de passe</label>
-                <input class="log-input" name="confirmPsw" type="password" @input="matchingPsw()" placeholder="Confirmer votre mot de passe" ref="confirmPswRef">
+                <input class="log-input" name="confirmPsw" type="password" @input="matchingPsw()" placeholder="Confirmer votre mot de passe" v-model="confirmPsw">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ pswConfirmMsg }}</p>
@@ -34,7 +34,7 @@
 
             <div class="flexCenter field-container">
                 <label for="userName">Nom et Prénom</label>
-                <input class="log-input"  name="userName" type="text" placeholder="Entrer votre nom et prénom" ref="userNameRef">
+                <input class="log-input"  name="userName" type="text" placeholder="Entrer votre nom et prénom" v-model="userName">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="userNameAlert">{{ userNameMsg }}</p>
@@ -43,7 +43,7 @@
 
             <div class="flexCenter field-container">
                 <label for="position">Poste occupé</label>
-                <input class="log-input" name="position" type="text" placeholder="Votre poste dans l'entreprise" ref="positionRef">
+                <input class="log-input" name="position" type="text" placeholder="Votre poste dans l'entreprise" v-model="position">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="positionAlert">{{ positionMsg }}</p>
@@ -52,12 +52,16 @@
 
             <div class="flexCenter field-container">
                 <label for="department">Service</label>
-                <input class="log-input" name="department" type="text" placeholder="Votre service dans l'entreprise" ref="departmentRef">
+                <input class="log-input" name="department" type="text" placeholder="Votre service dans l'entreprise" v-model="department">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="departmentAlert">{{ departmentMsg }}</p>
                 </transition>
             </div>
+
+            <transition name="slideSide">
+                <h3 class="flexCenter form-alert server-alert" v-show="serverAlert">{{ serverMsg }}</h3>
+            </transition>
             
             <button class="btn" @click.prevent="signin()" type="submit">S'inscrire</button>
         </form>
@@ -67,8 +71,14 @@
 
 
 <script>
+    import generic from "../../generic-methods.js"
+
     export default {
         name: "Signin",
+
+        mixins: [
+            generic,
+        ],
 
         props: {
             isLoading: Boolean,
@@ -77,7 +87,17 @@
 
         data() {
             return {
-                alertMsgDuration: 2500,  // <== miliseconds
+                timeOutDuration: 2500,  // <== miliseconds
+
+                serverAlert: false,
+                serverMsg: "",
+
+                email: "",
+                password: "",
+                confirmPsw: "",
+                userName: "",
+                position: "",
+                department: "",
 
                 emailValid: false,
                 emailAlert: false,
@@ -119,11 +139,8 @@
             },
 
 
-            matchingPsw() {                
-                const password = this.$refs.passwordRef;
-                const confirmPsw = this.$refs.confirmPswRef;
-
-                if(confirmPsw.value !== password.value) {
+            matchingPsw() {
+                if(this.confirmPsw !== this.password) {
                     this.pswConfirmAlert = true;
                     this.pswConfirmMsg = this.dismatchPsw;
                 }
@@ -137,7 +154,7 @@
 
             formValid(formData, inputField, regEx, elemString) {
                 // If input field is empty
-                if (inputField.value === "") {
+                if (inputField === "") {
                     if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.emptyField}
                     if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.emptyField}
                     if(elemString === "confirmPsw") {this.pswConfirmAlert = true; this.pswConfirmMsg = this.emptyField}
@@ -147,7 +164,7 @@
                 }
 
                 // If regEx is wrong
-                else if (!regEx.test(inputField.value)) {
+                else if (!regEx.test(inputField)) {
                     if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.wrongRegEx}
                     if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.pswUnderRegEx}
                     if(elemString === "confirmPsw") {this.pswConfirmAlert = true; this.pswConfirmMsg = this.pswUnderRegEx}
@@ -158,7 +175,7 @@
                 
                 // If all informations are corrects
                 else {
-                    formData.set(inputField.name, inputField.value);
+                    formData.set(elemString, inputField);
                     
                     if(elemString === "email") this.emailValid = true;
                     if(elemString === "password") this.passwordValid = true;
@@ -182,29 +199,24 @@
 
                 // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
                 const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
-
-                const email = this.$refs.emailRef;
-                const password = this.$refs.passwordRef;
-                const confirmPsw = this.$refs.confirmPswRef;
-                const userName = this.$refs.userNameRef;
-                const position = this.$refs.positionRef;
-                const department = this.$refs.departmentRef;
                 
                 const postForm = document.querySelector(".signin-form");
                 const formData = new FormData(postForm)
 
-                this.formValid(formData, email, emailRegEx, "email");
-                this.formValid(formData, password, passwordRegEx, "password");
-                this.formValid(formData, confirmPsw, passwordRegEx, "confirmPsw");
-                this.formValid(formData, userName, normalTextRegEx, "userName");
-                this.formValid(formData, position, normalTextRegEx, "position");
-                this.formValid(formData, department, normalTextRegEx, "department");
+                this.formValid(formData, this.email, emailRegEx, "email");
+                this.formValid(formData, this.password, passwordRegEx, "password");
+                this.formValid(formData, this.confirmPsw, passwordRegEx, "confirmPsw");
+                this.formValid(formData, this.userName, normalTextRegEx, "userName");
+                this.formValid(formData, this.position, normalTextRegEx, "position");
+                this.formValid(formData, this.department, normalTextRegEx, "department");
                 
                 return formData;
             },
 
 
             async postDataSignin(formData) {
+                this.$parent.$parent.isLoading = true;
+
                 const response = await fetch("http://localhost:3000/api/auth/signin", {
                     headers: {"Content-Type": "application/json; charset=UTF-8"},
                     method: "POST",
@@ -215,27 +227,7 @@
                     this.$parent.$parent.isLoading = false;
                     const session = await response.json();
 
-                    if(session.message.includes("déjà pris")) {
-                        this.emailAlert = true;
-                        this.emailMsg = session.message;
-                        setTimeout(() => this.emailAlert = false, this.alertMsgDuration);
-                    }
-
-                    else if(session.message.includes("avec succès")) {
-                        localStorage.setItem("Token", session.token);
-                        
-                        this.$parent.$parent.isLogPages = false;
-                        this.$parent.$parent.isSwapPages = true;
-
-                        document.querySelector(".signin").style.zIndex = "1";
-                        document.querySelector(".login").style.zIndex = "10";
-
-                        this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = session.message;
-                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, this.alertMsgDuration);
-
-                        this.clearInputFields();
-                    }
+                    this.log_Base(session, "déjà pris", this.timeOutDuration, "signin");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -259,7 +251,6 @@
                 && this.departmentValid
                 && this.passwordMatched) {
 
-                    this.$parent.$parent.isLoading = true;
                     this.postDataSignin(formData);
                 }
                 
@@ -270,7 +261,7 @@
                     this.userNameAlert = false;
                     this.positionAlert = false;
                     this.departmentAlert = false;
-                }, this.alertMsgDuration);
+                }, this.timeOutDuration);
             },
         }
     }
@@ -319,5 +310,22 @@
     .signin-form {
         align-content: space-between;
         height: 95%;
+    }
+
+    /* --- Alert Message --- */
+    .form-alert {
+        height: 30px;
+        bottom: -38px;
+    }
+
+    .server-alert {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        height: 40px;
+        margin-top: 30px;
+        font-size: 100%;
+        font-weight: 400;
+        transform: translateX(-50%);
     }
 </style>

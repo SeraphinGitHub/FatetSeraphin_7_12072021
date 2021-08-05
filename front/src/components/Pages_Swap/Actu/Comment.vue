@@ -6,9 +6,11 @@
             :isEditingComment="isEditingComment"
         />
         
-        <span class="flexCenter time-stamp">Publié le : <h3>{{ commentTime }}</h3></span>
+        <span v-show="!isUpdated" class="flexCenter time-stamp">Publié le : <h3>{{ createdTime }}</h3></span>
+        <span v-show="isUpdated" class="flexCenter time-stamp">Modifié le : <h3>{{ updatedTime }}</h3></span>
+       
         <p v-show="!isEditingComment">{{ comment.textContent }}</p>
-        <textarea v-show="isEditingComment" class="modif-content" type="text" :value="textModif" ref="commentModif_Ref"></textarea>
+        <textarea v-show="isEditingComment" class="modif-content" type="text" v-model="textModif"></textarea>
         
         <button v-if="checkEditing()" class="btn green-btn post-comment-btn" @click="postModifsComment()">Re-publier</button>
     </div>
@@ -32,21 +34,28 @@
 
         props: {
             comment: Object,
+            hasNoComment: Boolean,
         },
 
         data() {
             return {
                 user: {},
                 textModif: "",
+                
+                isUpdated: false,
                 isCommentOwner: false,
                 isEditingComment: false,
-                commentTime: new Date(this.comment.createdAt).toLocaleString(),
+
+                createdTime: new Date(this.comment.createdAt).toLocaleString(),
+                updatedTime: new Date(this.comment.updatedAt).toLocaleString(),
+
                 token: window.localStorage.getItem("Token"),
             }
         },
 
         async beforeMount() {
             await this.loggedUser();
+            if(this.createdTime !== this.updatedTime) this.isUpdated = true;
         },
 
         methods: {
@@ -59,6 +68,7 @@
                 this.user = await this.getLoggedUserInfos();
 
                 if(this.comment) {
+                    this.$parent.hasNoComment = false;
                     if(this.comment.userId === this.user.id || this.user.isAdmin) this.isCommentOwner = true;
                 }
             },
@@ -68,7 +78,7 @@
                 const formData = new FormData();
 
                 formData.set("id", this.comment.id);
-                formData.set("textContent", this.$refs.commentModif_Ref.value);
+                formData.set("textContent", this.textModif);
                 formData.forEach((key, value) => formData[value] = key);
 
                 this.isEditingComment = false;
@@ -133,7 +143,7 @@
 
     p,
     .modif-content {
-        width: 85%;
+        width: 100%;
         margin: 10px;
         padding: 10px;
         font-size: 100%;

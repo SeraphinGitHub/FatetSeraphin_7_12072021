@@ -6,7 +6,7 @@
         <form class="flexCenter login-form" method="POST">
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
-                <input class="log-input" name="email" id="email" type="email" placeholder="Entrer votre E-mail" ref="emailRef">
+                <input class="log-input" name="email" id="email" type="email" placeholder="Entrer votre E-mail" v-model="email">
 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="emailAlert">{{ emailMsg }}</p>
@@ -15,7 +15,7 @@
 
             <div class="flexCenter field-container">
                 <label for="password">Mot de passe</label>
-                <input class="log-input" name="password" id="password" type="password" placeholder="Entrer votre mot de passe" ref="passwordRef">
+                <input class="log-input" name="password" id="password" type="password" placeholder="Entrer votre mot de passe" v-model="password">
                 
                 <transition name="fade">
                     <p class="flexCenter form-alert" v-show="pswAlert">{{ pswMsg }}</p>
@@ -33,8 +33,14 @@
 </template>
 
 <script>
+    import generic from "../../generic-methods.js"
+
     export default {
         name: "Login",
+
+        mixins: [
+            generic,
+        ],
 
         props: {
             isLoading: Boolean,
@@ -45,6 +51,11 @@
 
         data() {
             return {
+                timeOutDuration: 2500, // <== miliseconds
+
+                email: "",
+                password: "",
+
                 emailValid: false,
                 emailAlert: false,
                 emailMsg: "",
@@ -72,20 +83,20 @@
 
             formValid(formData, inputField, regEx, elemString) {
                 // If input field is empty
-                if (inputField.value === "") {
+                if (inputField === "") {
                     if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.emptyField}
                     if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.emptyField}
                 }
 
                 // If regEx is wrong
-                else if (!regEx.test(inputField.value)) {
+                else if (!regEx.test(inputField)) {
                     if(elemString === "email") {this.emailAlert = true; this.emailMsg = this.wrongRegEx}
                     if(elemString === "password") {this.pswAlert = true; this.pswMsg = this.wrongRegEx}
                 }
                 
                 // If all informations are corrects
                 else {
-                    formData.set(inputField.name, inputField.value);
+                    formData.set(elemString, inputField);
 
                     if(elemString === "email") this.emailValid = true;
                     if(elemString === "password") this.passwordValid = true;
@@ -102,23 +113,22 @@
 
                 // Have to contain: LETTER || letter || number || accent letters || number
                 const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*]+$/);
-
-                const email = this.$refs.emailRef;
-                const password = this.$refs.passwordRef;
                 
                 const postForm = document.querySelector(".login-form");
                 const formData = new FormData(postForm)
 
-                this.formValid(formData, email, emailRegEx, "email");
-                this.formValid(formData, password, passwordRegEx, "password");
+                this.formValid(formData, this.email, emailRegEx, "email");
+                this.formValid(formData, this.password, passwordRegEx, "password");
 
                 if(this.emailValid && this.passwordValid) this.isInfosCorrects = true;
 
                 return formData;
             },
+            
 
+            async postDataLogin(formData) {
+                this.$parent.$parent.isLoading = true;
 
-            async postDataLogin(formData, timeOutDuration) {
                 const response = await fetch("http://localhost:3000/api/auth/login", {
                     headers: {"Content-Type": "application/json; charset=UTF-8"},
                     method: "POST",
@@ -129,24 +139,7 @@
                     this.$parent.$parent.isLoading = false;
                     const session = await response.json();
                     
-                    if(session.message.includes("invalide")) {
-                        this.serverAlert = true;
-                        this.serverMsg = session.message;
-                        setTimeout(() => this.serverAlert = false, timeOutDuration);
-                    }
-
-                    else if(session.message.includes("vous êtes connecté")) {
-                        localStorage.setItem("Token", session.token);
-                        
-                        this.$parent.$parent.isLogPages = false;
-                        this.$parent.$parent.isSwapPages = true;
-
-                        this.$parent.$parent.swapPageAlert = true;
-                        this.$parent.$parent.swapPageMsg = session.message;
-                        setTimeout(() => this.$parent.$parent.swapPageAlert = false, timeOutDuration);
-                        
-                        this.clearInputFields();
-                    }
+                    this.log_Base(session, "invalide", this.timeOutDuration, "");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -159,20 +152,15 @@
 
 
             login() {
-                const timeOutDuration = 2500; // <== miliseconds
-
                 const formData = this.getPersonInfos();
                 formData.forEach((key, value) => formData[value] = key);
 
-                if(this.isInfosCorrects) {
-                    this.$parent.$parent.isLoading = true;
-                    this.postDataLogin(formData, timeOutDuration);
-                }
+                if(this.isInfosCorrects) this.postDataLogin(formData);
                 
                 setTimeout(() => {
                     this.emailAlert = false;
                     this.pswAlert = false;
-                }, timeOutDuration);
+                }, this.timeOutDuration);
             },
         }
     }

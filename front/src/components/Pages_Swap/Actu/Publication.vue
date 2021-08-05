@@ -11,13 +11,14 @@
             </div>
             
             <h2 v-show="!isEditingPost" class="flexCenter post-title">{{ post.title }}</h2>
-            <input v-show="isEditingPost" name="title" class="flexCenter modif-title" type="text" :value="titleModif" ref="titleModif_Ref">
+            <input v-show="isEditingPost" name="title" class="flexCenter modif-title" type="text" v-model="titleModif">
 
-            <span class="flexCenter time-stamp">Publié le : <h3>{{ publishedTime }}</h3></span>
+            <span v-show="!isUpdated" class="flexCenter time-stamp">Publié le : <h3>{{ createdTime }}</h3></span>
+            <span v-show="isUpdated" class="flexCenter time-stamp">Modifié le: <h3>{{ updatedTime }}</h3></span>
         </div>
 
         <p v-show="!isEditingPost" class="content">{{ post.textContent }}</p>
-        <textarea v-show="isEditingPost" name="textContent" class="modif-content" type="text" :value="textModif" ref="textModif_Ref"></textarea>
+        <textarea v-show="isEditingPost" name="textContent" class="modif-content" type="text" v-model="textModif"></textarea>
 
         <figure v-if="hasPicture()" class="file-pict">
             <img v-show="!isEditingPost" :src="post.imageUrl" alt="image de publication">
@@ -29,32 +30,36 @@
             <button class="btn modif-image-btn" @click="$refs.modifAddFile_Ref.click()" type="button">Ajouter une image</button>
             <button class="btn green-btn repost-btn" @click.prevent="postModifsPublish()" type="submit">Re-publier</button>
         </div>
-
-
-        <!-- ************************************************************************** -->
-       
-        <div :key="com" v-if="toggleComment" class="flexCenter comment-flow">
+           
+        <div :key="com" v-show="isComment" class="flexCenter comment-flow">
 
             <Comment v-for="com in comments" :key="com.id"
                 :comment="com"
             />
 
+            <span v-show="hasNoComment" class="flexCenter has-no-coment">
+                <p>{{ hasNoComsMsg }}</p>
+            </span>
         </div>
 
-        <!-- ************************************************************************** -->
-        
-
         <form class="flexCenter commentate" method="POST">
-            <button class="btn add-comment-btn" @click.prevent="toggleComment=!toggleComment">Commentaires</button>
+            <button class="btn green-btn like-btn" @click.prevent="likePost()" style="width: 40%">{{ likes }}</button>
+            <button class="btn red-btn dislike-btn" @click.prevent="dislikePost()" style="width: 40%">{{ dislikes }}</button>
+            
+            <button class="btn toggle-comment-btn" @click.prevent="isComment=!isComment">Afficher les commentaires</button>
             
             <UserCaption/>
 
             <div class="flexCenter comment-container">
                 <label for="textContent">Espace commentaires</label>
-                <textarea name="textContent" type="text" placeholder="Laissr un commentaire" ref="comment_Ref"></textarea>
+                <textarea name="textContent" type="text" placeholder="Laissr un commentaire" v-model="commentText"></textarea>
             </div>
             
             <button class="btn green-btn add-comment-btn" @click.prevent="postOneComment()" type="submit">Publier</button>
+
+            <transition name="fade">
+                <p class="flexCenter form-alert" v-show="isEmpty">{{ emptyMsg }}</p>
+            </transition>
         </form>
         
     </li>
@@ -80,28 +85,89 @@
             allPostsReceived: Boolean,
         },
 
+        beforeMount() {
+            if(this.createdTime !== this.updatedTime) this.isUpdated = true;
+        },
+
         data() {
             if(this.$parent.allPostsReceived) this.getPublishComments();
 
             return {
                 isPostOwner: false,
                 isEditingPost: false,
-                toggleComment: false,
-
+                isComment: false,
+                hasNoComment: true,
+                isEmpty: false,
+                isUpdated: false,
+                
+                likes: 0,
+                dislikes: 0,
+                
                 titleModif: "",
                 textModif: "",
+                commentText: "",
                 pictureSrc: "",
                 modifiedPicture: "",
+                emptyMsg: "Vous devez écrire du texte !",
+                hasNoComsMsg: "Cette publication n'as pas encore de commentaires",
                 
                 com: {},
                 comments: {},
 
-                publishedTime: new Date(this.post.createdAt).toLocaleString(),
+                createdTime: new Date(this.post.createdAt).toLocaleString(),
+                updatedTime: new Date(this.post.updatedAt).toLocaleString(),
                 token: window.localStorage.getItem("Token"),
             };
         },
 
         methods: {
+            likePost() {
+                // if(this.post.likes) {
+                    const likeData = new FormData();
+                    likeData.set("id", this.post.id);
+                    likeData.set("like", 1);
+                    
+                    likeData.forEach((key, value) => likeData[value] = key);
+                    this.sendLikeDislike(likeData);
+                // }
+            },
+
+
+            dislikePost() {
+                // if(this.isDisliked) {
+                    const likeData = new FormData();
+                    likeData.set("id", this.post.id);
+                    likeData.set("like", -1);
+                    
+                    likeData.forEach((key, value) => likeData[value] = key);
+                    this.sendLikeDislike(likeData);
+                // }
+            },
+
+
+            async sendLikeDislike(likeData) {
+                const response = await fetch("http://localhost:3000/api/publish/like", {
+                    headers: { 
+                        "Content-Type": "application/json; charset=UTF-8",
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    method: "POST",
+                    body: JSON.stringify(likeData)
+                });
+                
+                try {
+                    const res = await response.json();
+                    this.likes = res.likesNumber;
+                    this.dislikes = res.dislikesNumber;
+                    
+                    console.log(res);
+                    
+                    this.$parent.refreshPosts();
+                }
+                catch(error) { console.log("error", error) }
+            },
+
+
             editPost() {
                 this.isEditingPost = !this.isEditingPost;
                 this.pictureSrc = this.post.imageUrl;
@@ -130,8 +196,8 @@
                 let formData = new FormData();
 
                 formData.set("id", this.post.id);
-                formData.set("title", this.$refs.titleModif_Ref.value);
-                formData.set("textContent", this.$refs.textModif_Ref.value);
+                formData.set("title", this.titleModif);
+                formData.set("textContent", this.textModif);
                 formData.set("image", this.modifiedPicture);
 
                 formData.forEach((key, value) => formData[value] = key);
@@ -140,8 +206,6 @@
 
 
             async sendModifsPublish(formData) {
-                this.$parent.$parent.isLoading = true;
-
                 const response = await fetch("http://localhost:3000/api/publish/modify", {
                     headers: { "Authorization": `Bearer ${this.token}` },
                     method: "PUT",
@@ -150,7 +214,6 @@
                 
                 try {
                     await response;
-                    this.$parent.$parent.isLoading = false;
                     this.isEditingPost = !this.isEditingPost;
                     this.$parent.refreshPosts();
                 }
@@ -177,28 +240,38 @@
 
 
             async postOneComment() {
-                const commentate = document.querySelector(".commentate");
-                const formData = new FormData(commentate);
 
-                formData.set("postId", this.post.id);
-                formData.set("textContent", this.$refs.comment_Ref.value);
-                formData.forEach((key, value) => formData[value] = key);
-
-                const response = await fetch("http://localhost:3000/api/comment/create", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "POST",
-                    body: JSON.stringify(formData)
-                });
-                
-                try {
-                    await response.json();
-                    this.$refs.comment_Ref.value = "";
-                    this.getPublishComments();
+                if(this.commentText === "") {
+                    this.isEmpty = true;
+                    this.emptyMsg;
+                    setTimeout(() => this.isEmpty = false, 2000);
                 }
-                catch(error) { console.log("error", error) }
+
+                else {
+                    const commentate = document.querySelector(".commentate");
+                    const formData = new FormData(commentate);
+    
+                    formData.set("postId", this.post.id);
+                    formData.set("textContent", this.commentText);
+                    formData.forEach((key, value) => formData[value] = key);
+    
+                    const response = await fetch("http://localhost:3000/api/comment/create", {
+                        headers: {
+                            "Content-Type": "application/json; charset=UTF-8",
+                            "Authorization": `Bearer ${this.token}`
+                        },
+                        method: "POST",
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    try {
+                        await response.json();
+                        this.toggleComment = true;
+                        this.commentText = "";
+                        this.getPublishComments();
+                    }
+                    catch(error) { console.log("error", error) }
+                }
             },
 
 
@@ -223,7 +296,7 @@
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
     .post {
         overflow: hidden;
         height: auto;
@@ -267,6 +340,11 @@
     .comment-container {
         margin: 15px;
         margin-bottom: 8px;
+    }
+
+    .time-stamp {
+        margin-left: 0px;
+        margin-right: 0px;
     }
 
     .comment-container {
@@ -313,11 +391,31 @@
 
 
     /* ========== COMMENT CONTENT ========== */
+    .has-no-coment {
+        height: auto;
+        width: 90%;
+        margin-bottom: 10px;
+        border: solid 1px black;
+        border-radius: 15px;
+        background: linear-gradient(to bottom right, white, darkviolet);
+    }
+
+    .has-no-coment p {
+        width: 100%;
+        margin: 10px;
+        padding: 10px;
+        font-size: 100%;
+        line-height: 110%;
+        border-radius: 10px;
+        background: white;
+    }
+
     .commentate {
-        padding-bottom: 10px;
+        position: relative;
+        padding-bottom: 15px;
         border-top: double rgb(0, 100, 200) 5px;
         background: linear-gradient(to bottom right, rgb(245, 245, 245), rgb(110, 110, 110));
-    }  
+    }
 
     label {
         text-align: left;
@@ -328,9 +426,11 @@
         font-weight: 400;
         font-size: 100%;
     }
-
+    
     .comment-flow {
-        margin-top: 10px;
+        height: auto;
+        overflow: hidden;
+        padding-top: 10px;
     }
 
     /* ========== Buttons ========== */
@@ -341,11 +441,35 @@
         width: 47%;
     }
     
-    .add-comment-btn,
     .repost-btn {
         margin: 10px;
         height: 40px;
         width: 70%;
+    }
+
+    .user-pict,
+    .toggle-comment-btn,
+    .add-comment-btn,
+    .comment-container {
+        margin-top: 15px;
+        margin-bottom: 0px;
+    }
+
+    .toggle-comment-btn {
+        width: 85%;
+        font-size: 105%;
+    }
+    
+    .add-comment-btn {
+        width: 55%;
+    }
+
+
+    /* ========== Alert Message ========== */
+    .form-alert {
+        position: absolute;
+        margin: 0;
+        bottom: 55px;
     }
     
 
@@ -373,4 +497,11 @@
         width: 55%;
         margin-top: 0;
     }
+
+
+    // ****************************************************************************************************
+    // ==>      Transitions     <==
+    // ****************************************************************************************************
+    
+    
 </style>

@@ -27,5 +27,35 @@ module.exports = {
             try { return await response.json() }
             catch(error) { console.log("error", error) }
         },
+
+
+        log_Base(session, includeString, resetString) {
+
+            if(session.message.includes(includeString)) {
+
+                this.serverAlert = true;
+                this.serverMsg = session.message;
+                setTimeout(() => this.serverAlert = false, this.timeOutDuration);
+            }
+
+            else if(session.message.includes("connecté")) {
+                localStorage.setItem("Token", session.token);
+                
+                this.$parent.$parent.isLogPages = false;
+                this.$parent.$parent.isSwapPages = true;
+
+                this.$parent.$parent.swapPageAlert = true;
+                this.$parent.$parent.swapPageMsg = session.message;
+
+                setTimeout(() => this.$parent.$parent.swapPageAlert = false, this.timeOutDuration);
+                
+                this.clearInputFields();
+
+                if(resetString === "signin") {
+                    document.querySelector(".signin").style.zIndex = "1";
+                    document.querySelector(".login").style.zIndex = "10";
+                }
+            }
+        }
     }
 }

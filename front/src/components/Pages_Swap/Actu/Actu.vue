@@ -6,20 +6,14 @@
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish=!isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
         
+        <component v-if="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
+    
+        <div :key="post" v-show="!isPublish" class="flexCenter flow">
 
-        <!-- <transition name="slidePublish" @leave="refreshPosts()"> -->
-            <component v-if="isPublish" @posted="isPublish=$event" :is="publishComponent"></component>
-        <!-- </transition> -->
-
-        <!-- <transition name="slideFlow"> -->
-            <div :key="post" v-show="!isPublish" class="flexCenter flow">
-
-                <Publication v-for="post in publications" :key="post.id"
-                    :post="post"
-                />
-
-            </div>
-        <!-- </transition> -->
+            <Publication v-for="post in publications" :key="post.id"
+                :post="post"
+            />
+        </div>
 
     </section>
 </template>
@@ -169,40 +163,5 @@
     // ==>      Transitions     <==
     // ****************************************************************************************************
     
-    $slideDuration: 1s;
-
-    .slidePublish-enter-active,
-    .slideFlow-enter-active {
-        transition-delay: $slideDuration;
-        transition-duration: $slideDuration;
-    }
-
-    .slidePublish-leave-active,
-    .slideFlow-leave-active {
-        transition-duration: $slideDuration;
-    }
-
-
-    // ========== Flow ==========
-    .slideFlow-enter-from,
-    .slideFlow-leave-to { 
-        height: 0;
-    }
-
-    .slideFlow-leave-from,
-    .slideFlow-enter-to {
-        height: $flowHeight;
-    }
-
     
-    // ========== Publish ==========
-    .slidePublish-enter-from,
-    .slidePublish-leave-to { 
-        height: 0;
-    }
-
-    .slidePublish-leave-from,
-    .slidePublish-enter-to {
-        height: 90%;
-    }
 </style>
