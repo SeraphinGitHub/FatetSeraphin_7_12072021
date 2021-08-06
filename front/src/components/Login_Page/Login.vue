@@ -76,8 +76,7 @@
         
         methods: {
             showLogin() {
-                document.querySelector(".login").style.zIndex = "10";
-                document.querySelector(".signin").style.zIndex = "1";
+                this.$emit("login");
             },
 
 
@@ -127,7 +126,7 @@
             
 
             async postDataLogin(formData) {
-                this.$parent.$parent.isLoading = true;
+                this.$parent.$emit("loading");
 
                 const response = await fetch("http://localhost:3000/api/auth/login", {
                     headers: {"Content-Type": "application/json; charset=UTF-8"},
@@ -136,9 +135,8 @@
                 });
                 
                 try {
-                    this.$parent.$parent.isLoading = false;
+                    this.$parent.$emit("loading");
                     const session = await response.json();
-                    
                     this.log_Base(session, "invalide", this.timeOutDuration, "");
                 }
                 catch(error) { console.log("error", error) }

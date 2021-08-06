@@ -35,6 +35,8 @@
 
             <Comment v-for="com in comments" :key="com.id"
                 :comment="com"
+                @hasNoComment="hasNoComment = !hasNoComment"
+                @getComments="getPublishComments()"
             />
 
             <span v-show="hasNoComment" class="flexCenter has-no-coment">
@@ -121,6 +123,12 @@
         },
 
         methods: {
+
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+
             likePost() {
                 // if(this.post.likes) {
                     const likeData = new FormData();
@@ -162,10 +170,16 @@
                     
                     console.log(res);
                     
-                    this.$parent.refreshPosts();
+                    this.$emit("refresh");
                 }
                 catch(error) { console.log("error", error) }
             },
+
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+            // ***************************************************************************************************
+
 
 
             editPost() {
@@ -215,7 +229,7 @@
                 try {
                     await response;
                     this.isEditingPost = !this.isEditingPost;
-                    this.$parent.refreshPosts();
+                    this.$emit("refresh");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -233,7 +247,7 @@
                 
                 try {
                     await response.json();
-                    this.$parent.refreshPosts();
+                    this.$emit("refresh");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -266,9 +280,9 @@
                     
                     try {
                         await response.json();
-                        this.toggleComment = true;
-                        this.commentText = "";
                         this.getPublishComments();
+                        this.commentText = "";
+                        this.isComment = true;
                     }
                     catch(error) { console.log("error", error) }
                 }
@@ -497,11 +511,4 @@
         width: 55%;
         margin-top: 0;
     }
-
-
-    // ****************************************************************************************************
-    // ==>      Transitions     <==
-    // ****************************************************************************************************
-    
-    
 </style>

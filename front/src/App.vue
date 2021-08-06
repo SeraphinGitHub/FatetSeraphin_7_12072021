@@ -9,8 +9,15 @@
       <h3 class="flexCenter swap-pages-alert" v-show="swapPageAlert">{{ swapPageMsg }}</h3>
     </transition>
 
-    <LogoutBtn v-if="isSwapPages"/>
-    <PagesLog v-if="isLogPages"/>
+    <LogoutBtn
+      v-if="isSwapPages"
+      @logPages="isLogPages = !isLogPages"
+      @swapPages="isSwapPages = !isSwapPages"
+      @swapPageAlert="swapPageAlert = !swapPageAlert"
+      @swapPageMsg="swapPageMsg = $event"
+    />
+
+    <PagesLog v-if="isLogPages" @loading="isLoading = !isLoading"/>
     <PagesSwap v-if="isSwapPages"/>
     <LoadingSpinner v-show="isLoading"/>
 
@@ -84,7 +91,8 @@
 
 
   /* ======== Pages ======== */
-  .pages-container {
+  .pages-log,
+  .pages-swap {
     position: relative;
     height: 500px;
     margin: 5px;
@@ -213,7 +221,7 @@
   }
 
   .btn:hover {
-    box-shadow: gray 5px 5px 8px;
+    box-shadow: rgb(50, 50, 50) 5px 5px 5px;
   }
 
   .btn:active {

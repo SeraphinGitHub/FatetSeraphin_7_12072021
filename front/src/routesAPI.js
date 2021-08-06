@@ -4,22 +4,6 @@ module.exports = {
 
         // const token = window.localStorage.getItem("Token");
         
-        async profileUser_API() {
-            
-            return await fetch("http://localhost:3000/api/auth/profile", {
-                headers: {
-                    "Content-Type": "application/json; charset=UTF-8",
-                    "Authorization": `Bearer ${token}`
-                },
-                method: "GET",
-            })
-            .then(response => response.json())
-            .then(data => { return data });
-        },
-
-
-        // const token = window.localStorage.getItem("Token");
-        
         async write_Base(data) {
             
             const response = await fetch("http://localhost:3000/api", {

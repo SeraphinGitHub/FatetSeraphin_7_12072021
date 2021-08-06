@@ -1,7 +1,7 @@
 <template>
     <section class="flexCenter actu">
        
-        <button class="actu-btn" @click="showActu(), refreshPosts()">Actu</button>
+        <button class="actu-btn" @click="toggleActu(), refreshPosts()">Actu</button>
 
         <button v-show="!isPublish" class="flexCenter btn toggle-publish-btn " @click="isPublish=!isPublish">Exprimez-vous</button>
         <button v-show="isPublish" class="btn cancel-btn" @click="isPublish=!isPublish" type="button">Annuler</button>
@@ -10,7 +10,7 @@
     
         <div :key="post" v-show="!isPublish" class="flexCenter flow">
 
-            <Publication v-for="post in publications" :key="post.id"
+            <Publication v-for="post in publications" :key="post.id" @refresh="refreshPosts()"
                 :post="post"
             />
         </div>
@@ -53,10 +53,8 @@
         },
 
         methods: {
-            showActu() {
-                document.querySelector(".actu").style.zIndex = "10";
-                document.querySelector(".user-wall").style.zIndex = "5";
-                document.querySelector(".profile").style.zIndex = "5";
+            toggleActu() {
+                this.$emit("actu");
             },
 
 
@@ -68,11 +66,11 @@
                     },
                     method: "GET",
                 });
+
                 try {
                     const allPosts = await response.json();
                     this.publications = allPosts.sort().reverse();
-
-                    this.$parent.isLoading = false;
+                    this.$emit("loading");
                     this.allPostsReceived = true;
                 }
                 catch(error) { console.log("error", error) }                
@@ -110,6 +108,11 @@
 
 <style scoped lang="scss">
 
+    // -----------------------------------
+    $pageColor: rgb(60, 180, 255);
+    // -----------------------------------
+
+
     $flowHeight: 420px;
     $flowMarginTop: 10px;
     
@@ -132,8 +135,7 @@
     .cancel-btn {
         width: 50%;
     }
-    
-    $pageColor: rgb(60, 180, 255);
+
 
     /* ========== COMMENT CONTENT ========== */
     .commentate {
@@ -157,11 +159,4 @@
         left: -3px;
         background-color: $pageColor;
     }
-
-
-    // ****************************************************************************************************
-    // ==>      Transitions     <==
-    // ****************************************************************************************************
-    
-    
 </style>

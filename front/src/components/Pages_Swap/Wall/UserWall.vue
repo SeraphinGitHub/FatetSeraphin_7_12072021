@@ -1,7 +1,7 @@
 <template>
     <section class="flexCenter user-wall">
 
-        <button class="user-wall-btn" @click="showUserWall()">Mon mur</button>
+        <button class="user-wall-btn" @click="toggleWall()">Mon mur</button>
         
         <div v-if="isWallEmpty" class="flexCenter empty-wall">
             <p>Vous n'avez encore rien publier</p>
@@ -44,10 +44,8 @@
         },
 
         methods: {
-            showUserWall() {
-                document.querySelector(".actu").style.zIndex = "5";
-                document.querySelector(".user-wall").style.zIndex = "10";
-                document.querySelector(".profile").style.zIndex = "5";
+            toggleWall() {
+                this.$emit("wall");
             },
 
             async getUserPosts() {
@@ -71,7 +69,10 @@
 
 <style scoped lang="scss">
 
+    // -----------------------------------
     $pageColor: rgb(255, 150, 0);
+    // -----------------------------------
+    
 
     .empty-wall {
         align-content: flex-start;

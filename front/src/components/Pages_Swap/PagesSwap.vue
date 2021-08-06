@@ -1,9 +1,9 @@
 <template>
-    <section class="flexCenter pages-container">
+    <section class="flexCenter pages-swap">
                 
-        <UserProfile/>
-        <UserWall/>
-        <Actu/>
+        <UserProfile @profile="toggleProfile()"/>
+        <UserWall @wall="toggleWall()"/>
+        <Actu @actu="toggleActu()"/>
 
     </section>
 </template>
@@ -13,14 +13,43 @@
     import Actu from "./Actu/Actu.vue"
     import UserWall from "./Wall/UserWall.vue"
     import UserProfile from "./Profile/UserProfile.vue"
+    import generic from "../../generic-methods.js"
 
     export default {
         name: "PagesSwap",
+
+        mixins: [
+            generic,
+        ],
         
         components: {
             Actu,
             UserWall,
             UserProfile,
+        },
+
+        mounted() {
+            const currentPage = window.localStorage.getItem("Current Page");
+            if(currentPage === "Actu") this.pageToggling("actu");
+            if(currentPage === "Wall") this.pageToggling("wall");
+            if(currentPage === "Profile") this.pageToggling("profile");
+        },
+        
+        methods: {
+            toggleActu() {
+                this.pageToggling("actu");
+                localStorage.setItem("Current Page", "Actu");
+            },
+
+            toggleWall() {
+                this.pageToggling("wall");
+                localStorage.setItem("Current Page", "Wall")
+            },
+
+            toggleProfile() {
+                this.pageToggling("profile");
+                localStorage.setItem("Current Page", "Profile")
+            },
         },
     }
 </script>

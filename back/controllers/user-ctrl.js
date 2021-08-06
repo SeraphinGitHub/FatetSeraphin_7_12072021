@@ -133,14 +133,14 @@ exports.userWall = (req, res, next) => {
 exports.getUserCaption = (req, res, next) => {
 
     const userIdTok = generic.verifyToken(req, res, next, "userId");
-    generic.getUserDetails(userIdTok, "loggedUser", req, res, next);
+    generic.getUserDetails(userIdTok, req, res, next);
 }
 
 
 // ==================================================================================
 // "POST" ==> Get Post's User Infos
 // ==================================================================================
-exports.getPostUserInfos = (req, res, next) => generic.getUserDetails(req.body.id, "postUser", req, res, next);
+exports.getPostUserInfos = (req, res, next) => generic.getUserDetails(req.body.id, req, res, next);
 
 
 // ==================================================================================

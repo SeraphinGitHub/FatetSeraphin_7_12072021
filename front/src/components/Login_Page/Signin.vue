@@ -134,8 +134,7 @@
         
         methods: {
             showSignin() {
-                document.querySelector(".signin").style.zIndex = "10";
-                document.querySelector(".login").style.zIndex = "1";
+                this.$emit("signin");
             },
 
 
@@ -215,7 +214,7 @@
 
 
             async postDataSignin(formData) {
-                this.$parent.$parent.isLoading = true;
+                this.$parent.$emit("loading");
 
                 const response = await fetch("http://localhost:3000/api/auth/signin", {
                     headers: {"Content-Type": "application/json; charset=UTF-8"},
@@ -224,9 +223,8 @@
                 });
                 
                 try {
-                    this.$parent.$parent.isLoading = false;
+                    this.$parent.$emit("loading");
                     const session = await response.json();
-
                     this.log_Base(session, "déjà pris", this.timeOutDuration, "signin");
                 }
                 catch(error) { console.log("error", error) }

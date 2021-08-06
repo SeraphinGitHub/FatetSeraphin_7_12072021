@@ -21,24 +21,20 @@ exports.getAllItem = (itemModel, whereObject, req, res, next) => {
 // ==================================================================================
 // Get User Infos
 // ==================================================================================
-exports.getUserDetails = (userId, valueString, req, res, next) => {
+exports.getUserDetails = (userId, req, res, next) => {
 
     User.findOne({ where: { id: userId } })
     .then((user) => {
                 
         const userCaption = {
             id: user.id,
-            isAdmin: user.isAdmin,
             userName: user.userName,
             position: user.position,
             department: user.department,
             imageUrl: user.imageUrl,
         };
 
-        const { isAdmin, ...securedUserCaption } = userCaption;
-
-        if(valueString === "loggedUser") res.status(200).json(userCaption);
-        if(valueString === "postUser") res.status(201).json(securedUserCaption);
+        res.status(200).json(userCaption);
 
     }).catch(() => res.status(403).json({ message: "User NOT found !" }));
 };
@@ -160,29 +156,18 @@ exports.userProbe = async (users, emailReq, req, res, next) => {
 // ==================================================================================
 exports.updateEmailOrPsw = (user, dataValue, req, res, next) => {
 
-    let oldData;
-    let newData;
     let userData;
-    let modifData;        
+    let modifData;
         
-    if(dataValue === "Password") {
-        oldData = req.body.oldPassword;
-        newData = req.body.newPassword;
-        userData = user.password;
-    }
-
-    if(dataValue === "E-mail") {
-        oldData = req.body.oldEmail;
-        newData = req.body.newEmail;
-        userData = user.email;
-    }
+    if(dataValue === "Password") userData = user.password;
+    if(dataValue === "E-mail") userData = user.email;
     
-    bcrypt.compare(oldData, userData)
+    bcrypt.compare(req.body.oldData, userData)
     .then(valid => {
 
         if(!valid) return res.status(401).json({ message: `Old ${dataValue} invalid !` });
 
-        else bcrypt.hash(newData, 12)
+        else bcrypt.hash(req.body.newData, 12)
         .then(hash => {
 
             if(dataValue === "Password") modifData = { password: hash };

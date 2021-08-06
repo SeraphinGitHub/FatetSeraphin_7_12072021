@@ -1,6 +1,46 @@
 
 module.exports = {
     methods: {
+        pageToggling(valueString) {
+            const login = document.querySelector(".login");
+            const signin = document.querySelector(".signin");
+            const actu = document.querySelector(".actu");
+            const wall = document.querySelector(".user-wall");
+            const profile = document.querySelector(".profile");
+            
+            const weakIndex = 5;
+            const strongIndex = 10;
+
+            if(valueString === "login") {
+                login.style.zIndex = strongIndex;
+                signin.style.zIndex = weakIndex;
+            }
+
+            if(valueString === "signin") {
+                login.style.zIndex = weakIndex;
+                signin.style.zIndex = strongIndex;
+            }
+
+            if(valueString === "actu") {
+                actu.style.zIndex = strongIndex;
+                wall.style.zIndex = weakIndex;
+                profile.style.zIndex = weakIndex;
+            }
+
+            if(valueString === "wall") {
+                actu.style.zIndex = weakIndex;
+                wall.style.zIndex = strongIndex;
+                profile.style.zIndex = weakIndex;
+            }
+
+            if(valueString === "profile") {
+                actu.style.zIndex = weakIndex;
+                wall.style.zIndex = weakIndex;
+                profile.style.zIndex = strongIndex;
+            }
+        },
+
+
         async getLoggedUserInfos() {
             const response = await fetch("http://localhost:3000/api/auth/user", {
                 headers: {

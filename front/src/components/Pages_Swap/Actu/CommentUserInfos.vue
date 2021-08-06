@@ -40,7 +40,6 @@
         props: {
             userId: Number,
             comment: Object,
-            textModif: String,
             isCommentOwner: Boolean,
             isEditingComment: Boolean,
         },
@@ -58,8 +57,8 @@
 
         methods: {
             editComment() {
-                this.$parent.isEditingComment = !this.$parent.isEditingComment;
-                this.$parent.textModif = this.$parent.comment.textContent;
+                this.$emit("editComment");
+                this.$emit("textModif");
             },
 
 
@@ -74,7 +73,7 @@
                 });
                 try {
                     await response.json();
-                    this.$parent.$parent.getPublishComments();
+                    this.$parent.$emit("getComments");
                 }
                 catch(error) { console.log("error", error) }
             },

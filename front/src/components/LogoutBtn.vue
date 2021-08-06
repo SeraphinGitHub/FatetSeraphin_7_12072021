@@ -37,20 +37,18 @@
                     const resObj = await response.json();
                     window.localStorage.clear();
 
-                    this.$parent.isLogPages = true;
-                    this.$parent.isSwapPages = false;
-
-                    this.$parent.swapPageAlert = true;
-                    this.$parent.swapPageMsg = resObj.message;
+                    this.$emit("logPages");
+                    this.$emit("swapPages");
+                    this.$emit("swapPageAlert");
+                    this.$emit("swapPageMsg", resObj.message);
 
                     const popup = document.querySelector(".swap-pages-alert");
                     popup.classList.add("red-popup");
-                    
-                    setTimeout(() => this.$parent.swapPageAlert = false, this.$parent.popupDuration * 2 );
+
+                    setTimeout(() => this.$emit("swapPageAlert"), this.$parent.popupDuration * 2 );
                     setTimeout(() => popup.classList.remove("red-popup"), this.$parent.popupDuration * 3);
                 }
                 catch(error) { console.log("error", error) }
-                return {}
             }
         }
     }

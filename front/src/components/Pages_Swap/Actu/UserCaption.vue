@@ -55,6 +55,14 @@
 
 
 <style scoped>
+    .user-pict {
+        justify-content: flex-start !important;
+        height: 70px;
+        width: 100%;
+        margin: 15px;
+        margin-bottom: 8px;
+    }
+
     .circle-user-img {
         object-fit: cover;
         height: 100%;
@@ -62,13 +70,5 @@
 
         border-radius: 50% !important;
         box-shadow: black 5px 5px 5px;
-    }
-    
-    .user-pict {
-        justify-content: flex-start !important;
-        height: 70px;
-        width: 100%;
-        margin: 15px;
-        margin-bottom: 8px;
     }
 </style>

@@ -1,8 +1,8 @@
 <template>
-    <section class="flexCenter pages-container">
+    <section class="flexCenter pages-log">
 
-        <Login/>
-        <Signin/>
+        <Login @login="toggleLogin()"/>
+        <Signin @signin="toggleSignin()"/>
 
     </section>
 </template>
@@ -11,14 +11,29 @@
 <script>    
     import Login from "./Login.vue"
     import Signin from "./Signin.vue"
+    import generic from "../../generic-methods.js"
 
     export default {
         name: "PagesLog",
+
+        mixins: [
+            generic,
+        ],
         
         components: {
             Login,
             Signin,
-        },    
+        },
+
+        methods: {
+            toggleLogin() {
+                this.pageToggling("login");
+            },
+
+            toggleSignin() {
+                this.pageToggling("signin");
+            },
+        },
     }
 </script>
 

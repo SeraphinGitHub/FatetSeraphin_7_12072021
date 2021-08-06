@@ -4,6 +4,8 @@
         <CommentUserInfos :userId="comment.userId"
             :isCommentOwner="isCommentOwner"
             :isEditingComment="isEditingComment"
+            @editComment="isEditingComment = !isEditingComment"
+            @textModif="textModif = comment.textContent"
         />
         
         <span v-show="!isUpdated" class="flexCenter time-stamp">Publié le : <h3>{{ createdTime }}</h3></span>
@@ -34,7 +36,6 @@
 
         props: {
             comment: Object,
-            hasNoComment: Boolean,
         },
 
         data() {
@@ -68,7 +69,7 @@
                 this.user = await this.getLoggedUserInfos();
 
                 if(this.comment) {
-                    this.$parent.hasNoComment = false;
+                    this.$emit("hasNoComment");
                     if(this.comment.userId === this.user.id || this.user.isAdmin) this.isCommentOwner = true;
                 }
             },
@@ -94,10 +95,11 @@
                     },
                     method: "PUT",
                     body: JSON.stringify(formData)
-                });            
+                });
+                        
                 try {
                     await response.json();
-                    this.$parent.getPublishComments();
+                    this.$emit("getComments");
                 }
                 catch(error) { console.log("error", error) }
             },
