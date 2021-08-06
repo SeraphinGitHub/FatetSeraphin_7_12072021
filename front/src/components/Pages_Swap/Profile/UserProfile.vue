@@ -37,7 +37,7 @@
             <button class="btn caption-btn" @click="toggleModifyPassword()">Changer mot de passe</button>
         </div>
 
-        <button class="btn red-btn delete-btn" @click="toggleDeleteAccount()">Supprimer le compte</button>
+        <button v-if="user.isAdmin" class="btn red-btn delete-btn" @click="toggleDeleteAccount()">Supprimer le compte</button>
 
         <section v-show="toggleResetPage()" class="flexCenter reset-page">
             <form class="flexCenter reset-form">
