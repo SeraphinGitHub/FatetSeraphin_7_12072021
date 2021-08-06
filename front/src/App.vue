@@ -18,7 +18,15 @@
     />
 
     <PagesLog v-if="isLogPages" @loading="isLoading = !isLoading"/>
-    <PagesSwap v-if="isSwapPages"/>
+
+    <PagesSwap v-if="isSwapPages"
+      @loading="isLoading = !isLoading"
+      @logPages="isLogPages = !isLogPages"
+      @swapPages="isSwapPages = !isSwapPages"
+      @swapPageAlert="swapPageAlert = !swapPageAlert"
+      @swapPageMsg="swapPageMsg = $event"
+    />
+
     <LoadingSpinner v-show="isLoading"/>
 
   </section>
@@ -234,10 +242,12 @@
   .swap-pages-alert {
     z-index: 30;
     position: absolute;
-    top: 50px;
+    top: 70px;
     left: 50%;
     height: 90px;
-    width: 77%;
+    width: 65%;
+    padding-left: 10px;
+    padding-right: 10px;
     margin: 0px;
 
     font-size: 120%;
@@ -245,8 +255,8 @@
     line-height: 140%;
 
     border-radius: 10px;
-    border: double green 5px;
     transform: translateX(-50%);
+    border: double green 5px;
     background: lightgreen;
   }
 

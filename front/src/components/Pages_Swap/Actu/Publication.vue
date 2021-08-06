@@ -206,7 +206,7 @@
             },
 
 
-            postModifsPublish() {
+            async postModifsPublish() {
                 let formData = new FormData();
 
                 formData.set("id", this.post.id);
@@ -215,11 +215,7 @@
                 formData.set("image", this.modifiedPicture);
 
                 formData.forEach((key, value) => formData[value] = key);
-                this.sendModifsPublish(formData);
-            },
 
-
-            async sendModifsPublish(formData) {
                 const response = await fetch("http://localhost:3000/api/publish/modify", {
                     headers: { "Authorization": `Bearer ${this.token}` },
                     method: "PUT",

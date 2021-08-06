@@ -28,7 +28,7 @@
                 <input class="log-input" name="confirmPsw" type="password" @input="matchingPsw()" placeholder="Confirmer votre mot de passe" v-model="confirmPsw">
                 
                 <transition name="fade">
-                    <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ pswConfirmMsg }}</p>
+                    <p class="flexCenter form-alert" v-show="pswConfirmAlert">{{ dismatchPswMsg }}</p>
                 </transition>
             </div>
 
@@ -109,7 +109,6 @@
 
                 confirmPswValid: false,
                 pswConfirmAlert: false,
-                pswConfirmMsg: "",
                 
                 userNameValid: false,
                 userNameAlert: false,
@@ -126,7 +125,7 @@
                 emptyField: "Le champ est vide !",
                 wrongRegEx: "Champ invalide !",
                 pswUnderRegEx: "Champ invalide ou moins de 10 caractères !",
-                dismatchPsw: "Les mots de passe ne correspondent pas !",
+                dismatchPswMsg: "Les mots de passe ne correspondent pas !",
 
                 passwordMatched: false,
             }
@@ -139,10 +138,7 @@
 
 
             matchingPsw() {
-                if(this.confirmPsw !== this.password) {
-                    this.pswConfirmAlert = true;
-                    this.pswConfirmMsg = this.dismatchPsw;
-                }
+                if(this.confirmPsw !== this.password) this.pswConfirmAlert = true;
 
                 else {
                     this.passwordMatched = true;
@@ -312,8 +308,9 @@
 
     /* --- Alert Message --- */
     .form-alert {
-        height: 30px;
-        bottom: -38px;
+        z-index: 3;
+        height: 35px;
+        bottom: -40px;
     }
 
     .server-alert {

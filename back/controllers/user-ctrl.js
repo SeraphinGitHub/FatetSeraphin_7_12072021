@@ -20,7 +20,10 @@ const emailRegEx = new RegExp(/^[A-Za-z0-9._-]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$/);
 const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-]+$/);
 
 // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
-const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
+const passwordRegExSignin = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
+
+// Have to contain: LETTER || letter || number || accent letters || number
+const passwordRegExLogin = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*]+$/);
 
 
 // ========== Token Generation ==========
@@ -36,8 +39,8 @@ const generateToken = (user, req, res, next) => {
 exports.signin = (req, res, next) => {
 
     if(req.body.email && emailRegEx.test(req.body.email)
-    && req.body.password && passwordRegEx.test(req.body.password)
-    && req.body.confirmPsw && passwordRegEx.test(req.body.confirmPsw)
+    && req.body.password && passwordRegExSignin.test(req.body.password)
+    && req.body.confirmPsw && passwordRegExSignin.test(req.body.confirmPsw)
     && req.body.userName && normalTextRegEx.test(req.body.userName)
     && req.body.position && normalTextRegEx.test(req.body.position)
     && req.body.department && normalTextRegEx.test(req.body.department) ) {
@@ -77,7 +80,7 @@ exports.signin = (req, res, next) => {
 exports.login = (req, res, next) => {
 
     if(req.body.email && emailRegEx.test(req.body.email)
-    && req.body.password && passwordRegEx.test(req.body.password) ) {
+    && req.body.password && passwordRegExLogin.test(req.body.password) ) {
 
         User.findAll()
         .then(async (users) => {
@@ -89,7 +92,7 @@ exports.login = (req, res, next) => {
                 bcrypt.compare(req.body.password, user.password)
                 .then(passwordValid => {
     
-                    if(passwordValid) generateToken(user, req, res, next)
+                    if(passwordValid) generateToken(user, req, res, next);
                     else return res.status(401).json({ message: "Mot de passe invalide !" });
     
                 }).catch(() => res.status(501).json({ message: `${user.userName} n'a pas pû se connecter !` }));
@@ -150,8 +153,20 @@ exports.getUserProfile = (req, res, next) => {
     const userIdTok = generic.verifyToken(req, res, next, "userId");
     
     User.findOne({ where: { id: userIdTok } })
-    .then((user) => res.status(200).json(user))
-    .catch(() => res.status(404).json({ message: "User NOT found !" }));
+    .then(user => {
+        
+        const securedUserDetails = {
+            isAdmin: user.isAdmin,
+            userName: user.userName,
+            position: user.position,
+            department: user.department,
+            imageUrl: user.imageUrl,
+            createdAt: user.createdAt,
+        };
+
+        res.status(200).json(securedUserDetails)
+
+    }).catch(() => res.status(404).json({ message: "User NOT found !" }));
 };
 
 
@@ -159,51 +174,108 @@ exports.getUserProfile = (req, res, next) => {
 // "PUT" ==> Update User Profile
 // ==================================================================================
 exports.modifyProfile = (req, res, next) => {
-
     const userIdTok = generic.verifyToken(req, res, next, "userId");
 
     User.findOne({ where: { id: userIdTok } })
     .then(user => {
-        
-        const item = {...req.body };
-        const {email, password, ...securedItem} = item;
 
-        User.update(securedItem, { where: { id: user.id } })
-        .then(() => res.status(200).json({ message: `${user.userName}'s profile update successfully !` }))
-        .catch(() => res.status(500).json({ message: `${user.userName}'s profile NOT updated !` }));
-            
+        if(req.file) {
+            const pictureName = user.imageUrl.split("/pictures/")[1];
+
+            fs.unlink(`pictures/${pictureName}`,(() => {
+                const userPhoto = {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}`};
+                const {email, password, position, department, isAdmin, ...securedUserPhoto} = userPhoto;
+                
+                User.update(securedUserPhoto, { where: { id: user.id } })
+                .then(() => res.status(202).json({ message: `${user.userName}'s photo update successfully !` }))
+                .catch(() => res.status(502).json({ message: `${user.userName}'s photo NOT updated !` }));
+            }));
+        }
+    
+        else {
+            const userData = {...req.body };
+            const {email, password, isAdmin, imageUrl, ...securedUserData} = userData;
+
+            User.update(securedUserData, { where: { id: user.id } })
+            .then(() => res.status(201).json({ message: `${user.userName}'s infos update successfully !` }))
+            .catch(() => res.status(501).json({ message: `${user.userName}'s infos NOT updated !` }));
+        }
+
     }).catch(() => res.status(500).json({ message: "User NOT found !" }));
 };
 
 
 // ==================================================================================
-// "PUT" ==> Update User Email
+// "PUT" ==> Update User Password
 // ==================================================================================
 exports.modifyPassword = (req, res, next) => {
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
 
-    User.findOne({ where: { id: userIdTok } })
-    .then(user => generic.updateEmailOrPsw(user, "Password", req, res, next))
-    .catch(() => res.status(404).json({ message: "User NOT found !" })); 
+    if(req.body.oldData
+    && req.body.newData
+    && passwordRegExSignin.test(req.body.newData)) {
+
+        const userIdTok = generic.verifyToken(req, res, next, "userId");
+    
+        User.findOne({ where: { id: userIdTok } })
+        .then(user => this.updateEmailOrPsw(user, "mot de passe", req, res, next))
+        .catch(() => res.status(404).json({ message: "User NOT found !" })); 
+    }
 }
 
 
 // ==================================================================================
-// "PUT" ==> Update User Password
+// "PUT" ==> Update User Email
 // ==================================================================================
 exports.modifyEmail = (req, res, next) => {
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
+
+    if(req.body.oldData
+    && req.body.newData
+    && emailRegEx.test(req.body.newData)) {
+
+        const userIdTok = generic.verifyToken(req, res, next, "userId");
+        
+        User.findAll()
+        .then(async (users) => {
+            const matchUserArray = await generic.userProbe(users, req.body.newData, req, res, next);
+            if(matchUserArray.length) return res.status(402).json({ message: "Cet e-mail est déjà pris !" });
+
+            else User.findOne({ where: { id: userIdTok } })
+            .then(user => this.updateEmailOrPsw(user, "e-mail", req, res, next))
+            .catch(() => res.status(404).json({ message: "User NOT found !" }));
+
+        }).catch(() => res.status(500).json({ message: "No users found !" }));
+    }
+};
+
+
+// ==================================================================================
+// Modify E-mail or Password
+// ==================================================================================
+exports.updateEmailOrPsw = (user, dataValue, req, res, next) => {
+
+    let userData;
+    let modifData;
+        
+    if(dataValue === "mot de passe") userData = user.password;
+    if(dataValue === "e-mail") userData = user.email;
     
-    User.findAll()
-    .then(async (users) => {
-        const matchUserArray = await generic.userProbe(users, req.body.newEmail, req, res, next);
-        if(matchUserArray.length) return res.status(402).json({ message: "This e-mail already exists !" });
+    bcrypt.compare(req.body.oldData, userData)
+    .then(valid => {
 
-        else User.findOne({ where: { id: userIdTok } })
-        .then(user => generic.updateEmailOrPsw(user, "E-mail", req, res, next))
-        .catch(() => res.status(404).json({ message: "User NOT found !" }));
+        if(!valid) return res.status(401).json({ message: `Ancien ${dataValue} invalide !` });
 
-    }).catch(() => res.status(500).json({ message: "No users found !" }));
+        else bcrypt.hash(req.body.newData, 12)
+        .then(hash => {
+
+            if(dataValue === "mot de passe") modifData = { password: hash };
+            if(dataValue === "e-mail") modifData = { email: hash };
+
+            User.update(modifData, { where: { id: user.id } })
+            .then(() => res.status(200).json({ message: `Votre ${dataValue} à été modifié avec succès !` }))
+            .catch(() => res.status(500).json({ message: `Votre ${dataValue} n'as pas pû être modifié !` }));
+
+        }).catch(() => res.status(501).json({ message: `Unexpected token ! -New ${dataValue}-` }));
+    }).catch(() => res.status(502).json({ message: `Unexpected token ! -Old ${dataValue}-` }));
 };
 
 
@@ -211,46 +283,49 @@ exports.modifyEmail = (req, res, next) => {
 // "DELETE" ==> Delete User
 // ==================================================================================
 exports.deleteUser = (req, res, next) => {
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
 
-    User.findOne({ where: { id: userIdTok } })
-    .then(user => {
-        if(user.isAdmin === false) {
+    if(req.body.password && passwordRegExSignin.test(req.body.password)) {
+        const userIdTok = generic.verifyToken(req, res, next, "userId");
 
-            bcrypt.compare(req.body.password, user.password)
-            .then(passwordValid => {
-                if(passwordValid) {
+        User.findOne({ where: { id: userIdTok } })
+        .then(user => {
+            if(user.isAdmin === false) {
 
-                    Comment.destroy({ where: { userId: user.id } })
-                    .then(() => {
+                bcrypt.compare(req.body.password, user.password)
+                .then(passwordValid => {
+                    if(passwordValid) {
 
-                        Publish.findAll({ where: { userId: user.id } })
-                        .then(posts => {
+                        Comment.destroy({ where: { userId: user.id } })
+                        .then(() => {
 
-                            posts.forEach(post => {
-                                if(post.imageUrl) {
-                                    const pictureName = post.imageUrl.split("/pictures/")[1];
-                                    fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(post, post.title, req, res, next));
-                                }
-                            });
+                            Publish.findAll({ where: { userId: user.id } })
+                            .then(posts => {
 
-                            Publish.destroy({ where: { userId: user.id } })
-                            .then(() => {
-    
-                                if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
+                                posts.forEach(post => {
+                                    if(post.imageUrl) {
+                                        const pictureName = post.imageUrl.split("/pictures/")[1];
+                                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(post, post.title, req, res, next));
+                                    }
+                                });
 
-                                    const pictureName = user.imageUrl.split("/pictures/")[1];
-                                    fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, req, res, next));
-                                
-                                } else generic.destroyItem(user, user.userName, req, res, next); 
-
-                            }).catch(() => res.status(504).json({ message: "Post NOT deleted !" }));
-                        }).catch(() => res.status(503).json({ message: "Publications NOT found !" }));
-                    }).catch(() => res.status(502).json({ message: "Comments NOT deleted !" }));
-
-                } else return res.status(501).json({ message: "Invalid password !" });
-            }).catch(() => res.status(401).json({ message: "Invalid password !" }));
+                                Publish.destroy({ where: { userId: user.id } })
+                                .then(() => {
         
-        } else return res.status(500).json({ message: "Cannot delete -Admin- user !" });
-    }).catch(() => res.status(400).json({ message: "User NOT found !" }));
+                                    if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
+
+                                        const pictureName = user.imageUrl.split("/pictures/")[1];
+                                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(user, user.userName, req, res, next));
+                                    
+                                    } else generic.destroyItem(user, user.userName, req, res, next); 
+
+                                }).catch(() => res.status(504).json({ message: "Post NOT deleted !" }));
+                            }).catch(() => res.status(503).json({ message: "Publications NOT found !" }));
+                        }).catch(() => res.status(502).json({ message: "Comments NOT deleted !" }));
+
+                    } else return res.status(501).json({ message: "Mot de passe invalide !" });
+                }).catch(() => res.status(401).json({ message: "Invalid password !" }));
+            
+            } else return res.status(500).json({ message: "Cannot delete -Admin- user !" });
+        }).catch(() => res.status(400).json({ message: "User NOT found !" }));
+    }
 };

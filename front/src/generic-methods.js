@@ -80,6 +80,7 @@ module.exports = {
 
             else if(session.message.includes("connecté")) {
                 localStorage.setItem("Token", session.token);
+                localStorage.setItem("Email", this.email);
                 
                 this.$parent.$parent.isLogPages = false;
                 this.$parent.$parent.isSwapPages = true;
@@ -91,10 +92,7 @@ module.exports = {
                 
                 this.clearInputFields();
 
-                if(resetString === "signin") {
-                    document.querySelector(".signin").style.zIndex = "1";
-                    document.querySelector(".login").style.zIndex = "10";
-                }
+                if(resetString === "signin") this.pageToggling("login");
             }
         }
     }

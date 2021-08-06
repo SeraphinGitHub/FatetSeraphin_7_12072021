@@ -114,8 +114,8 @@ exports.deleteOneItem = (post, req, res, next) => {
 exports.destroyItem = (item, itemName, req, res, next) => {
 
     item.destroy({ where: { id: item.id } })
-    .then(() => res.status(200).json({ message: `${itemName} deleted successfully !` }))
-    .catch(() => res.status(500).json({ message: `${itemName} NOT deleted !` }));
+    .then(() => res.status(200).json({ message: `${itemName} suprimer avec succès !` }))
+    .catch(() => res.status(500).json({ message: `${itemName} n'as pas pû être supprimé !` }));
 };
 
 
@@ -148,35 +148,4 @@ exports.userProbe = async (users, emailReq, req, res, next) => {
         .catch((error => res.status(501).json({ error })));
 
     } return matchUserArray;
-};
-
-
-// ==================================================================================
-// Modify E-mail or Password
-// ==================================================================================
-exports.updateEmailOrPsw = (user, dataValue, req, res, next) => {
-
-    let userData;
-    let modifData;
-        
-    if(dataValue === "Password") userData = user.password;
-    if(dataValue === "E-mail") userData = user.email;
-    
-    bcrypt.compare(req.body.oldData, userData)
-    .then(valid => {
-
-        if(!valid) return res.status(401).json({ message: `Old ${dataValue} invalid !` });
-
-        else bcrypt.hash(req.body.newData, 12)
-        .then(hash => {
-
-            if(dataValue === "Password") modifData = { password: hash };
-            if(dataValue === "E-mail") modifData = { email: hash };
-
-            User.update(modifData, { where: { id: user.id } })
-            .then(() => res.status(200).json({ message: `${dataValue} modified successfully !` }))
-            .catch(() => res.status(500).json({ message: `${dataValue} NOT modified !` }));
-
-        }).catch(() => res.status(501).json({ message: `Unexpected token ! -New ${dataValue}-` }));
-    }).catch(() => res.status(502).json({ message: `Unexpected token ! -Old ${dataValue}-` }));
 };

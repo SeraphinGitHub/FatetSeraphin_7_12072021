@@ -75,19 +75,14 @@
             },
 
 
-            postModifsComment() {
-                const formData = new FormData();
+            async postModifsComment() {
+                this.isEditingComment = false;
 
+                const formData = new FormData();
                 formData.set("id", this.comment.id);
                 formData.set("textContent", this.textModif);
                 formData.forEach((key, value) => formData[value] = key);
 
-                this.isEditingComment = false;
-                this.sendModifsComment(formData);
-            },
-
-
-            async sendModifsComment(formData) {
                 const response = await fetch("http://localhost:3000/api/comment/modify", {
                     headers: {
                         "Content-Type": "application/json; charset=UTF-8",
