@@ -131,6 +131,11 @@
             height: 730px;
             width: 90% !important;
         }
+
+        .empty-wall p {
+            margin-top: 60px;
+            font-size: 120%;
+        }
     }
 
 
@@ -142,6 +147,11 @@
         .flow {
             height: 830px;
             width: 90% !important;
+        }
+
+        .empty-wall p {
+            margin-top: 80px;
+            font-size: 130%;
         }
     }
 
@@ -155,6 +165,11 @@
             height: 800px;
             width: 85% !important;
         }
+
+        .empty-wall p {
+            margin-top: 100px;
+            font-size: 140%;
+        }
     }
 
 
@@ -166,6 +181,11 @@
         .flow {
             height: 950px;
             width: 85% !important;
+        }
+
+        .empty-wall p {
+            margin-top: 100px;
+            font-size: 150%;
         }
     }
 </style>

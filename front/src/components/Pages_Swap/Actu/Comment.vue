@@ -242,10 +242,14 @@
         .time-stamp,
         .modif-content,
         p {
-            width: 80%;
+            width: 65%;
             margin-top: 20px;
             font-size: 120%;
             transform: translateY(-15px);
+        }
+
+        .modif-content {
+            height: 150px;
         }
 
         p {
@@ -255,6 +259,8 @@
         .post-comment-btn {
             height: 60px;
             width: 30%;
+            margin-left: 100px;
+            margin-right: 100px;
             transform: translateY(-5px);
         }
     }

@@ -182,13 +182,13 @@
     /* =============================================================================== */
     @media screen and (min-width: 1367px) {
         .user-pict {
-            height: 100px;
+            height: 110px;
             margin: 20px !important;
             margin-left: 45px !important;
         }
 
         .circle-user-img {
-            width: 100px;
+            width: 110px;
         }
 
         .user-infos {

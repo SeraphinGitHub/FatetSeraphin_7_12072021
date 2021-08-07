@@ -47,7 +47,7 @@
         <form class="flexCenter commentate" method="POST">
             <button class="btn toggle-comment-btn" @click.prevent="isComment=!isComment">Afficher les commentaires</button>
             
-            <UserCaption/>
+            <UserCaption class="userCaption"/>
 
             <div class="flexCenter comment-container">
                 <label for="textContent">Espace commentaires</label>
@@ -518,9 +518,9 @@
         }
 
         .form-alert {
-            height: 40px;
+            height: 45px;
             width: 70% !important;
-            bottom: 55px;
+            bottom: 60px;
         }
     }
 
@@ -618,7 +618,7 @@
         .form-alert {
             height: 60px;
             width: 50% !important;
-            bottom: 55px;
+            bottom: 70px;
         }
     }
 
@@ -677,6 +677,7 @@
         }
 
         .toggle-comment-btn {
+            z-index: 4;
             width: 30%;
             margin-top: 15px;
             margin-bottom: 5px;
@@ -688,6 +689,7 @@
             margin-bottom: 10px;
             margin-left: 100px;
             margin-right: 100px;
+            transform: translateY(-115px);
         }
 
         .post-title,
@@ -712,10 +714,19 @@
             line-height: 130%;
         }
 
+        .commentate {
+            height: 400px;
+        }
+
         .comment-container {
             width: 50%;
             margin-left: 100px;
             margin-right: 100px;
+            transform: translateY(-110px);
+        }
+
+        .userCaption {
+            transform: translateY(-90px);
         }
 
         .modif-content,
@@ -726,8 +737,8 @@
 
         .form-alert {
             height: 60px;
-            width: 50% !important;
-            bottom: 55px;
+            width: 30% !important;
+            bottom: 70px;
         }
     }
 </style>

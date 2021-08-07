@@ -30,7 +30,7 @@
         <div class="flexCenter main-container">
             <h2 v-if="user.isAdmin" class="paragraphes admin">*** Compte Administrateur ***</h2>
             <p class="paragraphes email-p">{{ email }}</p>
-            <p class="paragraphes psw-p">Créé le : {{ createdTime }}</p>
+            <p class="paragraphes created-at-p">Créé le : {{ createdTime }}</p>
             
             <button class="btn caption-btn" @click="toggleModifyEmail()">Changer E-mail</button>
             <button class="btn caption-btn" @click="toggleModifyPassword()">Changer mot de passe</button>
@@ -599,7 +599,7 @@
     }
 
     .email-p,
-    .psw-p {
+    .created-at-p {
         font-family: "Roboto-Light";
         font-size: 100%;
         font-weight: 600;
@@ -706,16 +706,273 @@
     /* =============================================================================== */
     @media screen and (min-width: 421px) and (max-width : 576px) {
 
+        $margin_Base: 30px;
+
+        .main-container {
+            margin: $margin_Base;
+            margin-bottom: 0px;
+        }
         
+        .user-photo {
+            height: 200px;
+            width: 35%;
+        }
+
+        .photoPreview {
+            border-radius: 15px;
+        }
+        
+        .profile-infos {
+            height: 150px;
+            width: 55%;
+        }
+
+        .profile-infos input,
+        .paragraphes {
+            margin: 0px;
+            font-size: 110%;
+        }
+
+        .profile-infos input {
+            height: 25px;
+            padding: 7px;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .paragraphes {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .admin {
+            margin-bottom: 30px;
+            font-size: 120%;
+        }
+
+        .email-p,
+        .created-at-p {
+            font-size: 115%;
+        }
+
+        .email-p {
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+
+        .reset-form {
+            height: 400px;
+            width: 85%;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-radius: 15px;
+        }
+
+        .cancel-btn,
+        .send-btn {
+            height: 60px;
+            width: 40%;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .label-input {
+            width: 80%;
+        }
+
+        .label-input label,
+        .label-input input {
+            width: 100%;
+            font-size: 120%;
+        }
+
+        .label-input input {
+            height: 50px;
+            margin-top: 7px;
+        }
+        
+        .caption-btn {
+            height: 60px;
+            width: 40%;
+            margin-top: $margin_Base;
+            padding: 5px;
+            font-size: 140%;
+        }
+
+        .delete-btn {
+            height: 60px;
+            margin-top: 30px;
+            width: 60%;
+        }
+
+
+        /* --- Alert Message --- */
+        .form-alert {
+            height: 40px;
+            bottom: -40px;
+            width: 85% !important;
+            font-size: 110%;
+        }
+
+        .server-alert,
+        .server-alert-form {
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 75% !important;
+            margin: 0px;
+            font-size: 110%;
+            font-weight: 400;
+            line-height: 130%;
+        }
+
+        .server-alert {
+            top: 20px;
+            height: 80px;
+        }
+        
+        .server-alert-form {
+            top: -40px;
+            height: 60px;
+        }
     }
 
 
     /* =============================================================================== */
-    /*      Tablet Big Size       */
+    /*      Laptop Small Size       */
     /* =============================================================================== */
     @media screen and (min-width: 577px) and (max-width : 768px) {
-
         
+        $margin_Base: 40px;
+
+        .main-container {
+            margin: $margin_Base;
+            margin-bottom: 0px;
+        }
+        
+        .user-photo {
+            height: 200px;
+            width: 35%;
+        }
+
+        .photoPreview {
+            border-radius: 15px;
+        }
+        
+        .profile-infos {
+            height: 150px;
+            width: 55%;
+        }
+
+        .profile-infos input,
+        .paragraphes {
+            width: 80%;
+            margin: 0px;
+            margin-left: 10%;
+            font-size: 110%;
+        }
+
+        .profile-infos input {
+            height: 25px;
+            padding: 7px;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .paragraphes {
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .admin {
+            margin-bottom: 30px;
+            font-size: 120%;
+        }
+
+        .email-p,
+        .created-at-p {
+            font-size: 115%;
+        }
+
+        .email-p {
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+
+        .reset-form {
+            height: 400px;
+            width: 85%;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-radius: 15px;
+        }
+
+        .cancel-btn,
+        .send-btn {
+            height: 60px;
+            width: 40%;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .label-input {
+            width: 80%;
+        }
+
+        .label-input label,
+        .label-input input {
+            width: 100%;
+            font-size: 120%;
+        }
+
+        .label-input input {
+            height: 50px;
+            margin-top: 7px;
+        }
+        
+        .caption-btn {
+            height: 65px;
+            width: 35%;
+            margin-top: $margin_Base;
+            padding: 5px;
+            font-size: 150%;
+        }
+
+        .delete-btn {
+            height: 80px;
+            margin-top: 60px;
+            width: 50%;
+        }
+
+
+        /* --- Alert Message --- */
+        .form-alert {
+            height: 40px;
+            bottom: -40px;
+            width: 85% !important;
+            font-size: 110%;
+        }
+
+        .server-alert,
+        .server-alert-form {
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 75% !important;
+            margin: 0px;
+            font-size: 110%;
+            font-weight: 400;
+            line-height: 130%;
+        }
+
+        .server-alert {
+            top: 20px;
+            height: 80px;
+        }
+        
+        .server-alert-form {
+            top: -40px;
+            height: 60px;
+        }
     }
 
 
@@ -724,6 +981,138 @@
     /* =============================================================================== */
     @media screen and (min-width: 769px) and (max-width : 992px) {
         
+        $margin_Base: 60px;
+
+        .main-container {
+            margin: $margin_Base;
+            margin-bottom: 0px;
+        }
+        
+        .user-photo {
+            height: 280px;
+            width: 35%;
+        }
+
+        .photoPreview {
+            border-radius: 15px;
+        }
+        
+        .profile-infos {
+            height: 200px;
+            width: 55%;
+        }
+
+        .profile-infos input,
+        .paragraphes {
+            width: 70%;
+            margin: 0px;
+            margin-left: 15%;
+            font-size: 115%;
+        }
+
+        .profile-infos input {
+            height: 25px;
+            padding: 7px;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .paragraphes {
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .admin {
+            margin-bottom: 30px;
+            font-size: 120%;
+        }
+
+        .email-p,
+        .created-at-p {
+            font-size: 125%;
+        }
+
+        .email-p {
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+
+        .reset-form {
+            height: 500px;
+            width: 75%;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-radius: 15px;
+        }
+
+        .cancel-btn,
+        .send-btn {
+            height: 60px;
+            width: 40%;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .label-input {
+            width: 80%;
+        }
+
+        .label-input label,
+        .label-input input {
+            width: 100%;
+            font-size: 120%;
+        }
+
+        .label-input input {
+            height: 50px;
+            margin-top: 7px;
+        }
+        
+        .caption-btn {
+            height: 65px;
+            width: 35%;
+            margin-top: $margin_Base;
+            padding: 5px;
+            font-size: 150%;
+        }
+
+        .delete-btn {
+            height: 80px;
+            margin-top: 35px;
+            width: 50%;
+        }
+
+
+        /* --- Alert Message --- */
+        .form-alert {
+            height: 40px;
+            bottom: -40px;
+            width: 85% !important;
+            font-size: 120%;
+        }
+
+        .server-alert,
+        .server-alert-form {
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 75% !important;
+            margin: 0px;
+            font-size: 140%;
+            font-weight: 400;
+            line-height: 130%;
+        }
+
+        .server-alert {
+            top: 100px;
+            height: 100px;
+            width: 65% !important;
+        }
+        
+        .server-alert-form {
+            top: -40px;
+            height: 80px;
+            width: 65% !important;
+        }
     }
 
 
@@ -731,7 +1120,148 @@
     /*      Laptop Big Size      */
     /* =============================================================================== */
     @media screen and (min-width: 993px) and (max-width : 1366px) {
+        .reset-page {
+            object-fit: cover;
+            top: -50px;
+            left: 0;
+            margin: -3.2%;
+            margin-bottom: -80px;
+            padding: 3.2%;
+            height: 110%;
+        }
+
+        $margin_Base: 60px;
+
+        .main-container {
+            margin: $margin_Base;
+            margin-bottom: 0px;
+        }
         
+        .user-photo {
+            height: 280px;
+            width: 35%;
+        }
+
+        .photoPreview {
+            border-radius: 15px;
+        }
+        
+        .profile-infos {
+            height: 200px;
+            width: 55%;
+        }
+
+        .profile-infos input,
+        .paragraphes {
+            width: 70%;
+            margin: 0px;
+            margin-left: 15%;
+            font-size: 115%;
+        }
+
+        .profile-infos input {
+            height: 25px;
+            padding: 7px;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .paragraphes {
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .admin {
+            margin-bottom: 30px;
+            font-size: 120%;
+        }
+
+        .email-p,
+        .created-at-p {
+            font-size: 125%;
+        }
+
+        .email-p {
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+
+        .reset-form {
+            height: 500px;
+            width: 75%;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-radius: 15px;
+        }
+
+        .cancel-btn,
+        .send-btn {
+            height: 60px;
+            width: 40%;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .label-input {
+            width: 80%;
+        }
+
+        .label-input label,
+        .label-input input {
+            width: 100%;
+            font-size: 120%;
+        }
+
+        .label-input input {
+            height: 50px;
+            margin-top: 7px;
+        }
+        
+        .caption-btn {
+            height: 65px;
+            width: 35%;
+            margin-top: 30px;
+            padding: 5px;
+            font-size: 150%;
+        }
+
+        .delete-btn {
+            height: 80px;
+            margin-top: 35px;
+            width: 50%;
+        }
+
+
+        /* --- Alert Message --- */
+        .form-alert {
+            height: 40px;
+            bottom: -40px;
+            width: 85% !important;
+            font-size: 120%;
+        }
+
+        .server-alert,
+        .server-alert-form {
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 75% !important;
+            margin: 0px;
+            font-size: 140%;
+            font-weight: 400;
+            line-height: 130%;
+        }
+
+        .server-alert {
+            top: 100px;
+            height: 120px;
+            width: 60% !important;
+        }
+        
+        .server-alert-form {
+            top: -40px;
+            height: 80px;
+            width: 65% !important;
+        }
     }
 
 
@@ -740,5 +1270,152 @@
     /* =============================================================================== */
     @media screen and (min-width: 1367px) {
         
+        .reset-page {
+            object-fit: cover;
+            top: -50px;
+            left: 0;
+            margin: -2.95%;
+            padding: 2.95%;
+            height: 105%;
+        }
+
+        $margin_Base: 60px;
+
+        .main-container {
+            margin: $margin_Base;
+            margin-bottom: 0px;
+            width: 65%;
+        }
+        
+        .user-photo {
+            height: 300px;
+            width: 25%;
+            margin-left: 2.5%;
+        }
+
+        .photoPreview {
+            border-radius: 15px;
+        }
+        
+        .profile-infos {
+            height: 200px;
+            width: 60%;
+            margin-right: -13%;
+        }
+        
+        .paragraphes {
+            width: 60%;
+            margin: 0px;
+            margin-left: 20%;
+            font-size: 125%;
+        }
+
+        .profile-infos input {
+            height: 25px;
+            margin: 0px;
+            padding: 11px;
+            padding-left: 10px;
+            border-radius: 5px;
+            font-size: 125%;
+        }
+
+        .paragraphes {
+            padding: 13px;
+            border-radius: 5px;
+        }
+        
+        .admin {
+            margin-bottom: 30px;
+            font-size: 135%;
+        }
+
+        .email-p,
+        .created-at-p {
+            font-size: 140%;
+        }
+
+        .email-p {
+            margin-top: 0px;
+            margin-bottom: 40px;
+        }
+
+        .reset-form {
+            height: 500px;
+            width: 50%;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-radius: 15px;
+        }
+
+        .cancel-btn,
+        .send-btn {
+            height: 70px;
+            width: 35%;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        .label-input {
+            width: 65%;
+        }
+
+        .label-input label,
+        .label-input input {
+            width: 100%;
+            font-size: 120%;
+        }
+
+        .label-input input {
+            height: 50px;
+            margin-top: 7px;
+        }
+        
+        .caption-btn {
+            height: 80px;
+            width: 30%;
+            margin-top: 40px;
+            padding: 5px;
+            font-size: 160%;
+        }
+
+        .delete-btn {
+            height: 100px;
+            margin-top: 50px;
+            width: 30%;
+            font-size: 170%;
+        }
+
+
+        /* --- Alert Message --- */
+        .form-alert {
+            height: 40px;
+            bottom: -40px;
+            width: 60% !important;
+            font-size: 120%;
+        }
+
+        .server-alert,
+        .server-alert-form {
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 75% !important;
+            margin: 0px;
+            font-size: 140%;
+            font-weight: 400;
+            line-height: 130%;
+        }
+
+        .server-alert {
+            top: 100px;
+            height: 150px;
+            width: 40% !important;
+            font-size: 150%;
+        }
+        
+        .server-alert-form {
+            top: -40px;
+            height: 80px;
+            width: 50% !important;
+        }
     }
 </style>

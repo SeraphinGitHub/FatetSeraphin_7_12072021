@@ -71,25 +71,50 @@
     /* =============================================================================== */
     @media screen and (min-width: 421px) and (max-width : 576px) {
         
-        
+        .user-pict {
+            height: 100px;
+            margin: 30px !important;
+            margin-bottom: 0 !important;
+        }
+
+        .user-pict img {
+            width: 100px;
+        }
+
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
     }
 
 
     /* =============================================================================== */
     /*      Tablet Big Size       */
     /* =============================================================================== */
-    @media screen and (min-width: 577px) and (max-width : 768px) {
+    @media screen and (min-width: 577px) and (max-width : 992px) {
 
-        
-    }
+        .user-pict {
+            height: 100px;
+            margin: 30px !important;
+            margin-bottom: 0 !important;
+        }
 
+        .user-pict img {
+            width: 100px;
+        }
 
-    /* =============================================================================== */
-    /*      Laptop Small Size       */
-    /* =============================================================================== */
-    @media screen and (min-width: 769px) and (max-width : 992px) {
-        
-        
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
     }
 
 
@@ -98,7 +123,24 @@
     /* =============================================================================== */
     @media screen and (min-width: 993px) and (max-width : 1366px) {
         
-        
+        .user-pict {
+            height: 110px;
+            margin: 40px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .user-pict img {
+            width: 110px;
+        }
+
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
     }
 
 
@@ -107,5 +149,24 @@
     /* =============================================================================== */
     @media screen and (min-width: 1367px) {
         
+        .user-pict {
+            height: 120px;
+            margin: 40px !important;
+            margin-left: 150px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .user-pict img {
+            width: 120px;
+        }
+
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
     }
 </style>

@@ -256,8 +256,8 @@
   /* --- Alert Message --- */
   .swap-pages-alert {
     z-index: 30;
-    position: absolute;
-    top: 70px;
+    position: fixed;
+    top: 100px;
     left: 50%;
     height: 90px;
     width: 70%;
@@ -431,7 +431,6 @@
     }
 
     .swap-pages-alert {
-      top: 90px;
       width: 60% !important;
       padding-left: 4%;
       padding-right: 4%;
@@ -496,7 +495,6 @@
     }
 
     .swap-pages-alert {
-      top: 40px;
       height: 150px;
       width: 40% !important;
       padding-left: 4%;
@@ -595,7 +593,6 @@
     }
 
     .swap-pages-alert {
-      top: 20px;
       height: 120px;
       width: 40% !important;
       padding-left: 4%;
@@ -694,13 +691,12 @@
     }
 
     .swap-pages-alert {
-      top: 30px;
       height: 140px;
       width: 30% !important;
       padding-left: 4%;
       padding-right: 4%;
       line-height: 200%;
-      font-size: 130%;
+      font-size: 150%;
     }
   }
 </style>
