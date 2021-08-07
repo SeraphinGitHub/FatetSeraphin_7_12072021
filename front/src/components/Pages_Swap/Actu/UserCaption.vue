@@ -60,6 +60,7 @@
         height: 70px;
         width: 100%;
         margin: 15px;
+        margin-left: 15px !important;
         margin-bottom: 8px;
     }
 
@@ -70,5 +71,133 @@
 
         border-radius: 50% !important;
         box-shadow: black 5px 5px 5px;
+    }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 576px) {
+
+        .user-pict {
+            height: 100px;
+            margin-left: 30px !important;
+        }
+
+        .circle-user-img {
+            width: 100px;
+        }
+
+        .user-infos {
+            margin-left: 20px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 120%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Tablet Big Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 577px) and (max-width : 768px) {
+
+        .user-pict {
+            height: 100px;
+            margin-left: 30px !important;
+        }
+
+        .circle-user-img {
+            width: 100px;
+        }
+
+        .user-infos {
+            margin-left: 20px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 120%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+        
+        .user-pict {
+            height: 120px;
+            margin: 15px !important;
+            margin-left: 40px !important;
+        }
+
+        .circle-user-img {
+            width: 120px;
+        }
+
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+        .user-pict {
+            height: 100px;
+            margin: 15px !important;
+            margin-left: 50px !important;
+        }
+
+        .circle-user-img {
+            width: 100px;
+        }
+
+        .user-infos {
+            margin-left: 40px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        .user-pict {
+            height: 100px;
+            margin: 20px !important;
+            margin-left: 45px !important;
+        }
+
+        .circle-user-img {
+            width: 100px;
+        }
+
+        .user-infos {
+            margin-left: 30px;
+        }
+
+        .user-infos h2,
+        .user-infos p {
+            font-size: 110%;
+        }
     }
 </style>

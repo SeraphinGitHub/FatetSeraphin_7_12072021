@@ -29,7 +29,6 @@
 
         <div class="flexCenter main-container">
             <h2 v-if="user.isAdmin" class="paragraphes admin">*** Compte Administrateur ***</h2>
-            <span v-if="!user.isAdmin" class="empty-space"></span>
             <p class="paragraphes email-p">{{ email }}</p>
             <p class="paragraphes psw-p">Créé le : {{ createdTime }}</p>
             
@@ -37,7 +36,7 @@
             <button class="btn caption-btn" @click="toggleModifyPassword()">Changer mot de passe</button>
         </div>
 
-        <button v-if="user.isAdmin" class="btn red-btn delete-btn" @click="toggleDeleteAccount()">Supprimer le compte</button>
+        <button v-if="!user.isAdmin" class="btn red-btn delete-btn" @click="toggleDeleteAccount()">Supprimer le compte</button>
 
         <section v-show="toggleResetPage()" class="flexCenter reset-page">
             <form class="flexCenter reset-form">
@@ -150,6 +149,8 @@
                 serverAlertForm: false,
                 serverMsgForm: "",
 
+                isAdminMsg: ">>> Administrateur <<<",
+
                 token: window.localStorage.getItem("Token"),
             }
         },
@@ -158,6 +159,11 @@
             await this.getUserProfile();
             this.email = window.localStorage.getItem("Email");
             this.createdTime = new Date(this.user.createdAt).toLocaleString();
+            
+            if(this.user.isAdmin) {
+                this.$parent.$emit("userAdmin", this.isAdminMsg);
+                this.$parent.$emit("adminPopup");
+            }
         },
 
         methods: {
@@ -167,15 +173,7 @@
 
 
             async getUserProfile() {
-                this.user = await fetch("http://localhost:3000/api/auth/profile", {
-                    headers: {
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "GET",
-                })
-                .then(response => response.json())
-                .then(data => { return data });
+                this.user = await this.getLoggedUserInfos();
             },
 
 
@@ -209,7 +207,10 @@
                     body: formData
                 });
                 
-                try { return await response }
+                try {
+                    await response;
+                    this.$emit("refreshActu");
+                }
                 catch(error) { console.log("error", error) }
             },
 
@@ -241,6 +242,7 @@
                 try {
                     await response.json();
                     await this.getUserProfile();
+                    this.$emit("refreshActu");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -590,15 +592,10 @@
 
     // ========== User Fields ==========
     .admin {
-        margin-bottom: $margin_Base;
+        margin-top: 30px;
         font-size: 105%;
         border: none;
-        background: linear-gradient(to bottom, rgb(212, 244, 255), dodgerblue);
-    }
-
-    .empty-space {
-        height: $margin_Base + 30px;
-        width: 100%;
+        background: linear-gradient(to bottom right, greenyellow, rgb(0, 170, 0));
     }
 
     .email-p,
@@ -609,6 +606,7 @@
     }
 
     .email-p {
+        margin-top: 30px;
         margin-bottom: $margin_Base;
     }
 
@@ -658,7 +656,7 @@
     }
 
     .delete-btn {
-        margin-top: 30px;
+        margin-top: 35px;
         width: 80%;
     }
 
@@ -699,5 +697,48 @@
     .green-popup {
         border: double green 5px !important;
         background: lightgreen !important;
+    }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 576px) {
+
+        
+    }
+
+
+    /* =============================================================================== */
+    /*      Tablet Big Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 577px) and (max-width : 768px) {
+
+        
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+        
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        
     }
 </style>

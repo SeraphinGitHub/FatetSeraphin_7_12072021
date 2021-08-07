@@ -6,7 +6,7 @@
     </figure>
     
     <transition name="slideSide" id="popupTrans">
-      <h3 class="flexCenter swap-pages-alert" v-show="swapPageAlert">{{ swapPageMsg }}</h3>
+      <h3 class="flexCenter swap-pages-alert" v-show="swapPageAlert">{{ swapPageMsg }} <br> {{ isAdminMsg }}</h3>
     </transition>
 
     <LogoutBtn
@@ -25,6 +25,8 @@
       @swapPages="isSwapPages = !isSwapPages"
       @swapPageAlert="swapPageAlert = !swapPageAlert"
       @swapPageMsg="swapPageMsg = $event"
+      @adminPopup="adminPopup()"
+      @userAdmin="isAdminMsg = $event"
     />
 
     <LoadingSpinner v-show="isLoading"/>
@@ -59,6 +61,8 @@
 
         swapPageAlert: false,
         swapPageMsg: "",
+        
+        isAdminMsg: "",
 
         token: window.localStorage.getItem("Token"),
         popupDuration: 1000, // milliseconds
@@ -75,6 +79,16 @@
           this.isLogPages = false;
           this.isSwapPages = true;
         }
+      },
+
+      adminPopup() {
+        const popup = document.querySelector(".swap-pages-alert");
+        popup.classList.add("gold-popup");
+        
+        setTimeout(() => {
+          this.isAdminMsg = "";
+          popup.classList.remove("gold-popup")
+        }, 3500);
       },
     },
   }
@@ -105,6 +119,7 @@
     height: 500px;
     margin: 5px;
     margin-top: 0;
+    margin-bottom: 20px;
   }
 
   /* ======== Pages Buttons ======== */
@@ -245,7 +260,7 @@
     top: 70px;
     left: 50%;
     height: 90px;
-    width: 65%;
+    width: 70%;
     padding-left: 10px;
     padding-right: 10px;
     margin: 0px;
@@ -260,10 +275,15 @@
     background: lightgreen;
   }
 
+  .gold-popup {
+    border: double rgb(255, 136, 0) 5px !important;
+    background: rgb(255, 228, 76) !important;
+  }
 
-  // ****************************************************************************************************
+
+  // ****************************************
   // ==>      Transitions     <==
-  // ****************************************************************************************************
+  // ****************************************
   
   // ========== Fade ==========
   .fade-enter-active,
@@ -299,5 +319,360 @@
     70% {transform: translateX(-54%)}
     90% {transform: translateX(-48%)}
     100% {transform: translateX(-50%)}
+  }
+</style>
+
+
+<style>
+  /* =============================================================================== */
+  /*      Tablet Small Size       */
+  /* =============================================================================== */
+  @media screen and (min-width: 421px) and (max-width : 576px) {
+
+    .logo {
+      height: 40px;
+    }
+
+    .logo img {
+      width: 220px;
+    }
+
+    .pages-log,
+    .pages-swap {
+      height: 660px;
+      margin-bottom: 20px;
+    }
+
+    .login,
+    .signin,
+    .actu,
+    .user-wall,
+    .profile {
+      width: 97% !important;
+    }
+
+    .login-btn,
+    .signin-btn,
+    .actu-btn,
+    .user-wall-btn,
+    .profile-btn {
+      height: 50px;
+      top: -50px;
+      font-size: 130%;
+    }
+
+    input {
+      height: 40px;
+      font-size: 110%;
+    }
+
+    .btn {
+      height: 45px;
+      width: 40%;
+      font-size: 140%;
+    }
+  }
+
+
+  /* =============================================================================== */
+  /*      Tablet Big Size       */
+  /* =============================================================================== */
+  @media screen and (min-width: 577px) and (max-width : 768px) {
+
+    .logo {
+      height: 40px;
+    }
+
+    .logo img {
+      width: 240px;
+    }
+
+    .pages-log,
+    .pages-swap {
+      height: 770px;
+      margin-bottom: 20px;
+    }
+
+    .login,
+    .signin,
+    .actu,
+    .user-wall,
+    .profile {
+      width: 98% !important;
+    }
+
+    .login-btn,
+    .signin-btn,
+    .actu-btn,
+    .user-wall-btn,
+    .profile-btn {
+      height: 50px;
+      top: -50px;
+      font-size: 140%;
+    }
+
+    .signin-form {
+      height: 90% !important;
+    }
+
+    .form-alert {
+      font-size: 110%;
+    }
+
+    .field-container {
+      width: 70% !important;
+    }
+
+    label {
+      font-size: 120%;
+    }
+
+    input {
+      height: 40px;
+      font-size: 120%;
+    }
+
+    .btn {
+      height: 50px;
+      width: 40%;
+      font-size: 160%;
+    }
+  }
+
+
+  /* =============================================================================== */
+  /*      Laptop Small Size       */
+  /* =============================================================================== */
+  @media screen and (min-width: 769px) and (max-width : 992px) {
+    
+    .logo {
+      height: 50px;
+    }
+
+    .logo img {
+      width: 270px;
+      margin-left: 50px;
+    }
+
+    .pages-log,
+    .pages-swap {
+      height: 900px;
+      margin-bottom: 30px;
+    }
+
+    .login,
+    .signin,
+    .actu,
+    .user-wall,
+    .profile {
+      width: 98% !important;
+    }
+
+    .login-btn,
+    .signin-btn,
+    .actu-btn,
+    .user-wall-btn,
+    .profile-btn {
+      height: 50px;
+      top: -50px;
+      font-size: 140%;
+    }
+
+    .signin-form {
+      height: 90% !important;
+    }
+
+    .form-alert {
+      font-size: 110%;
+    }
+
+    .field-container {
+      width: 70% !important;
+    }
+
+    label {
+      font-size: 120%;
+    }
+
+    input {
+      height: 40px;
+      font-size: 120%;
+    }
+
+    .btn {
+      height: 50px;
+      width: 40%;
+      font-size: 160%;
+    }
+  }
+
+
+  /* =============================================================================== */
+  /*      Laptop Big Size      */
+  /* =============================================================================== */
+  @media screen and (min-width: 993px) and (max-width : 1366px) {
+   
+   .logo {
+      position: absolute;
+      height: 50px;
+      width: 90%;
+      margin: 0px;
+      top: 15px;
+      left: 1%;
+    }
+
+    .logo img {
+      width: 20%;
+    }
+
+    .pages-log,
+    .pages-swap {
+      height: 850px;
+      top: 70px;
+      margin-bottom: 60px;
+    }
+
+    .login,
+    .signin,
+    .actu,
+    .user-wall,
+    .profile {
+      width: 95% !important;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 20px !important;
+    }
+
+    .login-btn,
+    .signin-btn,
+    .actu-btn,
+    .user-wall-btn,
+    .profile-btn {
+      height: 60px;
+      width: 19%;
+      top: -60px;
+      font-size: 150%;
+    }
+
+    .actu-btn {
+      left: 19% !important;
+    }
+
+    .profile-btn {
+      right: 19% !important;
+    }
+
+    .signin-form {
+      height: 90% !important;
+    }
+
+    .form-alert {
+      font-size: 110%;
+    }
+
+    .field-container {
+      width: 70% !important;
+    }
+
+    label {
+      font-size: 120%;
+    }
+
+    input {
+      height: 40px;
+      font-size: 120%;
+    }
+
+    .btn {
+      height: 45px;
+      width: 40%;
+      font-size: 160%;
+    }
+  }
+
+
+  /* =============================================================================== */
+  /*      Screen Normal Size && Over      */
+  /* =============================================================================== */
+  @media screen and (min-width: 1367px) {
+    
+    .logo {
+      position: absolute;
+      height: 50px;
+      width: 75%;
+      margin: 0px;
+      top: 15px;
+      left: 1%;
+    }
+
+    .logo img {
+      width: 20%;
+    }
+
+    .pages-log,
+    .pages-swap {
+      height: 1000px;
+      top: 75px;
+      margin-bottom: 60px;
+    }
+
+    .login,
+    .signin,
+    .actu,
+    .user-wall,
+    .profile {
+      width: 95% !important;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 20px !important;
+    }
+
+    .login-btn,
+    .signin-btn,
+    .actu-btn,
+    .user-wall-btn,
+    .profile-btn {
+      height: 65px;
+      width: 19%;
+      top: -65px;
+      font-size: 160%;
+    }
+
+    .actu-btn {
+      left: 19% !important;
+    }
+
+    .profile-btn {
+      right: 19% !important;
+    }
+
+    .signin-form {
+      height: 90% !important;
+    }
+
+    .form-alert {
+      font-size: 110%;
+    }
+
+    .field-container {
+      width: 70% !important;
+    }
+
+    label {
+      font-size: 120%;
+    }
+
+    input {
+      height: 40px;
+      font-size: 120%;
+    }
+
+    .btn {
+      height: 45px;
+      width: 40%;
+      font-size: 160%;
+    }
   }
 </style>

@@ -188,4 +188,208 @@
     .publish-btn {
         margin-bottom: 10px;
     }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 576px) {
+
+        input {
+            height: 30px !important;
+        }
+
+        textarea {
+            height: 80px !important;
+            font-size: 110%;
+        }
+
+        .imagePreview {
+            width: 100%;
+            max-height: 200px;
+            max-width: 300px;
+        }
+     
+        .add-image-btn,
+        .publish-btn {
+            width: 55%;
+        }
+
+        .form-alert {
+            width: 60% !important;
+            font-size: 120%;
+            bottom: 50px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Tablet Big Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 577px) and (max-width : 768px) {
+
+        .publish-flow {
+            width: 80%;
+        }
+
+        input {
+            height: 30px !important;
+        }
+
+        textarea {
+            height: 80px !important;
+            font-size: 110%;
+        }
+
+        .imagePreview {
+            width: 100%;
+            max-height: 280px;
+            max-width: 300px;
+        }
+
+        .add-image-btn,
+        .publish-btn {
+            width: 55%;
+        }
+
+        .form-alert {
+            width: 60% !important;
+            font-size: 120%;
+            bottom: 50px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+        
+        .publish-flow {
+            width: 80%;
+        }
+
+        input {
+            height: 30px !important;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            height: 100px !important;
+            margin-bottom: 5px;
+            font-size: 110%;
+        }
+
+        .imagePreview {
+            width: 100%;
+            max-height: 370px;
+            max-width: 400px;
+        }
+        
+        .add-image-btn,
+        .publish-btn {
+            height: 60px;
+            width: 35%;
+            margin: 20px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .form-alert {
+            width: 60% !important;
+            font-size: 120%;
+            bottom: 60px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+        .publish-flow {
+            width: 72%;
+        }
+        
+        input {
+            height: 30px !important;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            height: 80px !important;
+            margin-bottom: 5px;
+            font-size: 110%;
+        }
+
+        .imagePreview {
+            width: 100%;
+            max-height: 380px;
+            max-width: 400px;
+        }
+        
+        .add-image-btn,
+        .publish-btn {
+            width: 35%;
+            margin: 20px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .form-alert {
+            width: 60% !important;
+            font-size: 130%;
+            bottom: 60px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        .publish-flow {
+            width: 80%;
+        }
+
+        .post-form {
+            width: 65%;
+            padding-left: 8%;
+            padding-right: 8%;
+        }
+        
+        input {
+            height: 35px !important;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            height: 100px !important;
+            margin-bottom: 5px;
+            font-size: 110%;
+        }
+
+        .imagePreview {
+            width: 100%;
+            max-height: 420px;
+            max-width: 450px;
+        }
+        
+        .add-image-btn,
+        .publish-btn {
+            height: 60px;
+            width: 35%;
+            margin: 30px;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+
+        .form-alert {
+            width: 60% !important;
+            font-size: 130%;
+            bottom: 80px;
+        }
+    }
 </style>

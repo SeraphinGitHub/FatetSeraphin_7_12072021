@@ -19,28 +19,6 @@ exports.getAllItem = (itemModel, whereObject, req, res, next) => {
 
 
 // ==================================================================================
-// Get User Infos
-// ==================================================================================
-exports.getUserDetails = (userId, req, res, next) => {
-
-    User.findOne({ where: { id: userId } })
-    .then((user) => {
-                
-        const userCaption = {
-            id: user.id,
-            userName: user.userName,
-            position: user.position,
-            department: user.department,
-            imageUrl: user.imageUrl,
-        };
-
-        res.status(200).json(userCaption);
-
-    }).catch(() => res.status(403).json({ message: "User NOT found !" }));
-};
-
-
-// ==================================================================================
 // Check post User in order to Update/Delete (Base function)
 // ==================================================================================
 exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {

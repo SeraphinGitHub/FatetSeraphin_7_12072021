@@ -10,7 +10,6 @@ router.post("/login", userCtrl.login);
 router.post("/logout", auth, userCtrl.logout);
 router.post("/postUser", auth, userCtrl.getPostUserInfos);
 
-router.get("/user", auth, userCtrl.getUserCaption);
 router.get("/wall", auth, userCtrl.userWall);
 router.get("/profile", auth, userCtrl.getUserProfile);
 

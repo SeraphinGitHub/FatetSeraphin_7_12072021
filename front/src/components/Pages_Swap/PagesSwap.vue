@@ -1,9 +1,9 @@
 <template>
     <section class="flexCenter pages-swap">
                 
-        <UserProfile @profile="toggleProfile()"/>
+        <UserProfile @profile="toggleProfile()" @refreshActu="refreshActu()"/>
         <UserWall @wall="toggleWall()"/>
-        <Actu @actu="toggleActu()"/>
+        <Actu @actu="toggleActu()" :key="upActu"/>
 
     </section>
 </template>
@@ -28,6 +28,12 @@
             UserProfile,
         },
 
+        data() {
+            return  {
+                upActu: 0,
+            }
+        },
+
         mounted() {
             const currentPage = window.localStorage.getItem("Current Page");
             if(currentPage === "Actu") this.pageToggling("actu");
@@ -36,6 +42,11 @@
         },
         
         methods: {
+            refreshActu() {
+                this.upActu++;
+                setTimeout(() => this.pageToggling("profile"),0);
+            },
+            
             toggleActu() {
                 this.pageToggling("actu");
                 localStorage.setItem("Current Page", "Actu");
@@ -59,6 +70,7 @@
     .flow {
         justify-content: flex-start !important;
         overflow: scroll;
+        overflow-x: hidden;
         width: 95% !important;
         margin-left: 25px;
     }

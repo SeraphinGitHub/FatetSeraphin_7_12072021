@@ -42,7 +42,7 @@ module.exports = {
 
 
         async getLoggedUserInfos() {
-            const response = await fetch("http://localhost:3000/api/auth/user", {
+            const response = await fetch("http://localhost:3000/api/auth/profile", {
                 headers: {
                     "Content-Type": "application/json; charset=UTF-8",
                     "Authorization": `Bearer ${this.token}`

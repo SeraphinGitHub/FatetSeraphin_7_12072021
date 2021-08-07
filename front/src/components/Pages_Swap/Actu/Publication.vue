@@ -45,9 +45,6 @@
         </div>
 
         <form class="flexCenter commentate" method="POST">
-            <button class="btn green-btn like-btn" @click.prevent="likePost()" style="width: 40%">{{ likes }}</button>
-            <button class="btn red-btn dislike-btn" @click.prevent="dislikePost()" style="width: 40%">{{ dislikes }}</button>
-            
             <button class="btn toggle-comment-btn" @click.prevent="isComment=!isComment">Afficher les commentaires</button>
             
             <UserCaption/>
@@ -102,9 +99,6 @@
                 isEmpty: false,
                 isUpdated: false,
                 
-                likes: 0,
-                dislikes: 0,
-                
                 titleModif: "",
                 textModif: "",
                 commentText: "",
@@ -123,65 +117,6 @@
         },
 
         methods: {
-
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-
-            likePost() {
-                // if(this.post.likes) {
-                    const likeData = new FormData();
-                    likeData.set("id", this.post.id);
-                    likeData.set("like", 1);
-                    
-                    likeData.forEach((key, value) => likeData[value] = key);
-                    this.sendLikeDislike(likeData);
-                // }
-            },
-
-
-            dislikePost() {
-                // if(this.isDisliked) {
-                    const likeData = new FormData();
-                    likeData.set("id", this.post.id);
-                    likeData.set("like", -1);
-                    
-                    likeData.forEach((key, value) => likeData[value] = key);
-                    this.sendLikeDislike(likeData);
-                // }
-            },
-
-
-            async sendLikeDislike(likeData) {
-                const response = await fetch("http://localhost:3000/api/publish/like", {
-                    headers: { 
-                        "Content-Type": "application/json; charset=UTF-8",
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    method: "POST",
-                    body: JSON.stringify(likeData)
-                });
-                
-                try {
-                    const res = await response.json();
-                    this.likes = res.likesNumber;
-                    this.dislikes = res.dislikesNumber;
-                    
-                    console.log(res);
-                    
-                    this.$emit("refresh");
-                }
-                catch(error) { console.log("error", error) }
-            },
-
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-            // ***************************************************************************************************
-
-
-
             editPost() {
                 this.isEditingPost = !this.isEditingPost;
                 this.pictureSrc = this.post.imageUrl;
@@ -439,7 +374,6 @@
     
     .comment-flow {
         height: auto;
-        overflow: hidden;
         padding-top: 10px;
     }
 

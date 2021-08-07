@@ -131,31 +131,15 @@ exports.userWall = (req, res, next) => {
 
 
 // ==================================================================================
-// "GET" ==> Get User Caption
+// Get User Infos (Base function)
 // ==================================================================================
-exports.getUserCaption = (req, res, next) => {
+exports.getUserDetails = (userId, req, res, next) => {
 
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
-    generic.getUserDetails(userIdTok, req, res, next);
-}
-
-
-// ==================================================================================
-// "POST" ==> Get Post's User Infos
-// ==================================================================================
-exports.getPostUserInfos = (req, res, next) => generic.getUserDetails(req.body.id, req, res, next);
-
-
-// ==================================================================================
-// "GET" ==> User Profile
-// ==================================================================================
-exports.getUserProfile = (req, res, next) => {
-    const userIdTok = generic.verifyToken(req, res, next, "userId");
-    
-    User.findOne({ where: { id: userIdTok } })
-    .then(user => {
-        
+    User.findOne({ where: { id: userId } })
+    .then((user) => {
+                
         const securedUserDetails = {
+            id: user.id,
             isAdmin: user.isAdmin,
             userName: user.userName,
             position: user.position,
@@ -164,9 +148,24 @@ exports.getUserProfile = (req, res, next) => {
             createdAt: user.createdAt,
         };
 
-        res.status(200).json(securedUserDetails)
+        res.status(200).json(securedUserDetails);
 
-    }).catch(() => res.status(404).json({ message: "User NOT found !" }));
+    }).catch(() => res.status(403).json({ message: "User NOT found !" }));
+};
+
+
+// ==================================================================================
+// "POST" ==> Get Post's User Infos
+// ==================================================================================
+exports.getPostUserInfos = (req, res, next) => this.getUserDetails(req.body.id, req, res, next);
+
+
+// ==================================================================================
+// "GET" ==> User Profile
+// ==================================================================================
+exports.getUserProfile = (req, res, next) => {
+    const userIdTok = generic.verifyToken(req, res, next, "userId");
+    this.getUserDetails(userIdTok, req, res, next);
 };
 
 

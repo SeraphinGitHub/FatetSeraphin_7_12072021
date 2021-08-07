@@ -190,7 +190,6 @@
     }
 
     input {
-        height: 30px;
         margin-top: 8px;
     }
     
