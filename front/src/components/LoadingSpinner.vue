@@ -124,4 +124,213 @@
         0% { transform: translateY(7px) scaleY(25%) rotate(0deg) };
         100% { transform: translateY(7px) scaleY(25%) rotate(360deg) };
     }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 768px) {
+
+        .spin-container {
+            height: 115px;
+            width: 115px;
+        }
+
+        .ring-container-1,
+        .ring-container-2 {
+            width: 240px;
+            height: 240px;
+        }
+
+        .logo-top,
+        .logo-bottom {
+            height: 51%;
+        }
+
+        .logo-top {
+            border-radius: 60px 60px 0 0;
+        }
+
+        .logo-bottom {
+            border-radius: 0 0 60px 60px;
+        }
+
+        .ring-container-1 {
+            transform: translateY(-9px);
+        }
+
+        .ring-container-2 {
+            transform: translateY(9px);
+        }
+
+        .ring-1,
+        .ring-2 {
+            border-top: solid 10px;
+        }
+
+        .ring-1 {
+            border-top-color: red;
+            transform: rotate(-70deg);
+        }
+
+        .ring-2 {
+            border-top-color: lime;
+            transform: rotate(-70deg);
+        }
+
+        @keyframes spin_ring_1 {
+            0% { transform: translateY(-9px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(-9px) scaleY(25%) rotate(-360deg) };
+        }
+
+        @keyframes spin_ring_2 {
+            0% { transform: translateY(9px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(9px) scaleY(25%) rotate(360deg) };
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 1366px) {
+        
+        .spin-container {
+            height: 130px;
+            width: 130px;
+        }
+
+        .ring-container-1,
+        .ring-container-2 {
+            width: 260px;
+            height: 260px;
+        }
+
+        .logo-top,
+        .logo-bottom {
+            height: 51%;
+        }
+
+        .logo-top {
+            border-radius: 65px 65px 0 0;
+        }
+
+        .logo-bottom {
+            border-radius: 0 0 65px 65px;
+        }
+
+        .ring-container-1 {
+            transform: translateY(-10px);
+        }
+
+        .ring-container-2 {
+            transform: translateY(10px);
+        }
+
+        .ring-1,
+        .ring-2 {
+            border-top: solid 12px;
+        }
+
+        .ring-1 {
+            border-top-color: red;
+            transform: rotate(-70deg);
+        }
+
+        .ring-2 {
+            border-top-color: lime;
+            transform: rotate(-70deg);
+        }
+
+        @keyframes logo_anim {
+            0% { transform: translateY(0) };
+            25% { transform: translateY(10px) };
+            50% { transform: translateY(0px) };
+            75% { transform: translateY(-10px) };
+            100% { transform: translateY(0) };
+        }
+
+        @keyframes spin_ring_1 {
+            0% { transform: translateY(-10px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(-10px) scaleY(25%) rotate(-360deg) };
+        }
+
+        @keyframes spin_ring_2 {
+            0% { transform: translateY(10px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(10px) scaleY(25%) rotate(360deg) };
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        
+        .spin-container {
+            height: 150px;
+            width: 150px;
+        }
+
+        .ring-container-1,
+        .ring-container-2 {
+            width: 350px;
+            height: 350px;
+        }
+
+        .logo-top,
+        .logo-bottom {
+            height: 51%;
+        }
+
+        .logo-top {
+            border-radius: 75px 75px 0 0;
+        }
+
+        .logo-bottom {
+            border-radius: 0 0 75px 75px;
+        }
+
+        .ring-container-1 {
+            transform: translateY(-13px);
+        }
+
+        .ring-container-2 {
+            transform: translateY(13px);
+        }
+
+        .ring-1,
+        .ring-2 {
+            border-top: solid 20px;
+        }
+
+        .ring-1 {
+            border-top-color: red;
+            transform: rotate(-70deg);
+        }
+
+        .ring-2 {
+            border-top-color: lime;
+            transform: rotate(-70deg);
+        }
+
+        @keyframes logo_anim {
+            0% { transform: translateY(0) };
+            25% { transform: translateY(10px) };
+            50% { transform: translateY(0px) };
+            75% { transform: translateY(-10px) };
+            100% { transform: translateY(0) };
+        }
+
+        @keyframes spin_ring_1 {
+            0% { transform: translateY(-13px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(-13px) scaleY(25%) rotate(-360deg) };
+        }
+
+        @keyframes spin_ring_2 {
+            0% { transform: translateY(13px) scaleY(25%) rotate(0deg) };
+            100% { transform: translateY(13px) scaleY(25%) rotate(360deg) };
+        }
+    }
 </style>

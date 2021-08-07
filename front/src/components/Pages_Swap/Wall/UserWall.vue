@@ -127,7 +127,10 @@
     /* =============================================================================== */
     @media screen and (min-width: 577px) and (max-width : 768px) {
 
-        
+        .flow {
+            height: 730px;
+            width: 90% !important;
+        }
     }
 
 
@@ -136,6 +139,10 @@
     /* =============================================================================== */
     @media screen and (min-width: 769px) and (max-width : 992px) {
         
+        .flow {
+            height: 830px;
+            width: 90% !important;
+        }
     }
 
 
@@ -144,6 +151,10 @@
     /* =============================================================================== */
     @media screen and (min-width: 993px) and (max-width : 1366px) {
         
+        .flow {
+            height: 800px;
+            width: 85% !important;
+        }
     }
 
 
@@ -152,5 +163,9 @@
     /* =============================================================================== */
     @media screen and (min-width: 1367px) {
         
+        .flow {
+            height: 950px;
+            width: 85% !important;
+        }
     }
 </style>

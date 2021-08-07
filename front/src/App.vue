@@ -361,15 +361,16 @@
       font-size: 130%;
     }
 
-    input {
-      height: 40px;
-      font-size: 110%;
-    }
-
     .btn {
       height: 45px;
       width: 40%;
       font-size: 140%;
+    }
+
+    .swap-pages-alert {
+      width: 65% !important;
+      padding-left: 4%;
+      padding-right: 4%;
     }
   }
 
@@ -423,19 +424,17 @@
       width: 70% !important;
     }
 
-    label {
-      font-size: 120%;
-    }
-
-    input {
-      height: 40px;
-      font-size: 120%;
-    }
-
     .btn {
       height: 50px;
       width: 40%;
       font-size: 160%;
+    }
+
+    .swap-pages-alert {
+      top: 90px;
+      width: 60% !important;
+      padding-left: 4%;
+      padding-right: 4%;
     }
   }
 
@@ -473,8 +472,8 @@
     .actu-btn,
     .user-wall-btn,
     .profile-btn {
-      height: 50px;
-      top: -50px;
+      height: 55px;
+      top: -55px;
       font-size: 140%;
     }
 
@@ -490,19 +489,20 @@
       width: 70% !important;
     }
 
-    label {
-      font-size: 120%;
-    }
-
-    input {
-      height: 40px;
-      font-size: 120%;
-    }
-
     .btn {
       height: 50px;
       width: 40%;
       font-size: 160%;
+    }
+
+    .swap-pages-alert {
+      top: 40px;
+      height: 150px;
+      width: 40% !important;
+      padding-left: 4%;
+      padding-right: 4%;
+      line-height: 200%;
+      font-size: 130%;
     }
   }
 
@@ -555,6 +555,19 @@
       font-size: 150%;
     }
 
+    .login-btn,
+    .signin-btn {
+      width: 30%;
+    }
+
+    .login-btn {
+      left: 19% !important;
+    }
+
+    .signin-btn {
+      right: 19% !important;
+    }
+
     .actu-btn {
       left: 19% !important;
     }
@@ -575,19 +588,20 @@
       width: 70% !important;
     }
 
-    label {
-      font-size: 120%;
-    }
-
-    input {
-      height: 40px;
-      font-size: 120%;
-    }
-
     .btn {
       height: 45px;
       width: 40%;
       font-size: 160%;
+    }
+
+    .swap-pages-alert {
+      top: 20px;
+      height: 120px;
+      width: 40% !important;
+      padding-left: 4%;
+      padding-right: 4%;
+      line-height: 200%;
+      font-size: 130%;
     }
   }
 
@@ -640,6 +654,19 @@
       font-size: 160%;
     }
 
+    .login-btn,
+    .signin-btn {
+      width: 30%;
+    }
+
+    .login-btn {
+      left: 19% !important;
+    }
+
+    .signin-btn {
+      right: 19% !important;
+    }
+
     .actu-btn {
       left: 19% !important;
     }
@@ -660,19 +687,20 @@
       width: 70% !important;
     }
 
-    label {
-      font-size: 120%;
-    }
-
-    input {
-      height: 40px;
-      font-size: 120%;
-    }
-
     .btn {
       height: 45px;
       width: 40%;
       font-size: 160%;
+    }
+
+    .swap-pages-alert {
+      top: 30px;
+      height: 140px;
+      width: 30% !important;
+      padding-left: 4%;
+      padding-right: 4%;
+      line-height: 200%;
+      font-size: 130%;
     }
   }
 </style>

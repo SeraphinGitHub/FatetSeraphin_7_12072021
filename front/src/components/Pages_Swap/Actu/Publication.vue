@@ -315,13 +315,13 @@
     /* ========== PICTURE ========== */
     .file-pict {
         margin: 0;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         width: 90%;
     }
 
     .file-pict img,
     .modif-imagePreview {
-        object-fit: cover;
+        object-fit:scale-down;
         height: 100%;
         width: 100%;
         border-radius: 10px;
@@ -417,9 +417,9 @@
     }
     
 
-    /* ================================================================================ */
+    /* ======================================= */
     /* --- MODIFY POST --- */
-    /* ================================================================================ */
+    /* ======================================= */
     .modif-title {
         font-family: "Roboto-Medium";
         line-height: 100%;
@@ -440,5 +440,294 @@
     .repost-btn {
         width: 55%;
         margin-top: 0;
+    }
+
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 992px) {
+
+        .edit-btn,
+        .cancel-btn,
+        .delete-btn,
+        .toggle-comment-btn,
+        .add-comment-btn,
+        .modif-image-btn,
+        .repost-btn {
+            height: 60px;
+            font-size: 145%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modif-content {
+            margin: 20px;
+        }
+
+        .time-stamp {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-btn {
+            width: 80%;
+        }
+
+        .toggle-comment-btn {
+            width: 55%;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .add-comment-btn {
+            width: 45%;
+        }
+
+        .post-title,
+        .modif-title {
+            width: 75%;
+            height: 30px;
+            font-size: 125%;
+        }
+
+        .time-stamp,
+        .content,
+        .modif-content,
+        p,
+        .comment-container label,
+        .comment-container textarea {
+            font-size: 110% !important;
+        }
+
+        .content {
+            width: 100%;
+            margin: 25px;
+            line-height: 130%;
+        }
+
+        .comment-container {
+            margin-top: 20px;
+        }
+
+        .modif-content,
+        .comment-container textarea {
+            height: 80px;
+        }
+
+        .form-alert {
+            height: 40px;
+            width: 70% !important;
+            bottom: 55px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+        .comment-flow {
+            width: 80%;
+        }
+
+        .file-pict img {
+            max-width: 700px;
+        }
+
+        .edit-btn,
+        .cancel-btn,
+        .delete-btn,
+        .toggle-comment-btn,
+        .add-comment-btn,
+        .modif-image-btn,
+        .repost-btn {
+            height: 70px;
+            font-size: 160%;
+        }
+
+        .modif-image-btn,
+        .repost-btn {
+            width: 40%;
+            margin: 20px;
+            margin-bottom: 30px;
+        }
+
+        .modif-content {
+            margin: 30px;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+
+        .time-stamp {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-btn {
+            width: 70%;
+        }
+
+        .toggle-comment-btn {
+            width: 40%;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .add-comment-btn {
+            width: 25%;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .post-title,
+        .modif-title {
+            height: 30px;
+            width: 68%;
+            font-size: 130%;
+        }
+
+        .time-stamp,
+        .content,
+        .modif-content,
+        p,
+        .comment-container label,
+        .comment-container textarea {
+            font-size: 120% !important;
+        }
+
+        .content {
+            margin: 40px;
+            line-height: 130%;
+        }
+
+        .comment-container {
+            width: 65%;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        .modif-content,
+        .comment-container textarea {
+            height: 80px;
+        }
+
+        .form-alert {
+            height: 60px;
+            width: 50% !important;
+            bottom: 55px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+
+        .comment-flow {
+            width: 80%;
+        }
+
+        .file-pict img {
+            max-width: 800px;
+        }
+
+        .edit-btn,
+        .cancel-btn,
+        .delete-btn,
+        .toggle-comment-btn,
+        .add-comment-btn,
+        .modif-image-btn,
+        .repost-btn {
+            height: 70px;
+            font-size: 160%;
+        }
+
+        .modif-image-btn,
+        .repost-btn {
+            width: 40%;
+            margin: 20px;
+            margin-bottom: 30px;
+        }
+
+        .modif-content {
+            margin: 30px;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+
+        .time-stamp {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .post-btn {
+            width: 50%;
+            margin-bottom: 20px;
+        }
+
+        .edit-btn,
+        .cancel-btn,
+        .delete-btn {
+            width: 40%;
+        }
+
+        .toggle-comment-btn {
+            width: 30%;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .add-comment-btn {
+            width: 25%;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        .post-title,
+        .modif-title {
+            height: 30px;
+            width: 48%;
+            font-size: 130%;
+        }
+
+        .time-stamp,
+        .content,
+        .modif-content,
+        p,
+        .comment-container label,
+        .comment-container textarea {
+            font-size: 120% !important;
+        }
+
+        .content {
+            width: 50%;
+            margin: 40px;
+            line-height: 130%;
+        }
+
+        .comment-container {
+            width: 50%;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        .modif-content,
+        .comment-container textarea {
+            height: 120px;
+            width: 100%;
+        }
+
+        .form-alert {
+            height: 60px;
+            width: 50% !important;
+            bottom: 55px;
+        }
     }
 </style>

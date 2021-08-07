@@ -4,6 +4,10 @@
         <button class="login-btn" @click="showLogin()">Connexion</button>
         
         <form class="flexCenter login-form" method="POST">
+            <transition name="slideSide">
+                <h3 class="flexCenter form-alert server-alert" v-show="serverAlert">{{ serverMsg }}</h3>
+            </transition>
+
             <div class="flexCenter field-container">
                 <label for="email">E-mail</label>
                 <input class="log-input" name="email" id="email" type="email" placeholder="Entrer votre E-mail" v-model="email">
@@ -22,11 +26,7 @@
                 </transition>
             </div>
 
-            <transition name="slideSide">
-                <h3 class="flexCenter form-alert server-alert" v-show="serverAlert">{{ serverMsg }}</h3>
-            </transition>
-
-            <button class="btn" @click.prevent="login()" type="submit">Se Connecter</button>
+            <button class="btn log-btn" @click.prevent="login()" type="submit">Se Connecter</button>
         </form>
     </section>
 
@@ -208,5 +208,165 @@
         font-size: 100%;
         font-weight: 400;
         transform: translateX(-50%);
+    }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 768px) {
+
+        .field-container {
+            width: 70% !important;
+            height: 80px;
+        }
+
+        label {
+            font-size: 125%;
+        }
+
+        input {
+            height: 40px;
+            font-size: 110%;
+        }
+
+        .log-btn {
+            height: 60px;
+        }
+
+        .form-alert {
+            height: 35px;
+            font-size: 110%;
+        }
+
+        .server-alert {
+            height: 60px;
+            width: 70% !important;
+            font-size: 130%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+        
+        .field-container {
+            width: 50% !important;
+            height: 80px;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        label {
+            font-size: 125%;
+        }
+
+        input {
+            height: 60px;
+            font-size: 120%;
+        }
+
+        .log-btn {
+            height: 80px;
+        }
+
+        .form-alert {
+            height: 40px;
+            font-size: 120%;
+            bottom: -60px;
+        }
+
+        .server-alert {
+            top: 20px;
+            height: 80px;
+            width: 50% !important;
+            font-size: 140%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+        .field-container {
+            width: 50% !important;
+            height: 80px;
+            margin-left: 100px;
+            margin-right: 100px;
+        }
+
+        label {
+            font-size: 125%;
+        }
+
+        input {
+            height: 60px;
+            font-size: 120%;
+        }
+
+        .log-btn {
+            height: 80px;
+        }
+
+        .form-alert {
+            height: 40px;
+            font-size: 120%;
+            bottom: -60px;
+        }
+
+        .server-alert {
+            top: 20px;
+            height: 80px;
+            width: 50% !important;
+            font-size: 140%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        
+        .field-container {
+            width: 35% !important;
+            height: 80px;
+            margin-left: 200px;
+            margin-right: 200px;
+        }
+
+        label {
+            font-size: 125%;
+        }
+
+        input {
+            height: 60px;
+            font-size: 120%;
+        }
+
+        .log-btn {
+            height: 100px;
+            width: 25%;
+            margin-left: 200px;
+            margin-right: 200px;
+        }
+
+        .form-alert {
+            height: 40px;
+            font-size: 120%;
+            bottom: -60px;
+        }
+
+        .server-alert {
+            top: 40px;
+            height: 80px;
+            width: 40% !important;
+            font-size: 140%;
+        }
     }
 </style>

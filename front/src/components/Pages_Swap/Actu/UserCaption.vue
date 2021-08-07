@@ -81,12 +81,12 @@
     @media screen and (min-width: 421px) and (max-width : 576px) {
 
         .user-pict {
-            height: 100px;
+            height: 90px;
             margin-left: 30px !important;
         }
 
         .circle-user-img {
-            width: 100px;
+            width: 90px;
         }
 
         .user-infos {
@@ -95,7 +95,7 @@
 
         .user-infos h2,
         .user-infos p {
-            font-size: 120%;
+            font-size: 110%;
         }
     }
 

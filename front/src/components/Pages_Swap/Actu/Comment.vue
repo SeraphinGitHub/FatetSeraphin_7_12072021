@@ -114,14 +114,14 @@
     }
 
     .time-stamp,
-    p,
-    .modif-content {
-        margin-top: 10px;
+    .modif-content,
+    p {
+        margin-top: 15px;
     }
 
     .time-stamp {
         align-content: space-between;
-        height: 37px;
+        height: auto;
         width: 90%;
 
         font-family: "Raleway-Medium";
@@ -160,5 +160,102 @@
         width: 60%;
         margin-top: 5px;
         margin-bottom: 15px;
+    }
+
+
+
+    /* =============================================================================== */
+    /*      Tablet Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 421px) and (max-width : 768px) {
+
+        .time-stamp,
+        .modif-content,
+        p {
+            margin-top: 20px;
+            font-size: 110%;
+        }
+
+        .post-comment-btn {
+            width: 50%;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Small Size       */
+    /* =============================================================================== */
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+
+        .time-stamp,
+        .modif-content,
+        p {
+            width: 80%;
+            margin-top: 20px;
+            font-size: 115%;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .post-comment-btn {
+            height: 60px;
+            width: 40%;
+            margin: 20px;
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Laptop Big Size      */
+    /* =============================================================================== */
+    @media screen and (min-width: 993px) and (max-width : 1366px) {
+        
+        .time-stamp,
+        .modif-content,
+        p {
+            width: 80%;
+            margin-top: 20px;
+            font-size: 115%;
+            transform: translateY(-15px);
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .post-comment-btn {
+            height: 60px;
+            width: 40%;
+            margin: 20px;
+            transform: translateY(-15px);
+        }
+    }
+
+
+    /* =============================================================================== */
+    /*      Screen Normal Size && Over      */
+    /* =============================================================================== */
+    @media screen and (min-width: 1367px) {
+        
+        .time-stamp,
+        .modif-content,
+        p {
+            width: 80%;
+            margin-top: 20px;
+            font-size: 120%;
+            transform: translateY(-15px);
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .post-comment-btn {
+            height: 60px;
+            width: 30%;
+            transform: translateY(-5px);
+        }
     }
 </style>

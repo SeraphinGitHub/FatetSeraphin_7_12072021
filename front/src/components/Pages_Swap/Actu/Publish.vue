@@ -198,6 +198,7 @@
 
         input {
             height: 30px !important;
+            font-size: 110%;
         }
 
         textarea {
@@ -235,6 +236,7 @@
 
         input {
             height: 30px !important;
+            font-size: 110%;
         }
 
         textarea {
@@ -273,6 +275,7 @@
         input {
             height: 30px !important;
             margin-bottom: 5px;
+            font-size: 110%;
         }
 
         textarea {
@@ -316,6 +319,7 @@
         input {
             height: 30px !important;
             margin-bottom: 5px;
+            font-size: 110%;
         }
 
         textarea {
@@ -363,6 +367,7 @@
         input {
             height: 35px !important;
             margin-bottom: 5px;
+            font-size: 110%;
         }
 
         textarea {
