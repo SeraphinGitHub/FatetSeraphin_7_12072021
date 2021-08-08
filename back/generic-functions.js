@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("./models");
 const User = db.User;
+const Comment = db.Comment;
 
 
 // ==================================================================================
@@ -33,7 +34,8 @@ exports.verifyPostOwner = (itemModel, valueString, req, res, next) => {
             if(user.isAdmin === true || post.userId === user.id) {
                 
                 if(valueString === "modifyItem") this.modifyOneItem(itemModel, post, req, res, next);
-                if(valueString === "deleteItem") this.deleteOneItem(post, req, res, next);
+                if(valueString === "deletePost") this.deletePublication(post, req, res, next);
+                if(valueString === "deleteComment") this.destroyItem(post, "Comment", req, res, next);
             }
 
         }).catch(() => res.status(404).json({ message: "Publication NOT found !" }));
@@ -77,12 +79,19 @@ exports.modifyOneItem = (itemModel, post, req, res, next) => {
 // ==================================================================================
 // Delete One Item
 // ==================================================================================
-exports.deleteOneItem = (post, req, res, next) => {
+exports.deletePublication = (post, req, res, next) => {
     
-    if(post.imageUrl) {
-        const pictureName = post.imageUrl.split("/pictures/")[1];
-        fs.unlink(`pictures/${pictureName}`, () => this.destroyItem(post, "Publication", req, res, next));
-    } else this.destroyItem(post, "Publication", req, res, next);
+    Comment.destroy({ where: { publishId: post.id } })
+    .then(() => {
+        
+        if(post.imageUrl) {
+            const pictureName = post.imageUrl.split("/pictures/")[1];
+            fs.unlink(`pictures/${pictureName}`, () => this.destroyItem(post, "Publication", req, res, next));
+    
+        } else this.destroyItem(post, "Publication", req, res, next);
+
+        res.status(200).json({ message: `All comments deleted - ${post.title} -` });
+    }).catch(() => res.status(500).json({ message: `Comment NOT deleted - ${post.title} -` }));
 };
 
 

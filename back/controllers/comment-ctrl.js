@@ -34,4 +34,4 @@ generic.verifyPostOwner(Comment, "modifyItem", req, res, next);
 
 // "DELETE" ==> Delete one comment by ID in DataBase
 exports.deleteComment = (req, res, next) => 
-generic.verifyPostOwner(Comment, "deleteItem", req, res, next);
+generic.verifyPostOwner(Comment, "deleteComment", req, res, next);

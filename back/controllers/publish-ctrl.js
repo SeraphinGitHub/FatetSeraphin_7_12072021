@@ -52,4 +52,4 @@ generic.verifyPostOwner(Publish, "modifyItem", req, res, next);
 // "DELETE" ==> Delete one publication by ID in DataBase
 // ==================================================================================
 exports.deletePublication = (req, res, next) => 
-generic.verifyPostOwner(Publish, "deleteItem", req, res, next);
+generic.verifyPostOwner(Publish, "deletePost", req, res, next);
