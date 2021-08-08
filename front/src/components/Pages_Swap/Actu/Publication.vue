@@ -323,6 +323,7 @@
     .modif-imagePreview {
         object-fit: cover;
         border-radius: 10px;
+        max-width: 200px;
     }
 
 
@@ -444,6 +445,25 @@
 
 
 
+    @media screen and (min-width: 421px) and (max-width : 576px) {
+        .file-pict img {
+            max-width: 300px;
+        }
+    }
+
+    @media screen and (min-width: 577px) and (max-width : 768px) {
+        .file-pict img {
+            max-width: 400px;
+        }
+    }
+
+    @media screen and (min-width: 769px) and (max-width : 992px) {
+        .file-pict img {
+            max-width: 550px;
+        }
+    }
+
+
     /* =============================================================================== */
     /*      Tablet Small Size       */
     /* =============================================================================== */
@@ -488,7 +508,6 @@
         .post-title,
         .modif-title {
             width: 75%;
-            height: 30px;
             font-size: 125%;
         }
 
@@ -534,7 +553,7 @@
         }
 
         .file-pict img {
-            max-width: 700px;
+            max-width: 650px;
         }
 
         .edit-btn,
@@ -584,7 +603,6 @@
 
         .post-title,
         .modif-title {
-            height: 30px;
             width: 68%;
             font-size: 130%;
         }
@@ -632,7 +650,7 @@
         }
 
         .file-pict img {
-            max-width: 1200px;
+            max-width: 950px;
         }
 
         .has-no-coment p {
@@ -699,7 +717,6 @@
 
         .post-title,
         .modif-title {
-            height: 30px;
             width: 48%;
             font-size: 130%;
         }

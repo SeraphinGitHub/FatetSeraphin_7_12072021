@@ -82,7 +82,7 @@
         }
 
         .user-infos {
-            margin-left: 40px;
+            margin-left: 20px;
         }
 
         .user-infos h2,

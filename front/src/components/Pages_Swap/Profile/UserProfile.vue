@@ -795,7 +795,7 @@
         
         .caption-btn {
             height: 60px;
-            width: 40%;
+            width: 45%;
             margin-top: $margin_Base;
             padding: 5px;
             font-size: 140%;

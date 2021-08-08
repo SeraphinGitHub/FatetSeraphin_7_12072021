@@ -172,6 +172,13 @@ exports.getUserProfile = (req, res, next) => {
 // ==================================================================================
 // "PUT" ==> Update User Profile
 // ==================================================================================
+exports.updateUser = (user, securedUserPhoto, req, res, next) => {
+
+    User.update(securedUserPhoto, { where: { id: user.id } })
+    .then(() => res.status(202).json({ message: `${user.userName}'s photo update successfully !` }))
+    .catch(() => res.status(502).json({ message: `${user.userName}'s photo NOT updated !` }));
+}
+
 exports.modifyProfile = (req, res, next) => {
     const userIdTok = generic.verifyToken(req, res, next, "userId");
 
@@ -179,25 +186,27 @@ exports.modifyProfile = (req, res, next) => {
     .then(user => {
 
         if(req.file) {
-            const pictureName = user.imageUrl.split("/pictures/")[1];
-
-            fs.unlink(`pictures/${pictureName}`,(() => {
+            if(user.imageUrl !== "http://localhost:3000/pictures/Default.jpg") {
+                const pictureName = user.imageUrl.split("/pictures/")[1];
+    
+                fs.unlink(`pictures/${pictureName}`,(() => {
+                    const userPhoto = {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}`};
+                    const {email, password, position, department, isAdmin, ...securedUserPhoto} = userPhoto;
+                    this.updateUser(user, securedUserPhoto, req, res, next);
+                }));
+            }
+            
+            else {
                 const userPhoto = {imageUrl: `${req.protocol}://${req.get("host")}/pictures/${req.file.filename}`};
                 const {email, password, position, department, isAdmin, ...securedUserPhoto} = userPhoto;
-                
-                User.update(securedUserPhoto, { where: { id: user.id } })
-                .then(() => res.status(202).json({ message: `${user.userName}'s photo update successfully !` }))
-                .catch(() => res.status(502).json({ message: `${user.userName}'s photo NOT updated !` }));
-            }));
+                this.updateUser(user, securedUserPhoto, req, res, next);
+            }
         }
     
         else {
             const userData = {...req.body };
             const {email, password, isAdmin, imageUrl, ...securedUserData} = userData;
-
-            User.update(securedUserData, { where: { id: user.id } })
-            .then(() => res.status(201).json({ message: `${user.userName}'s infos update successfully !` }))
-            .catch(() => res.status(501).json({ message: `${user.userName}'s infos NOT updated !` }));
+            this.updateUser(user, securedUserData, req, res, next);
         }
 
     }).catch(() => res.status(500).json({ message: "User NOT found !" }));
