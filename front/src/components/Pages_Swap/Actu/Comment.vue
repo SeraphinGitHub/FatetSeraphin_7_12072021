@@ -44,6 +44,7 @@
                 textModif: "",
                 
                 isUpdated: false,
+                hasNoComment: false,
                 isCommentOwner: false,
                 isEditingComment: false,
 
@@ -69,7 +70,7 @@
                 this.user = await this.getLoggedUserInfos();
 
                 if(this.comment) {
-                    this.$emit("hasNoComment");
+                    this.$emit("hasNoComment", this.hasNoComment);
                     if(this.comment.userId === this.user.id || this.user.isAdmin) this.isCommentOwner = true;
                 }
             },
@@ -149,6 +150,7 @@
     }
 
     p {
+        white-space: pre-wrap;
         background: white;
     }
 
@@ -242,7 +244,7 @@
         .time-stamp,
         .modif-content,
         p {
-            width: 65%;
+            width: 70%;
             margin-top: 20px;
             font-size: 120%;
             transform: translateY(-15px);

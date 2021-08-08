@@ -684,6 +684,7 @@
     }
 
     .server-alert {
+        z-index: 10;
         top: 20px;
         height: 80px;
         
@@ -1303,6 +1304,7 @@
             margin-right: -13%;
         }
         
+        .profile-infos input,
         .paragraphes {
             width: 60%;
             margin: 0px;
@@ -1312,11 +1314,9 @@
 
         .profile-infos input {
             height: 25px;
-            margin: 0px;
             padding: 11px;
             padding-left: 10px;
             border-radius: 5px;
-            font-size: 125%;
         }
 
         .paragraphes {

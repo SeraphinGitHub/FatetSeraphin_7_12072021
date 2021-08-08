@@ -245,7 +245,7 @@
     @media screen and (min-width: 993px) and (max-width : 1366px) {
         
         .user-infos {
-            width: 75% !important;
+            width: 65% !important;
             margin-left: 40px;
         }
 
@@ -267,8 +267,6 @@
         .btn-container {
             height: 55%;
             width: 80%;
-            margin-left: 240px;
-            transform: translateY(-50px);
         }
 
         .btn-container button {

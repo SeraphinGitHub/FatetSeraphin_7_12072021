@@ -35,7 +35,7 @@
 
             <Comment v-for="com in comments" :key="com.id"
                 :comment="com"
-                @hasNoComment="hasNoComment = !hasNoComment"
+                @hasNoComment="hasNoComment = $event"
                 @getComments="getPublishComments()"
             />
 
@@ -321,9 +321,7 @@
 
     .file-pict img,
     .modif-imagePreview {
-        object-fit:scale-down;
-        height: 100%;
-        width: 100%;
+        object-fit: cover;
         border-radius: 10px;
     }
 
@@ -332,6 +330,7 @@
     .content {
         margin: 20px;
         font-size: 100%;
+        white-space: pre-wrap;
     }
 
 
@@ -629,11 +628,15 @@
     @media screen and (min-width: 1367px) {
 
         .comment-flow {
-            width: 80%;
+            width: 70%;
         }
 
         .file-pict img {
-            max-width: 800px;
+            max-width: 1200px;
+        }
+
+        .has-no-coment p {
+            width: 70%;
         }
 
         .edit-btn,
@@ -649,12 +652,15 @@
 
         .modif-image-btn,
         .repost-btn {
-            width: 40%;
+            width: 30%;
             margin: 20px;
-            margin-bottom: 30px;
+            margin-left: 70px;
+            margin-right: 70px;
+            margin-bottom: 40px;
         }
 
         .modif-content {
+            width: 60% !important;
             margin: 30px;
             margin-left: 50px;
             margin-right: 50px;
@@ -689,7 +695,6 @@
             margin-bottom: 10px;
             margin-left: 100px;
             margin-right: 100px;
-            transform: translateY(-115px);
         }
 
         .post-title,
@@ -714,19 +719,10 @@
             line-height: 130%;
         }
 
-        .commentate {
-            height: 400px;
-        }
-
         .comment-container {
             width: 50%;
             margin-left: 100px;
             margin-right: 100px;
-            transform: translateY(-110px);
-        }
-
-        .userCaption {
-            transform: translateY(-90px);
         }
 
         .modif-content,

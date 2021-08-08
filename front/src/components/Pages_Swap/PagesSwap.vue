@@ -84,14 +84,17 @@
 
     textarea {
         text-align: left;
-        resize: none;
+        resize: vertical;
         height: 60px;
+        min-height: 100px;
+        max-height: 300px;
         width: 100%;
         margin-top: 8px;
         padding: 15px;
         padding-top: 5px;
         border-radius: 8px;
         border: solid black 1px;
+        white-space: pre-wrap;
 
         font-family: "Raleway-Medium";
         line-height: 100%;

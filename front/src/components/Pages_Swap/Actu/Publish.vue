@@ -155,6 +155,7 @@
     }
 
     .post-container textarea {
+        resize: none;
         margin-top: 5px;
         height: 50px;
     }

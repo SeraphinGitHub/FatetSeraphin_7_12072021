@@ -193,7 +193,7 @@
                 const emailRegEx = new RegExp(/^[A-Za-z0-9._-]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$/);
 
                 // Have to contain: LETTER || letter || accent letters || spaces || dash
-                const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-]+$/);
+                const normalTextRegEx = new RegExp(/^[A-Za-zÜ-ü\s-']+$/);
 
                 // Have to contain: LETTER || letter || number || accent letters || number && minimum 10 characters 
                 const passwordRegEx = new RegExp(/^[A-Za-zÜ-ü0-9!@#$%^&*].{9,}$/);
