@@ -312,7 +312,7 @@ exports.deleteUser = (req, res, next) => {
                                 posts.forEach(post => {
                                     if(post.imageUrl) {
                                         const pictureName = post.imageUrl.split("/pictures/")[1];
-                                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(post, post.title, req, res, next));
+                                        fs.unlink(`pictures/${pictureName}`, () => generic.destroyItem(post, "", req, res, next));
                                     }
                                 });
 

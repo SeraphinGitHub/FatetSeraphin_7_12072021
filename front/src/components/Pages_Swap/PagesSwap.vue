@@ -2,7 +2,7 @@
     <section class="flexCenter pages-swap">
                 
         <UserProfile @profile="toggleProfile()" @refreshActu="refreshActu()"/>
-        <UserWall @wall="toggleWall()"/>
+        <UserWall @wall="toggleWall()" :key="upWall"/>
         <Actu @actu="toggleActu()" :key="upActu"/>
 
     </section>
@@ -31,6 +31,7 @@
         data() {
             return  {
                 upActu: 0,
+                upWall: 0,
             }
         },
 
@@ -55,6 +56,8 @@
             toggleWall() {
                 this.pageToggling("wall");
                 localStorage.setItem("Current Page", "Wall")
+                this.upWall++;
+                setTimeout(() => this.pageToggling("wall"),0);
             },
 
             toggleProfile() {

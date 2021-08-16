@@ -161,6 +161,7 @@
                     await response;
                     this.isEditingPost = !this.isEditingPost;
                     this.$emit("refresh");
+                    this.$parent.$emit("wall");
                 }
                 catch(error) { console.log("error", error) }
             },
@@ -179,6 +180,7 @@
                 try {
                     await response.json();
                     this.$emit("refresh");
+                    this.$parent.$emit("wall");
                 }
                 catch(error) { console.log("error", error) }
             },
